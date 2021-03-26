@@ -1,0 +1,38 @@
+{
+	"PORT": 8878,
+	"METRICSPORT": 8879,
+	
+	"vertx": {
+		
+	},
+	
+	"TLSFile": "null",
+	"TLSPassword": "null",
+	"PEMCert": "",
+	"TLSType": "pfx",
+	"cipher": {
+		"TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384": true,
+		"TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384": true,
+		"TLS_RSA_WITH_AES_256_GCM_SHA384": true
+	},
+	"enabledProtocols": {
+		"TLSv1.3": false,
+		"TLSv1.2": true
+	},
+	"removeInsecureProtocols": {
+		"TLSv1": true,
+		"TLSv1.1": true,
+		"SSLv2Hello": true
+	},
+	"CORS": {
+		"localhost": true,
+		"hcl.com": true,
+		".local": true
+	},
+	"prometheusMetrics": {
+		"embeddedServerEndpoint": "/metrics",
+		"enabled": true,
+		"publishQuantiles": true,
+		"startEmbeddedServer": true
+	}
+}

@@ -1,0 +1,25 @@
+.scale-img-fifty-percent {
+    width: 50%;
+    height: 50%;
+}
+
+.scale-img-seventy-five-percent {
+    width: 75%;
+    height: 75%;
+}
+
+.scale-img-twenty-five-percent {
+    width: 25%;
+    height: 25%;
+}
+
+.prev-btns {
+    margin-right: 5px;
+}
+
+.img-zoom {
+    transition: transform .2s;
+    &:hover {
+        transform: scale(2.0);
+    }
+}

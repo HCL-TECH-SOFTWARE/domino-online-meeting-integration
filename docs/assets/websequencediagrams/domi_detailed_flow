@@ -1,0 +1,100 @@
+actor user
+participant notes
+participant browser
+participant hclApp
+participant meetingService
+
+note left of notes
+Administrator will have 
+installed DOMI into 
+mail template
+end note
+note left of user
+1.
+end note
+user -> notes: Create profile for meeting service
+user -> notes: User clicks "Get OAuth Token" button
+notes -> browser: Open URL for e.g.\nhttps://domi.hcl.com/\ndominoZoom/index.html
+browser -> hclApp:
+hclApp -> meetingService: Process OAuth request
+meetingService -> browser: \"Do you want to allow\nNotes Meetings to access\nZoom/Team/Webex/GTM?\"
+browser -> user:
+user -> browser: User approves
+browser -> meetingService: 
+meetingService -> hclApp: Return short-lived code
+note left of user
+2.
+end note
+hclApp -> meetingService: Request tokens
+meetingService -> hclApp: Return token
+hclApp -> browser: Display refresh token
+browser -> user: Copy refresh token
+user -> notes: Pastes refresh token in profile
+note left of user
+3.
+end note
+notes -> hclApp: Send refresh token for validation
+hclApp -> meetingService: Request updated tokens
+meetingService -> hclApp: Send updated tokens
+hclApp -> notes: Send and store updated tokens
+notes -> user: Tokens validated
+note left of notes: NOW WE HAVE A TOKEN\nTO CREATE MEETINGS
+note left of user
+4.
+end note
+user -> notes: Create calendar entry and\nadd online meeting
+alt
+note left of user
+4a.
+end note
+notes -> meetingService: Create Meeting using access token token
+meetingService -> notes: Send back meeting details
+else
+note left of user
+4b.
+end note
+notes -> hclApp: Send refresh token
+hclApp -> meetingService: Request updated tokens
+meetingService -> hclApp: Send updated tokens
+hclApp -> notes: Send and store updated tokens
+notes -> meetingService: Create Meeting using access token token
+meetingService -> notes: Send back meeting details
+else
+note left of user
+4c.
+end note
+notes -> user: Token has expired,\nwould you like to refresh?
+note left of user
+4c.1.
+end note
+user -> notes: User clicks "Get OAuth Token" button
+notes -> browser: Open URL for e.g.\nhttps://domi.hcl.com/\ndominoZoom/index.html
+browser -> hclApp:
+hclApp -> meetingService: Process OAuth request
+meetingService -> browser: \"Do you want to allow\nNotes Meetings to access\nZoom/Team/Webex/GTM?\"
+browser -> user:
+user -> browser: User approves
+browser -> meetingService: 
+note left of user
+3c.2.
+end note
+meetingService -> hclApp: Return short-lived code
+hclApp -> meetingService: Request token
+meetingService -> hclApp: Return refresh token
+hclApp -> browser: Display refresh token
+note left of user
+4c.3.
+end note
+browser -> user: Copy refresh token
+user -> notes: Pasts refresh token in profile
+notes -> hclApp: Send refresh token for validation
+hclApp -> meetingService: Request updated tokens
+meetingService -> hclApp: Send updated tokens
+hclApp -> notes: Send and store updated tokens
+notes -> user: Tokens validated
+note left of user
+4c.4.
+end note
+notes -> meetingService: Create Meeting using access token token
+meetingService -> notes: Send back meeting details
+end

@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+    <title>Online Meetings for HCL Notes Setup</title>
+
+    <style type="text/css">
+        body {
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        }
+
+        .h1 {
+            font-size: 40px;
+            line-height: 1.3;
+        }
+
+        h4,
+        .h4,
+        .btn.btn-style-1,
+        .btn.btn-style-2,
+        .btn.btn-style-3,
+        .btn.btn-style-8,
+        .btn.btn-style-9,
+        .btn.btn-style-blue-1,
+        .btn.btn-style-blue-2,
+        .btn.btn-style-blue-3,
+        .btn.btn-style-blue-4,
+        .btn.btn-style-blue-5,
+        .btn.btn-style-blue-6,
+        .btn.btn-style-light-blue,
+        .main-header .menu-list li .link,
+        .master-header .master-menu-list li .link,
+        .schedule-demo-dialog .demo-list,
+        .accordion .panel .panel-heading a,
+        .accordion .panel .panel-body {
+            font-size: 16px;
+            line-height: 1.75;
+        }
+
+        .header-container {
+            max-width: none;
+        }
+
+        .header-container:before {
+            display: table;
+            content: " ";
+        }
+
+        .banner-section.pnp-ui-banner {
+            background: rgb(5, 4, 4);
+            padding-top: 180px;
+            padding-bottom: 120px;
+            background-image: url('images/200119_Illustration_circuit-board_1920x500.jpg');
+            background-size: cover;
+        }
+
+        .open-intro {
+            font-size: 12pt;
+            color: #fff;
+        }
+
+        .open-title {
+            font-weight: 500;
+            font-size: 48px;
+            color: #47DECF;
+        }
+
+        .open-body {
+            font-size: 14pt;
+            color: #fff;
+        }
+
+        .header-topbar {
+            border-bottom: 1px solid #4b4b4b;
+            height: 32px;
+            transition-duration: 0.4s;
+        }
+
+        .master-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 99;
+        }
+
+        .master-header .container {
+            width: auto;
+            padding: 0 32px;
+        }
+
+        .dark-master {
+            background: #000000;
+        }
+
+        .logo-brand {
+            float: left;
+            padding-right: 35px;
+            margin-right: 35px;
+            position: relative;
+            overflow: hidden;
+            height: 48px;
+        }
+
+        .logo-brand:before {
+            content: '';
+            width: 1px;
+            height: 18px;
+            background: #4b4b4b;
+            position: absolute;
+            top: 15px;
+            right: 0;
+        }
+
+        .logo-brand a img {
+            max-width: 150px;
+            margin-top: -5px;
+        }
+
+        .logo-hcl-tech,
+        .logo-hcl-tech:hover,
+        .logo-hcl-tech:focus {
+            text-transform: uppercase;
+            font-size: 12px;
+            line-height: 31px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .banner-section {
+            position: relative;
+            padding: 100px 0 50px;
+            text-align: left;
+        }
+
+        .img-responsive {
+            display: inline-block;
+            max-width: 100%;
+        }
+
+        .btn-copy {
+            font-size: 13px;
+            margin-right: 8px;
+            color: #5C5C5C;
+            border: #ADADAD 1px solid;
+            border-radius: 25px;
+        }
+
+        .label {
+            font-weight: 400;
+            font-size: 24px;
+            color: #01539B;
+        }
+
+        .code {
+            font-size: 18px;
+            background-color: #ffffff;
+            border: #ADADAD 1px solid;
+            padding: 5px;
+            overflow-wrap: break-word;
+        }
+        
+        .row {
+        	margin-bottom: 10px;
+        }
+
+        @media (max-width: 1200px) {
+            .master-header {
+                top: 30px !important;
+            }
+        }
+
+        @media (max-width: 991px) {
+            #navbar {
+                top: 110px;
+                height: calc(100% - 110px);
+            }
+
+            .sticky #navbar {
+                top: 78px;
+                height: calc(100% - 78px);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="row">
+            <header id="masterHeader" class="dark master-header dark-master">
+                <div id="header-topbar" class="header-topbar">
+                    <div id="drawer-overlay" class="sidedrawer-wrapper"></div>
+                    <div class="container header-container">
+                        <div class="row">
+                            <div class="col col-xs-6 text-left">
+                                <a href="https://www.hcltech.com/" target="_blank" class="logo-hcl">
+                                    <img src="https://www.hcltechsw.com/hclf/img/hcl-symbol.png"
+                                        class="img-responsive" />
+                                </a>
+                            </div>
+                            <div class="col col-xs-6 text-right">
+                                <a href="https://www.hcltech.com/" target="_blank" class="logo-hcl-tech">HCL
+                                    TECHNOLOGIES</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="container header-container">
+                    <div class="logo-brand">
+                        <a href="https://www.hcltechsw.com/">
+                            <img src="https://www.hcltechsw.com//hclf/img/hcl-m.png" alt="HCL Logo" border="" title=""
+                                class="img-responsive" />
+                        </a>
+                    </div>
+                </div>
+            </header>
+        </div>
+    </div>
+
+    <!-- start: Banner -->
+    <!-- banner-section -->
+    <section class="banner-section domino-ui-banner ">
+
+        <img src="https://hcltechsw.com/wps/wcm/connect/16a73d8a-7170-4ebd-bc40-208a50af4de1/1_Hero-Image.jpg?MOD=AJPERES&amp;CACHEID=ROOTWORKSPACE-16a73d8a-7170-4ebd-bc40-208a50af4de1-nn.yGKl"
+            class="img-responsive"
+            style="object-fit:cover; position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
+
+        <div class="container">
+            <div class="row">
+                <style>
+                    .product-logo-scrolled {
+                        position: relative;
+                        top: -10px;
+                    }
+                </style>
+                <div class="col-lg-4 col-md-3 col-xs-6 col-sm-3">
+                    <div class="product-logo">
+                        <a href="https://hcltechsw.com/wps/portal/products/domino/home">
+                            <span class="hide-regular">
+                                <img src="https://hcltechsw.com/wps/wcm/connect/de479e1c-ba2e-4f77-90d1-d91ec640eafb/HCL_Domino_White.svg?MOD=AJPERES&amp;CACHEID=ROOTWORKSPACE-de479e1c-ba2e-4f77-90d1-d91ec640eafb-nr.ulQd"
+                                    class="img-responsive">
+                            </span>
+                            <br /><br />
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+
+                <div class="col-sm-6 mt-50 col-text ">
+                    <h1 class="bold text-white banner-title">
+                        Domino. Apps that Run Your Business.
+                    </h1>
+
+                    <h4 class="text-white">
+                        <p dir="ltr">Solve workflow and process challenges fast with HCL Domino &#8212; a secure,
+                            enterprise-grade, application development platform. Our latest release of Domino v11
+                            promises more value and lower TCO than ever.</p>
+
+                    </h4>
+
+                </div>
+
+            </div>
+        </div>
+    </section>
+    <!-- /.banner-section -->
+    <!-- end: Banner -->
+    <!-- start: main-section -->
+    <section class="section text-center" style="background: #f6f6f6; padding: 24px 0">
+        <div class="container">
+            <div class="row">
+                <h3 class="bold title text-black">
+                    <p dir="ltr">Welcome</p>
+                    <h3>
+            </div>
+        </div>
+    </section>
+    
+    <div class="py-3 border-top">
+  <div class="container">
+
+    <div class="row footer" style="font-size:0.8em">
+
+      <div class="col-sm">
+        <ul class="list-unstyled">
+          <li>
+            &copy; HCL Software 2021
+          </li>
+        </ul>
+      </div>
+
+
+      <div class="col-sm text-right">
+        <p><a href="https://www.hcltechsw.com/wps/portal/legal/privacy">Privacy</a> &bull; <a href="https://www.hcltechsw.com/wps/portal/legal/terms-use">Terms of Use</a></p>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+</body>
+
+</html>
