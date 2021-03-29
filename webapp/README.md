@@ -2,9 +2,7 @@
 
 ## Project Dill
 
-image:https://img.shields.io/badge/vert.x-4.0.0-purple.svg[link="https://vertx.io"]
-
-This application was generated using http://start.vertx.io.
+![https://vertx.io](https://img.shields.io/badge/vert.x-4.0.0-purple.svg)
 
 ## Running
 
