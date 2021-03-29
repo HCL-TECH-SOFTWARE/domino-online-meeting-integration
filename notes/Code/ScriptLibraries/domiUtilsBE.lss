@@ -1,0 +1,1391 @@
+'++LotusScript Development Environment:2:5:(Options):0:74
+%REM
+	Library domiUtilsBE
+	Created Feb 2021 by Devin Olson/USA/PNPHCL, Rocky Oliver/USA/PNPHCL, Paul Withers/USA/PNPHCL 
+
+	Domino Online Meeting Integration Back End Utilities 
+
+	Copyright 2021 HCL Software
+	Licensed under the Apache License, Version 2.0 (the "License"); 
+	you may not use this file except in compliance with the License. 
+	You may obtain a copy of the License at
+
+	http://www.apache.org/licenses/LICENSE-2.0
+
+	Unless required by applicable law or agreed to in writing, 
+	software distributed under the License is distributed on an "AS IS" BASIS, 
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
+	See the License for the specific language governing permissions and limitations under the License
+%END REM
+Option Public
+Option Explicit
+
+Use "NotesRESTConsumer"
+Use "domiConstantsBE"
+
+'++LotusScript Development Environment:2:5:(Forward):0:1
+Declare Function getDOMIdesignElements(thisdb As NotesDatabase) As NotesNoteCollection
+Declare Function columnValArray(doc As NotesDocument, colnum As Integer) As Variant
+Declare Function getDOMIserviceLabel(meetingservice$) As String 
+Declare Function getSTHeaderTokens(urlBase As String, cookieVal As String, tokenVal As String) As Variant
+Declare Function getDOMIvalidationFailureMessages(flag As Integer) As Variant 
+Declare Function cleanupSTMeetingName(subj As String) As String
+Declare Function getSTTempTokens(urlBase As String, cookieVal As String, tokenVal As String) As Boolean
+Declare Sub logDOMIversion() 
+Declare Function getServiceEmail(service As String) As String
+Declare Function columnValStr(doc As NotesDocument, colnum As Integer) As String
+Declare Function getServiceToken(service As String, tokenType As String) As String
+Declare Function getDOMIrootURL(meetingservice$) As String 
+Declare Function isDOMIserviceSupported(meetingservice$) As Boolean 
+Declare Function getCredentialsDoc(thisDb As NotesDatabase, service As String) As NotesDocument
+Declare Sub instantiateDOMIlog() 
+Declare Property Get DOMI_JSON_NODES_EXCLUDE_FROM_LOG As BooleanList
+Declare Function getDOMIendpointURL(meetingservice$, operation$, replacements As StringList) As String 
+Declare Function domiValidateCalendarEntry(context As NotesDocument, ndtStart As NotesDateTime, ndtEnd As NotesDateTime) As Integer
+Declare Function atUniqueID() As String
+Declare Sub updateSTCalendarEntry(curDoc As NotesDocument, updateList As VariantList)
+
+'++LotusScript Development Environment:2:5:(Declarations):0:10
+
+Private Const LIB_PREFIX = |Library: domiUtilsBE.|
+
+Private Const SC_ProperCase = 3
+
+'++LotusScript Development Environment:2:1:getDOMIdesignElements:18:8
+
+
+
+
+ 
+
+
+
+
+
+%REM
+	Function getDOMIdesignElements(thisdb As NotesDatabase) As NotesNoteCollection
+	PURPOSE: Gets the design elements that are a part of the OMI feature. This includes 
+	Agents, Folders, Forms, Script Libs, Subforms, and Views
+	
+	RETURNS: NotesNoteCollection of the desired design elements
+%END REM
+Function getDOMIdesignElements(thisdb As NotesDatabase) As NotesNoteCollection
+	Dim nc As NotesNoteCollection
+	Dim nid As String, i As Double, nextid As String
+	
+	On Error GoTo errHandler
+	
+	REM Create note collection for current database
+	Set nc = thisdb.CreateNoteCollection(False)
+	With nc
+		.SelectAgents = True
+		.SelectFolders = True
+		.SelectForms = True
+		.SelectScriptLibraries = True
+		.SelectSubforms = True
+		.SelectViews = True
+		
+		.SelectOutlines = False
+		.SelectPages = False
+		.SelectImageResources = False
+		.SelectFrameSets = False
+		.SelectActions = False
+		.SelectStyleSheetResources = False
+		.SelectSharedFields = False
+		.SelectNavigators = False
+		.SelectMiscCodeElements = False
+		.SelectJavaResources = False
+		.SelectACL = False
+		.SelectDatabaseScript = False
+		.SelectDataConnections = False
+		.SelectDocuments = False
+		.SelectHelpAbout = False
+		.SelectHelpIndex = False
+		.SelectHelpUsing = False
+		.SelectMiscFormatElements = False
+		.SelectMiscIndexElements = False
+		.SelectProfiles = False
+		.SelectReplicationFormulas = False
+	End With
+	Call nc.BuildCollection
+	Set getDOMIdesignElements = nc
+	
+getOut:
+	Exit Function
+	
+errHandler:
+	Set getDOMIdesignElements = Nothing
+	On Error GoTo 0
+	Error Err, Error$ & " [in " & LSI_Info(2) & "]"
+	Resume getOut
+End Function
+
+'++LotusScript Development Environment:2:1:columnValArray:14:8
+
+
+%REM
+	Function columnValArray
+	Description: 
+		One annoying trait of the NotesDocument.columnValues property is that 
+		it can return either a scalar or an array. This is annoying, and introduces 
+		a potential failure point if you aren't studious enough to make sure you fix 
+		this every time you use the columnValues property.
+		
+		This little function takes the column value, and makes sure to always 
+		return it as an array, no matter what.
+%END REM
+Function columnValArray(doc As NotesDocument, colnum As Integer) As Variant
+	Dim vtmp1 As Variant, vtmp2 As Variant
+	Dim errtxt As String
+	
+	On Error GoTo errHandler
+
+	vtmp1 = doc.Columnvalues(colnum)
+	If IsArray(vtmp1) Then
+		columnValArray = vtmp1
+	Else
+		ReDim vtmp2(0)
+		vtmp2(0) = vtmp1
+		columnValArray = vtmp2
+	End If
+	
+getOut:
+	Exit Function
+errHandler:
+	columnValArray = Null
+	errtxt = Error$ & " [in: " & GetThreadInfo(1) & "; err: " & Err & "; line: " & Erl & "]"
+	On Error GoTo 0
+
+	Error Err, errtxt
+	Resume getOut
+End Function
+
+'++LotusScript Development Environment:2:1:getDOMIserviceLabel:9:8
+%REM
+	Function getDOMIserviceLabel
+	Gets the service label for a specified meeting service
+	
+	@param meetingservice$  DOMI_SERVICE_XXX Meeting service (from domiConstantsBE)
+	
+	@return Service Label for the specified meeting service. Blank if meeting service unknown.  
+%END REM
+Function getDOMIserviceLabel(meetingservice$) As String 
+	On Error GoTo ErrorTrap
+
+	Const DOMI_SERVICEPAIR_GTM = 	"Go to Meeting|gtm"
+	Const DOMI_SERVICEPAIR_TEAMS = 	"Teams|teams" 
+	Const DOMI_SERVICEPAIR_WEBEX = 	"WebEx|webex" 
+	Const DOMI_SERVICEPAIR_ZOOM = 	"Zoom|zoom"
+
+	Dim result$
+	
+	' BEGIN CODE
+	Select Case LCase$(meetingservice$) 
+		Case DOMI_SERVICE_GTM: 
+			result$ = |GoToMeeting|
+		
+		Case DOMI_SERVICE_TEAMS: 
+			result$ = |Teams|
+			
+		Case DOMI_SERVICE_WEBEX: 
+			result$ = |WebEx|
+			
+		Case DOMI_SERVICE_ZOOM: 
+			result$ = |Zoom|
+	End Select
+	
+	
+ExitPoint: 
+	getDOMIserviceLabel = result$
+	Exit Function 
+ErrorTrap:
+	On Error GoTo 0
+	enhLogException LIB_PREFIX, |Meeting Service: | & meetingservice$
+	Resume ExitPoint
+End Function
+
+'++LotusScript Development Environment:2:1:getSTHeaderTokens:15:8
+%REM
+	Function getSTTempTokens(urlBase As String, cookieVal As String, tokenVal As String) As Boolean
+	Description: This function is used to get the initial x-csrf token and related cookie from the 
+	ST Meeting server at the specified location. These tokens are then return back by Ref on the 
+	appropriate params, with the function return True/False based on success.
+	
+	--- PARAMS ---
+	urlBase (String) == the url of the ST Meetings server API
+	cookieVal (String) == the variable where the cookie will be returned
+	tokenVal (String) == the variable where the x-csrf token will be returned
+	
+	--- RETURNS ---
+	- returns True if successful, False if not
+%END REM
+Function getSTHeaderTokens(urlBase As String, cookieVal As String, tokenVal As String) As Variant
+	Dim s As New NotesSession
+	Dim thisDb As NotesDatabase
+	Dim credDoc As NotesDocument
+	Dim url As String, hdrList As New stringlist()
+	Dim nrest As NotesRESTConsumer
+	Dim jsonNav As NotesJSONNavigator
+	Dim resp As String
+	Dim tokenTag As String, cookieTag As String, preTag As String, tag As String, xcsrfTag As String
+	Dim token As String, fullCookie As String, cVal As String, tVal As String, cookieVar As Variant
+	Dim retList List As Variant
+	Dim rstr As String, rvar As Variant, rint As Integer, rbool As String, emptyvar As Variant, errtxt As String
+	
+	On Error GoTo errHandler
+	
+	Set thisDb = s.Currentdatabase
+	Set credDoc = getCredentialsDoc(thisDb, "sametime")
+	If LCase(Right(urlBase, 8)) = "/refresh" Then
+		url = urlBase
+	Else
+		url = urlBase & "/refresh"
+	End If
+	
+	rbool = getSTTempTokens(urlBase, cVal, tVal)  ' in domiUtilsBE
+	If rbool = False Then Error 1000, "Error retrieving needed initial tokens"
+	
+	Set nrest = New NotesRESTconsumer(DOMI_JSON_NODES_EXCLUDE_FROM_LOG)
+	token = getServiceToken("sametime", DOMI_TOKEN_REFRESH) ' in domiUtilsBE
+	fullCookie = "_csrf=" & cVal & "; sametimeRefresh=" & token
+	
+	hdrList.content("accept") = "application/json"
+	hdrList.content("X-CSRF-Token") = tVal
+	hdrList.content("cookie") = fullCookie
+	resp = nrest.httpGet(url, hdrList, Nothing)
+	rint = nrcParseResponseCode(resp)
+	If rint = 401 Then Error (1000 + rint), "ST Refresh Token Expired"
+	If rint <> 200 Then Error (1000 + rint), "Problem creating meeting (" & rstr & ")"
+	
+	rvar = emptyVar
+	rvar = nrest.ResponseHeaders
+	
+	If IsArray(rvar) Then
+		retList("sametimeJwt=") = ""
+		retList("sametimeRefresh=") = ""
+		pretag = "Set-Cookie: "
+		xcsrfTag = "x-csrf-token: "
+		ForAll z In rvar
+			If LCase(Left(z, Len(xcsrfTag))) = LCase(xcsrfTag) Then
+				retList(xcsrfTag) = StrRight(z, xcsrfTag, 5)
+			Else
+				ForAll c In retList
+					tag = pretag & ListTag(c)
+					' need to update the credentials doc with the updated tokens
+					If LCase(Left(z, Len(tag))) = LCase(tag) Then
+						rstr = StrRight(z, tag, 5)
+						c = rstr
+					End If			
+				End ForAll
+			End If
+		End ForAll
+		' update the corresponding credentials doc with the new tokens
+		If Not(credDoc Is Nothing) Then
+			If Not(retList("sametimeJwt=") = "") Then Call credDoc.Replaceitemvalue("stJWTTokenFull", retList("sametimeJwt="))
+			If Not(retList("sametimeRefresh=") = "") Then Call credDoc.Replaceitemvalue("stRefreshTokenFull", retList("sametimeRefresh="))
+			Call credDoc.Computewithform(True, False)
+			Call credDoc.Save(True, False, True)
+		End If
+		
+		retList("_csrf=") = cVal
+	Else
+		Error 1000, "Error retrieving ST Token"
+	End If
+
+	getSTHeaderTokens = retList
+
+getOut:
+	Exit Function
+errHandler:
+	getSTHeaderTokens = emptyvar
+	errtxt = Error$ & " [in: " & GetThreadInfo(1) & "; err: " & Err & "; line: " & Erl & "]"
+	On Error GoTo 0
+
+	Error Err, errtxt
+	Resume getOut
+End Function
+
+'++LotusScript Development Environment:2:1:getDOMIvalidationFailureMessages:28:8
+
+	
+
+	
+%REM
+	Function getDOMIvalidationFailureMessages
+	Gets the DOMI validation Failure Messages from a DOMI flags carrier
+	
+	@param flag Flag where -1 (True) indicates success
+		Result flag indicates: 
+			-1 		Validation Passed
+			0		Validation Unknown 
+			
+			1 		Form not "Appointment"
+			2 		Subject is blank
+			4 		StartDate not populated or ot interpretable as a date time
+			8 		StartTime not populated or ot interpretable as a date time
+			16		StartTimeZone not populated or not interpretable as a time zone 
+			32		Start Date/Time is before NOW (Current Date/Time) 
+			64 		EndDate not populated or ot interpretable as a date time
+			128 	EndTime not populated or ot interpretable as a date time
+			256 	EndTimeZone not populated or not interpretable as a time zone 
+			512		End Date/Time is before Start Date/Time  
+			
+				  
+	@return Array of strings containing flag messages from the flag.  Empty array if no messages or Flag < 1  
+%END REM
+Function getDOMIvalidationFailureMessages(flag As Integer) As Variant 
+	On Error GoTo ErrorTrap
+	
+	' exception variables
+	Dim extendedinfo List As String 
+	Dim msg$
+	
+	
+	Dim result() As String 
+	Dim idx% 
+	
+	' BEGIN CODE
+	extendedinfo(|Flag|) = CStr(flag) 
+	ReDim result(0) As String 
+	
+	If (flag > 0) Then 
+		If (1 And flag) Then 
+			ReDim Preserve result(idx%) As String 
+			result(idx%) = |Form Not "Appointment"|
+			idx% = idx% + 1
+		End If
+
+		If (2 And flag) Then 
+			ReDim Preserve result(idx%) As String 
+			result(idx%) = |Subject Is blank|
+			idx% = idx% + 1
+		End If
+
+		If (4 And flag) Then 
+			ReDim Preserve result(idx%) As String 
+			result(idx%) = |StartDate Not populated Or ot interpretable As a Date Time|
+			idx% = idx% + 1
+		End If
+
+		If (8 And flag) Then 
+			ReDim Preserve result(idx%) As String 
+			result(idx%) = |StartTime Not populated Or ot interpretable As a Date Time|
+			idx% = idx% + 1
+		End If
+
+		If (16 And flag) Then 
+			ReDim Preserve result(idx%) As String 
+			result(idx%) = |StartTimeZone Not populated Or Not interpretable As a Time Zone| 
+			idx% = idx% + 1
+		End If
+
+		If (32 And flag) Then 
+			ReDim Preserve result(idx%) As String 
+			result(idx%) = |Start Date/Time Is before Now (Current Date/Time)| 
+			idx% = idx% + 1
+		End If
+
+		If (64 And flag) Then 
+			ReDim Preserve result(idx%) As String 
+			result(idx%) = |EndDate Not populated Or ot interpretable As a Date Time|
+			idx% = idx% + 1
+		End If
+
+		If (128 And flag) Then 
+			ReDim Preserve result(idx%) As String 
+			result(idx%) = |EndTime Not populated Or ot interpretable As a Date Time|
+			idx% = idx% + 1
+		End If
+
+		If (256 And flag) Then 
+			ReDim Preserve result(idx%) As String 
+			result(idx%) = |EndTimeZone Not populated Or Not interpretable As a Time Zone|
+			idx% = idx% + 1
+		End If
+
+		If (512 And flag) Then 
+			ReDim Preserve result(idx%) As String 
+			result(idx%) = |End Date/Time Is before Start Date/Time|
+			idx% = idx% + 1
+		End If
+		
+	End If 
+	
+ExitPoint: 
+	getDOMIvalidationFailureMessages = result
+	Exit Function 
+ErrorTrap:
+	On Error GoTo 0
+	ForAll s In extendedinfo
+		If isBlankString(msg$) Then 
+			msg$ = ListTag(s) & |: | & s
+		Else 
+			msg$ = msg$ & |, | & Chr(10) & ListTag(s) & |: | & s
+		End If
+	End ForAll
+	enhLogException LIB_PREFIX, msg$
+	Resume ExitPoint
+End Function
+
+'++LotusScript Development Environment:2:1:cleanupSTMeetingName:7:8
+%REM
+	Function cleanupSTMeetingName
+	Description: ST Meetings has a strict requirement for characters allowed in their meeting names. Since the meeting name 
+	is used as the ID of the meeting as well and is used in the URL for the meeting, we need to make sure it also 
+	works as a part of a URL - so we need to replace spaces with underscores
+%END REM
+Function cleanupSTMeetingName(subj As String) As String
+	Dim badList List As String, cleansubj As String
+	
+	' ? &* : ‘ % # ( ) ! @ $ ^ * + = [ ] / \ ; , .
+	badList("?") = ""
+	badList("&") = ""
+	badList("*") = ""
+	badList(":") = ""
+	badList("'") = ""
+	badList("%") = ""
+	badList("#") = ""
+	badList("(") = "-"
+	badList(")") = "-"
+	badList("!") = ""
+	badList("@") = ""
+	badList("$") = ""
+	badList("^") = ""
+	badList("+") = ""
+	badList("=") = ""
+	badList("[") = "-"
+	badList("]") = "-"
+	badList(|/|) = ""
+	badList(|\|) = ""
+	badList(";") = ""
+	badList(",") = ""
+	badList(".") = ""
+	badList(" ") = "_"
+
+	ForAll b In badList
+		cleansubj = Replace(subj, ListTag(b), b)
+	End ForAll
+	
+	cleanupSTMeetingName = cleansubj
+	
+getOut:
+	Exit Function
+
+errHandler:
+	cleanupSTMeetingName = ""
+
+	On Error GoTo 0
+	Error Err, Error$ & " [in " & GetThreadInfo(1) & "]"
+	Resume getOut
+End Function
+
+
+
+'++LotusScript Development Environment:2:1:getSTTempTokens:15:8
+%REM
+	Function getSTTempTokens(urlBase As String, cookieVal As String, tokenVal As String) As Boolean
+	Description: This function is used to get the initial x-csrf token and related cookie from the 
+	ST Meeting server at the specified location. These tokens are then return back by Ref on the 
+	appropriate params, with the function return True/False based on success.
+	
+	--- PARAMS ---
+	urlBase (String) == the url of the ST Meetings server API
+	cookieVal (String) == the variable where the cookie will be returned
+	tokenVal (String) == the variable where the x-csrf token will be returned
+	
+	--- RETURNS ---
+	- returns True if successful, False if not
+%END REM
+Function getSTTempTokens(urlBase As String, cookieVal As String, tokenVal As String) As Boolean
+	Dim s As New NotesSession
+	Dim url As String
+	Dim nrest As NotesRESTConsumer
+	Dim jsonNav As NotesJSONNavigator
+	Dim resp As String
+	Dim tokenTag As String, cookieTag As String
+	Dim rstr As String, rvar As Variant, errtxt As String
+	Dim httpRequest As NotesHTTPRequest
+	
+	On Error GoTo errHandler
+	getSTTempTokens = True
+	If LCase(Right(urlBase, 8)) = "/refresh" Then
+		url = urlBase
+	Else
+		url = urlBase & "/refresh"
+	End If
+	
+	Set nrest = New NotesRESTconsumer(DOMI_JSON_NODES_EXCLUDE_FROM_LOG)
+
+	resp = nrest.httpGET(url, Nothing, Nothing)
+	rvar = nrest.ResponseHeaders
+	
+	If IsArray(rvar) Then
+		tokenTag = "x-csrf-token: "
+		cookieTag = "set-cookie: _csrf="
+		ForAll z In rvar
+			If LCase(Left(z, Len(tokenTag))) = tokenTag Then tokenVal = StrRight(z, tokenTag, 5)	
+			If LCase(Left(z, Len(cookieTag))) = cookieTag Then cookieVal = StrLeft(StrRight(z, cookieTag, 5), ";")
+		End ForAll
+	Else
+		Error 1000, "Error retrieving ST Token"
+	End If
+	If tokenVal = "" Then Error 1000, "Unable to retrieve a good initial ST token"
+	
+getOut:
+	Exit Function
+errHandler:
+	getSTTempTokens = False
+	errtxt = Error$ & " [in: " & GetThreadInfo(1) & "; err: " & Err & "; line: " & Erl & "]"
+	On Error GoTo 0
+
+	Error Err, errtxt
+	Resume getOut
+End Function
+
+'++LotusScript Development Environment:2:2:logDOMIversion:6:8
+
+%REM
+	Sub logDOMIversion
+	Writes the Domino Online Meeting Integration Version and Build number to the log. 
+%END REM
+Sub logDOMIversion() 
+	enhLogExtendedContent ||, ||, _ 
+	|Domino Online Meeting Integration, | & DOMI_RELEASE_DATE _ 
+	& |, Version: | & DOMI_VERSION _ 
+	& |, Build: | & DOMI_BUILD
+End Sub
+
+
+
+'++LotusScript Development Environment:2:1:getServiceEmail:14:8
+
+%REM
+	Function getServiceEmail(service As String) As String
+	Description: This function returns the email used to register the user for the specified online meeting service
+	
+	NOTE: this param uses the Constants defined in teh Declarations of this library
+	
+	--- PARAMS ---
+	service (Constant string) - the name of the service (e.g. zoom, webex, etc.)
+	
+	--- RETURNS ---
+	Returns the user email from the Online Meeting Credentials profile for the provided service
+%END REM
+Function getServiceEmail(service As String) As String
+	Dim s As New NotesSession
+	Dim thisDb As NotesDatabase
+	Dim tokenView As NotesView
+	Dim tokenDoc As NotesDocument
+	Dim token As String, typeMap List As Integer
+	
+	On Error GoTo errHandler
+	
+	If service = "" Then Error 1001, "You must indicate the service"
+	Set thisDb = s.Currentdatabase
+	Set tokenView = thisDb.getView(DOMI_VIEWNAME_CREDS)
+	If tokenView Is Nothing Then Error 1002, "Unable to access Credentials Back-End view (" & DOMI_VIEWNAME_CREDS & ")"
+	
+	Set tokenDoc = tokenView.Getdocumentbykey(LCase(service), True)
+	If tokenDoc Is Nothing Then Error 1003, "Unable to find a Credntials profile for service (" & service & ")"
+	
+	' columnValStr(doc As NotesDocument, colnum As Integer) As String
+	token = columnValStr(tokenDoc,3)
+	getServiceEmail = token
+getOut:
+	Exit Function
+
+errHandler:
+	getServiceEmail = ""
+
+	On Error GoTo 0
+	Error Err, Error$ & " [in " & GetThreadInfo(1) & "]"
+	Resume getOut
+End Function
+
+
+
+'++LotusScript Development Environment:2:1:columnValStr:33:8
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+%REM
+	Function columnValStr
+	Description: 
+		One annoying trait of the NotesDocument.columnValues property is that 
+		it can return either a scalar or an array. This is annoying, and introduces 
+		a potential failure point if you aren't studious enough to make sure you fix 
+		this every time you use the columnValues property.
+		
+		This little function takes the column value, and makes sure to always 
+		return it as a string, no matter what.
+%END REM
+Function columnValStr(doc As NotesDocument, colnum As Integer) As String
+	Dim vtmp1 As Variant
+	Dim errtxt As String
+	
+	On Error GoTo errHandler
+
+	vtmp1 = doc.Columnvalues(colnum)
+	If IsArray(vtmp1) Then
+		columnValStr = FullTrim(CStr(Implode(vtmp1)))
+	Else
+		columnValStr = FullTrim(CStr(vtmp1))
+	End If
+	
+getOut:
+	Exit Function
+errHandler:
+	columnValStr = ""
+	errtxt = Error$ & " [in: " & GetThreadInfo(1) & "; err: " & Err & "; line: " & Erl & "]"
+	On Error GoTo 0
+
+	Error Err, errtxt
+	Resume getOut
+End Function
+
+'++LotusScript Development Environment:2:1:getServiceToken:15:8
+%REM
+	Function getServiceToken(service As String, tokenType As String) As String
+	Description: This function returns either the authorization token or the refresh token based 
+	on the indicated tokenType
+	
+	NOTE: both params use Constants defined in teh Declarations of this library
+	
+	--- PARAMS ---
+	service (Constant string) - the name of the service (e.g. zoom, webex, etc.)
+	tokenType (Constant string) - the type of token to return (auth or refresh)
+	
+	--- RETURNS ---
+	Returns the desired token from the Online Meeting Credentials profile for the provided service
+%END REM
+Function getServiceToken(service As String, tokenType As String) As String
+	Dim s As New NotesSession
+	Dim thisDb As NotesDatabase
+	Dim tokenView As NotesView
+	Dim tokenDoc As NotesDocument
+	Dim token As String, typeMap List As Integer
+	
+	On Error GoTo errHandler
+	
+	typeMap(LCase(DOMI_TOKEN_AUTH)) = 1
+	typeMap(LCase(DOMI_TOKEN_REFRESH)) = 2
+	If service = "" Then Error 1001, "You must indicate the service"
+	Set thisDb = s.Currentdatabase
+	Set tokenView = thisDb.getView(DOMI_VIEWNAME_CREDS)
+	If tokenView Is Nothing Then Error 1002, "Unable to access Credentials Back-End view (" & DOMI_VIEWNAME_CREDS & ")"
+	
+	Set tokenDoc = tokenView.Getdocumentbykey(LCase(service), True)
+	If tokenDoc Is Nothing Then Error 1003, "Unable to find a token for service (" & service & ")"
+	
+	' columnValStr(doc As NotesDocument, colnum As Integer) As String
+	token = columnValStr(tokenDoc,typeMap(LCase(tokenType)))
+	getServiceToken = token
+getOut:
+	Exit Function
+
+errHandler:
+	getServiceToken = ""
+
+	On Error GoTo 0
+	Error Err, Error$ & " [in " & GetThreadInfo(1) & "]"
+	Resume getOut
+End Function
+
+'++LotusScript Development Environment:2:1:getDOMIrootURL:12:8
+%REM
+	Function getDOMIrootURL
+	Gets the Refresh Token URL for the specified meeting service 
+	
+	@param meetingservice$  DOMI_SERVICE_XXX Meeting service (from domiConstantsBE)
+	
+	@return Refresh Token URL for the specified meeting service.  
+	
+	@throws ERR_PARAMETER_BLANK if meetingservice blank 
+	@throws ERR_PARAMETER_INVALID if meetingservice is not supported. 
+%END REM
+Function getDOMIrootURL(meetingservice$) As String 
+	
+	Dim url$
+	Dim result$
+	
+	
+	
+	' BEGIN CODE
+	If isBlankString(meetingservice$) Then Error ERR_PARAMETER_BLANK, MSG_PARAMETER_BLANK	
+
+	url$ = DOMI_ROOTURL_TOKEN
+	While (Len(url$) > 0) And (|/| = Right$(url$, 1)) 
+		url$ = Left$(url$, Len(url$) -1) 
+	Wend
+	
+	Select Case meetingservice$
+		Case DOMI_SERVICE_GTM:
+			result$ = DOMI_ROOTURL_TOKEN & |/dominoGTM|
+			
+		Case DOMI_SERVICE_TEAMS:
+			result$ = DOMI_ROOTURL_TOKEN & |/dominoTeams|
+
+		Case DOMI_SERVICE_WEBEX:
+			result$ = DOMI_ROOTURL_TOKEN & |/dominoWebex|
+			
+		Case DOMI_SERVICE_ZOOM:
+			result$ = DOMI_ROOTURL_TOKEN & |/dominoZoom|
+			
+		Case Else 
+			Error ERR_PARAMETER_INVALID, MSG_PARAMETER_INVALID & |Service "| & meetingservice$ & |"|  
+	End Select
+
+	getDOMIrootURL = result$
+End Function
+
+'++LotusScript Development Environment:2:1:isDOMIserviceSupported:9:8
+%REM
+	Function isDOMIserviceSupported
+	Indicates if a meeting service is supported. 
+	
+	@param meetingservice$  DOMI_SERVICE_XXX Meeting service (from domiConstantsBE) to check. 
+	
+	@return Flag indicating if the requested meeting service is supported. 
+%END REM
+Function isDOMIserviceSupported(meetingservice$) As Boolean 
+	On Error GoTo ErrorTrap
+	
+	' exception variables
+	Dim extendedinfo List As String 
+	Dim msg$
+	
+	Dim result As Boolean 
+	
+	
+	' BEGIN CODE
+	extendedinfo(|Meeting Service|) = meetingservice$
+	Select Case meetingservice$
+		Case DOMI_SERVICE_GTM, DOMI_SERVICE_TEAMS, DOMI_SERVICE_WEBEX, DOMI_SERVICE_ZOOM:  
+			result = True 
+
+	End Select
+	
+	
+ExitPoint: 
+	isDOMIserviceSupported = result
+	Exit Function 
+ErrorTrap:
+	On Error GoTo 0
+	ForAll s In extendedinfo
+		If isBlankString(msg$) Then 
+			msg$ = ListTag(s) & |: | & s
+		Else 
+			msg$ = msg$ & |, | & Chr(10) & ListTag(s) & |: | & s
+		End If
+	End ForAll
+	enhLogException LIB_PREFIX, msg$
+	Resume ExitPoint
+End Function
+
+'++LotusScript Development Environment:2:1:getCredentialsDoc:14:8
+%REM
+	Function getCredentialsDoc(service As String) As NotesDocument
+	Description: This function returns the Credentials doc for the specified service
+	
+	NOTE: this param uses the Constants defined in teh Declarations of this library
+	
+	--- PARAMS ---
+	thisDb - NotesDatabase object of the db containing the credntials (which should be the current mail db)
+	service (Constant string) - the name of the service (e.g. zoom, webex, etc.)
+	
+	--- RETURNS ---
+	NotesDocument object of the Online Meeting Credentials profile for the provided service
+%END REM
+Function getCredentialsDoc(thisDb As NotesDatabase, service As String) As NotesDocument
+	Dim s As New NotesSession
+	Dim tokenView As NotesView
+	Dim tokenDoc As NotesDocument
+	Dim token As String, typeMap List As Integer
+	
+	On Error GoTo errHandler
+	
+	If service = "" Then Error 1001, "You must indicate the service"
+	If thisDb Is Nothing Then Set thisDb = s.Currentdatabase
+	Set tokenView = thisDb.getView(DOMI_VIEWNAME_CREDS)
+	If tokenView Is Nothing Then Error 1002, "Unable to access Credentials Back-End view (" & DOMI_VIEWNAME_CREDS & ")"
+	
+	Set tokenDoc = tokenView.Getdocumentbykey(LCase(service), True)
+	If tokenDoc Is Nothing Then Error 1003, "Unable to find a Credntials profile for service (" & service & ")"
+	
+	Set getCredentialsDoc = tokenDoc
+getOut:
+	Exit Function
+
+errHandler:
+	Set getCredentialsDoc = Nothing
+
+	On Error GoTo 0
+	Error Err, Error$ & " [in " & GetThreadInfo(1) & "]"
+	Resume getOut
+End Function
+
+'++LotusScript Development Environment:2:2:instantiateDOMIlog:20:8
+
+
+%REM
+	Sub instantiateDOMIlog
+	Instantiates sets the properties (as specified in domiConstantsBE) for DOMI logging
+	
+	LOG OPTIONS controlled by Notes INI Variables
+		
+	DOMI_LOG_LEVEL
+		OFF = 0  		<<< MUST EXPLICTLY SET 
+		ERROR = 200 	<< DEFAULT : Logs Exceptions
+		WARN = 300		: Logs Warnings and Exceptions
+		INFO = 400 		: Logs Method Results, Warnings, and Exceptions
+		TRACE = 600		: Logs Actions, Extended Content, Method Results, Warnings, and Exceptions 
+	
+	DOMI_LOCAL_ECHO=1 
+		Causes all DOMI Log events to be echoed to the Notes Client status bar
+	
+%END REM
+Sub instantiateDOMIlog() 
+	On Error GoTo ErrorTrap
+	
+	' exception variables
+	Dim extendedinfo List As String 
+	Dim msg$
+	
+	Dim level$
+	Dim localecho$ 
+	
+	
+	' BEGIN CODE 
+	enhLogSetLogErrors  True 
+	enhLogSetActionsIncludeMethodNames True 
+	enhLogSetLogWarnings False 		
+	enhLogSetLogMethodResults False
+	enhLogSetLogActions False
+	enhLogSetLocalEcho False
+
+	level$ = getCurrentSession().getEnvironmentString(|DOMI_LOG_LEVEL|, True)
+	extendedInfo(|Level|) = level$ 
+	Select Case level$ 
+		Case |0|: 
+			enhLogSetLogErrors  False 
+			enhLogSetActionsIncludeMethodNames False 			
+			
+		Case |300|: 
+			enhLogSetLogWarnings True 
+			 		
+		Case |400|: 
+			enhLogSetLogWarnings True 
+			enhLogSetLogMethodResults True 
+			
+		Case |600|: 
+			enhLogSetLogWarnings True 
+			enhLogSetLogMethodResults True 
+			enhLogSetLogActions True 
+	End Select
+	  
+	localecho$ = getCurrentSession().getEnvironmentString(|DOMI_LOCAL_ECHO|, True)
+	extendedInfo(|localecho|) = localecho$
+	
+	If (|1| = localecho$) Then 	enhLogSetLocalEcho True 
+
+	enhLogOutputToNotesLog = True ' write Log content to log.nsf
+ 	Call logDOMIversion()
+ 
+ExitPoint: 
+	Exit Sub 
+ErrorTrap:
+	On Error GoTo 0
+	enhLogOutputToNotesLog = True ' write Log content to log.nsf
+	ForAll s In extendedinfo
+		If isBlankString(msg$) Then 
+			msg$ = ListTag(s) & |: | & s
+		Else 
+			msg$ = msg$ & |, | & Chr(10) & ListTag(s) & |: | & s
+		End If
+	End ForAll
+	enhLogException LIB_PREFIX, msg$
+	Resume ExitPoint
+End Sub
+
+'++LotusScript Development Environment:2:3:DOMI_JSON_NODES_EXCLUDE_FROM_LOG Get:5:8
+%REM
+	DOMI_JSON_NODES_EXCLUDE_FROM_LOG
+	Names of DOMI JSON Nodes or Node Value Prefixes whose content should be excluded from logging. 
+%END REM
+Property Get DOMI_JSON_NODES_EXCLUDE_FROM_LOG As BooleanList
+	On Error GoTo ErrorTrap 
+	 
+	Static result As BooleanList
+	
+	' BEGIN CODE
+	If (result Is Nothing) Then Set result = New BooleanList() 
+
+	result.content(|authtoken|) = True 
+	result.content(|refreshtoken|) = True 
+	result.content(|authorization|) = True 
+	result.content(|X-CSRF-Token|) = True
+	result.content(|sametimeJwt|) = True 
+	result.content(|sametimeRefresh|) = True 
+	result.content(|_csrf|) = True 
+	
+ExitPoint: 
+	Set DOMI_JSON_NODES_EXCLUDE_FROM_LOG = result
+	Exit Property 
+ErrorTrap:
+	On Error GoTo 0
+	enhLogException LIB_PREFIX, ||
+	Resume ExitPoint
+End Property
+
+'++LotusScript Development Environment:2:1:getDOMIendpointURL:24:8
+%REM
+	Function getDOMIendpointURL
+	Gets the Endpoint URL for the specified meeting service, operation, and meetingid$ 
+	
+	@param meetingservice$  DOMI_SERVICE_XXX Meeting service (from domiConstantsBE)
+	@param operation$ 		Requested operation (Create, Read, Update, Delete) 
+	
+	@param replacements  	[Optional] replacement strings where 
+			k = key substring found in endpoint raw url
+			v = value to replace k in raw url
+			example: 
+			raw url = "abc.com/meetings/{{meetingid}}" 
+			k 		= "{{meetingid}}" 
+			v 		= "123456"
+			result 	= "abc.com/meetings/123456" 
+			
+	@return Endpoint URL for the specified parameters
+	
+	
+	@throws ERR_PARAMETER_BLANK if meetingservice blank 
+	@throws ERR_PARAMETER_INVALID if meetingservice is not supported. 	
+	@throws ERR_PARAMEGER_INVALID if operatiion is not supported 
+%END REM
+Function getDOMIendpointURL(meetingservice$, operation$, replacements As StringList) As String 
+	On Error GoTo ErrorTrap
+
+	Const SUFFIX_MEETING_ID = |/{{meetingid}}|
+	
+
+	Const GTM_ROOT = |https://api.getgo.com/G2M/rest/meetings|
+	Const TEAMS_ROOT = |https://graph.microsoft.com/v1.0/me/onlineMeetings|
+	Const WEBEX_ROOT = |https://webexapis.com/v1/meetings| 
+	Const ZOOM_ROOT_CREATE = |https://api.zoom.us/v2/users/me/meetings|
+	Const ZOOM_ROOT_UPDATE_DELETE = |https://api.zoom.us/v2/meetings/|
+	
+	
+	' exception variables
+	Dim extendedinfo List As String 
+	Dim msg$
+	
+	Dim errmsg$ 
+	Dim errcode%
+	
+	Dim key$
+	Dim value$ 
+	Dim result$
+	
+	' BEGIN CODE
+	extendedinfo(|Meeting Service|) = meetingservice$
+	extendedinfo(|Operation|) = operation$ 
+	If isBlankString(meetingservice$) Then Error ERR_PARAMETER_BLANK, MSG_PARAMETER_BLANK	
+	
+
+	Select Case meetingservice$
+		Case DOMI_SERVICE_GTM:
+			Select Case LCase$(operation$) 
+			Case |create|: 
+				result$ = GTM_ROOT
+				
+			Case |read|, |update|, |delete|
+				result$ = GTM_ROOT & SUFFIX_MEETING_ID
+				
+			Case Else:
+				Error ERR_PARAMETER_INVALID, MSG_PARAMETER_INVALID & |Operation "| & operation$ & |"|  
+				
+		End Select
+
+			
+		Case DOMI_SERVICE_TEAMS:
+			Select Case LCase$(operation$) 
+			Case |create|: 
+				result$ = TEAMS_ROOT
+				
+			Case |read|, |update|, |delete|
+				result$ = TEAMS_ROOT & SUFFIX_MEETING_ID
+				
+			Case Else:
+				Error ERR_PARAMETER_INVALID, MSG_PARAMETER_INVALID & |Operation "| & operation$ & |"|  
+				
+		End Select
+
+			
+		Case DOMI_SERVICE_WEBEX:
+			Select Case LCase$(operation$) 
+			Case |create|: 
+				result$ = WEBEX_ROOT
+				
+			Case |read|, |update|, |delete|
+				result$ = WEBEX_ROOT & SUFFIX_MEETING_ID
+				
+			Case Else:
+				Error ERR_PARAMETER_INVALID, MSG_PARAMETER_INVALID & |Operation "| & operation$ & |"|  
+				
+		End Select
+
+			
+		Case DOMI_SERVICE_ZOOM:
+			Select Case LCase$(operation$) 
+			Case |create|: 
+				result$ = ZOOM_ROOT_CREATE
+				
+			Case |read|, |update|
+				result$ = ZOOM_ROOT_UPDATE_DELETE & SUFFIX_MEETING_ID
+				
+			Case |delete|
+				result$ = ZOOM_ROOT_UPDATE_DELETE & SUFFIX_MEETING_ID & "?schedule_for_reminder=false&cancel_meeting_reminder=false"
+				
+			Case Else:
+				Error ERR_PARAMETER_INVALID, MSG_PARAMETER_INVALID & |Operation "| & operation$ & |"|  
+				
+		End Select
+
+			
+		Case Else 
+			Error ERR_PARAMETER_INVALID, MSG_PARAMETER_INVALID & |Service "| & meetingservice$ & |"|  
+	End Select
+
+
+	If Not (replacements Is Nothing) Then 
+		ForAll v In replacements.content
+			key$ = ListTag(v)
+			value$ = CStr(v) 
+			extendedinfo(|Key|) = key$
+			extendedinfo(|Value|) = value$ 
+			result$ = strReplaceSubstring(result$, key$, value$) 
+		End ForAll
+	End If
+
+	
+ExitPoint: 
+	If (ERR_PARAMETER_BLANK = errcode%) Or (ERR_PARAMETER_INVALID = errcode%) Then Error errcode%, errmsg$ 
+	getDOMIendpointURL = result$
+	Exit Function 
+ErrorTrap:
+	On Error GoTo 0
+	errcode% = Err() 
+	errmsg$ = Error$() 
+	ForAll s In extendedinfo
+		If isBlankString(msg$) Then 
+			msg$ = ListTag(s) & |: | & s
+		Else 
+			msg$ = msg$ & |, | & Chr(10) & ListTag(s) & |: | & s
+		End If
+	End ForAll
+	enhLogException LIB_PREFIX, msg$
+	Resume ExitPoint
+End Function
+
+'++LotusScript Development Environment:2:1:domiValidateCalendarEntry:42:8
+%REM
+	Function domiValidateCalendarEntry
+	Validates a Calendar Entry document for Domino Online Meeting Integration 
+	
+	Verifies the following: 
+
+	Form is "Appointment"
+	Subject is not blank.
+
+	Start Date is populated
+	Start Time is populated
+	Start Time Zone is populated 
+	Start Date/Time is not before NOW 
+
+	End Date is populated
+	End Time is populated 
+	End Time Zone is populated 
+	End Date/Time is not before Start Date/Time  
+	
+	@param context 		[INBOUND / OUTBOUND] Document (Calendar Entry) carrying information about a meeting.
+	@param ndtStart 	[OUTBOUND] The Start date/time of the meeting. 
+	@param ndtEnd 		[OUTBOUND] The End date/time of the meeting.
+	
+	@return Flag where -1 (True) indicates success
+		Result flag indicates: 
+			-1 		Validation Passed
+			0		Validation Unknown 
+			
+			1 		Form not "Appointment"
+			2 		Subject is blank
+			4 		StartDate not populated or ot interpretable as a date time
+			8 		StartTime not populated or ot interpretable as a date time
+			16		StartTimeZone not populated or not interpretable as a time zone 
+			32		Start Date/Time is before NOW (Current Date/Time) 
+			64 		EndDate not populated or ot interpretable as a date time
+			128 	EndTime not populated or ot interpretable as a date time
+			256 	EndTimeZone not populated or not interpretable as a time zone 
+			512		End Date/Time is before Start Date/Time 
+			
+	@throws ERR_PARAMETER_BLANK if context document is nothing. 
+%END REM
+Function domiValidateCalendarEntry(context As NotesDocument, ndtStart As NotesDateTime, ndtEnd As NotesDateTime) As Integer
+	If (context Is Nothing) Then Error ERR_PARAMETER_BLANK, MSG_PARAMETER_BLANK
+	On Error GoTo ErrorTrap
+	
+	' exception variables
+	Dim extendedinfo List As String 
+	Dim msg$
+
+	Dim ndtNow As New NotesDateTime(Now) 
+	
+	Dim nitm_startdate As NotesItem 
+	Dim nitm_starttime As NotesItem 
+	Dim nitm_startzone As NotesItem 
+	Dim nitm_enddate As NotesItem 
+	Dim nitm_endtime As NotesItem 
+	Dim nitm_endzone As NotesItem 
+	
+	Dim itemname$ 
+
+	Dim result As Integer 
+	
+	' BEGIN CODE
+	itemname$ = |Form|
+	extendedinfo(|Item Name|) = itemname$
+	If context.hasItem(itemname$) Then extendedinfo(itemname$) = StrConv(context.getFirstItem(itemname$).Text, SC_ProperCase)
+	If (|Appointment| <> extendedinfo(itemname$)) Then result = 1
+
+	itemname$ = |Subject|
+	extendedinfo(|Item Name|) = itemname$
+	If context.hasItem(itemname$) Then extendedinfo(itemname$) = context.getFirstItem(itemname$).Text
+	If isBlankString(extendedinfo(itemname$)) Then result = result + 2
+	
+	itemname$ = |StartDate|
+	extendedinfo(|Item Name|) = itemname$
+	extendedinfo(itemname$) = ||
+	If context.hasItem(itemname$) Then 
+		Set nitm_startdate = context.getFirstItem(itemname$)
+		extendedinfo(itemname$) = nitm_startdate.Text
+		If isBlankString(extendedinfo(itemname$)) Then 
+			result = result + 4
+		Else 
+			itemname$ = |StartTime|
+			extendedinfo(|Item Name|) = itemname$
+			extendedinfo(itemname$) = ||
+			If context.hasItem(itemname$) Then
+				Set nitm_starttime = context.getFirstItem(itemname$)
+				extendedinfo(itemname$) = nitm_starttime.Text
+				If isBlankString(extendedinfo(itemname$)) Then 
+					result = result + 8
+				Else 
+					itemname$ = |StartTimeZone|
+					extendedinfo(|Item Name|) = itemname$
+					extendedinfo(itemname$) = ||
+					If context.hasItem(itemname$) Then
+						Set nitm_startzone = context.getFirstItem(itemname$)
+						extendedinfo(itemname$) = nitm_startzone.Text
+						If isBlankString(extendedinfo(itemname$)) Then 
+							result = result + 16
+						Else  
+							On Error Resume Next 
+							Set ndtStart = New NotesDateTime(nitm_startdate.DateTimeValue.DateOnly & | | & nitm_starttime.DateTimeValue.TimeOnly)
+							If (ndtStart Is Nothing) Then 
+								' failed to construct a NotesDateTime item for StartTime 
+								result = result + 32
+							Else
+								Call ndtStart.merge(ndtStart, context.getItemValue(itemname$)(0))
+								If (ndtNow.timeDifferenceDouble(ndtStart) > 0) Then result = result + 32
+							End If 
+							On Error GoTo ErrorTrap
+						End If
+					Else 
+						' context has no StartTimeZone item 
+						result = result + 16
+					End If 
+				End If
+			Else 
+				' context has no StartTime item 
+				result = result + 8 
+			End If 
+		End If
+	Else
+		' context has no StartDate item 
+		result = result + 4
+	End If 	
+	
+	
+	itemname$ = |EndDate|
+	extendedinfo(|Item Name|) = itemname$
+	extendedinfo(itemname$) = ||
+	If context.hasItem(itemname$) Then 
+		Set nitm_enddate = context.getFirstItem(itemname$)
+		extendedinfo(itemname$) = nitm_enddate.Text
+		If isBlankString(extendedinfo(itemname$)) Then 
+			result = result + 64
+		Else 
+			itemname$ = |EndTime|
+			extendedinfo(|Item Name|) = itemname$
+			extendedinfo(itemname$) = ||
+			If context.hasItem(itemname$) Then
+				Set nitm_endtime = context.getFirstItem(itemname$)
+				extendedinfo(itemname$) = nitm_endtime.Text
+				If isBlankString(extendedinfo(itemname$)) Then 
+					result = result + 128
+				Else 
+					itemname$ = |EndTimeZone|
+					extendedinfo(|Item Name|) = itemname$
+					extendedinfo(itemname$) = ||
+					If context.hasItem(itemname$) Then
+						Set nitm_endzone = context.getFirstItem(itemname$)
+						extendedinfo(itemname$) = nitm_startzone.Text
+						If isBlankString(extendedinfo(itemname$)) Then 
+							result = result + 256
+						Else  
+							On Error Resume Next 
+							Set ndtEnd = New NotesDateTime(nitm_enddate.DateTimeValue.DateOnly & | | & nitm_endtime.DateTimeValue.TimeOnly)
+							If (ndtEnd Is Nothing) Then 
+								' failed to construct a NotesDateTime item for EndTime 
+								result = result + 512
+							Else
+								Call ndtEnd.merge(ndtEnd, context.getItemValue(itemname$)(0))
+								If (ndtStart.timeDifferenceDouble(ndtEnd) > 0) Then result = result + 512
+							End If 
+							On Error GoTo ErrorTrap
+						End If
+					Else 
+						' context has no EndTimeZone item 
+						result = result + 256
+					End If 
+				End If
+			Else 
+				' context has no EndTime item 
+				result = result + 128 
+			End If 
+		End If
+	Else
+		' context has no EndDate item 
+		result = result + 64
+	End If 	
+	
+	
+
+ExitPoint:
+	If (0 = result) Then result = True ' True evaluates to -1
+	domiValidateCalendarEntry = result
+	Exit Function 
+ErrorTrap:
+	On Error GoTo 0
+	If (result < 1) Then result = False 
+	ForAll s In extendedinfo
+		If isBlankString(msg$) Then 
+			msg$ = ListTag(s) & |: | & s
+		Else 
+			msg$ = msg$ & |, | & Chr(10) & ListTag(s) & |: | & s
+		End If
+	End ForAll
+	enhLogException LIB_PREFIX, msg$
+	Resume ExitPoint
+End Function
+
+
+
+'++LotusScript Development Environment:2:1:atUniqueID:5:8
+%REM
+	Function atUniqueID
+	Description: Returns a unique string from @Unique
+%END REM
+Function atUniqueID() As String
+	Dim s As New NotesSession
+	Dim thisDb As NotesDatabase
+	Dim rdoc As NotesDocument, rvar As Variant, errtxt As string
+	
+	On Error GoTo errHandler
+	
+	Set thisDb = s.Currentdatabase
+	Set rdoc = thisDb.Createdocument()
+	rvar = Evaluate(|@Unique|, rdoc)
+	If IsArray(rvar) Then
+		atUniqueID = CStr(rvar(0))
+	End If
+	
+getOut:
+	Exit Function
+errHandler:
+	atUniqueID = ""
+	errtxt = Error$ & " [in: " & GetThreadInfo(1) & "; err: " & Err & "; line: " & Erl & "]"
+	On Error GoTo 0
+
+	Error Err, errtxt
+	Resume getOut
+End Function
+
+'++LotusScript Development Environment:2:2:updateSTCalendarEntry:5:8
+%REM
+	Function updateSTCalendarEntry
+	Description: Comments for Function
+%END REM
+Sub updateSTCalendarEntry(curDoc As NotesDocument, updateList As VariantList)
+	Dim s As New NotesSession
+	Dim payload As NotesAgent_JsonHTTPHelper
+	Dim jsonNav As NotesJSONNavigator
+	Dim fldList List As Variant
+	Dim mtgName As String, mtgURL As String, mtgKey As String, pw As String, urlBase As String
+	Dim bodyMsg As String
+	Dim rstr As String, rlng As Long, rdbl As Double, rbool As Boolean, rdoc As NotesDocument, rint As Integer, rvar As Variant, emptyvar As Variant
+	Dim errtxt As String
+	Set payload = spawnJSONHttpHelper(Nothing, False, True)  ' in NotesHTTPJsonRequestHelper
+	Call payload.loadJson(s, CStr(updateList.content("meetingJSON")))
+	
+	rbool = payload.findStringByPointer("/password", pw)
+	rbool = payload.findStringByPointer("/name", mtgName)
+	urlBase = DOMI_ROOTURL_SAMETIMEMEETINGS
+	If rbool Then
+		mtgURL = urlBase & "/meeting/" & mtgName
+	Else
+		Error 1000, "Meeting Name not returned from Sametime Meetings"
+	End If
+
+	fldList("meetingService") = "sametime"
+	fldList("meetingServiceLabel") = "Sametime"
+	fldList("meetingId") = mtgName
+	fldList("meetingPassword") = pw
+	fldList("meetingTitle") = mtgName
+	fldList("meetingAgenda") = updateList.content("meetingAgenda")
+	fldList("meetingURL") = mtgURL
+	fldList("meetingStartStr") = updateList.content("meetingStartStr")
+	fldList("meetingEndStr") = updateList.content("meetingEndStr")
+	fldList("meetingDuration") = updateList.content("meetingDuration")
+	fldList("meetingJSON") = updateList.content("meetingJSON")
+	' these fields give us the "Join Online" link below the Location on the Calendar Entry
+	fldList("OnlineMeeting") = "1"
+	fldList("ApptUNIDURL") = fldList("meetingURL")
+	fldList("SametimeType") = "0"
+	' this puts the link and PW into the Location field of the Calendar Entry
+	bodyMsg = bodyMsg & "Attendee Link: " & fldList("meetingURL")
+	If Not(fldList("meetingPassword") = "") Then bodyMsg = Chr(10) & bodyMsg & "Password: " & fldList("meetingPassword")
+	fldList("meetingInfoInsert") = bodyMsg
+	fldList("Location") = bodyMsg
+	' now that we have all of our field values, update the Calendar Entry doc
+	ForAll f In fldList
+		Call curDoc.Replaceitemvalue(ListTag(f), f)
+	End ForAll
+	
+End Sub

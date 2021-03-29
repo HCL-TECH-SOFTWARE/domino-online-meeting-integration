@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?><note xmlns="http://www.lotus.com/dxl" class="form" maintenanceversion="1.0" replicaid="8525867000756EB9" version="11.0">
+<noteinfo noteid="1bfa" sequence="2" unid="82747B950CBF8A8480258696005CB17F">
+<created><datetime>20210312T165227,51+00</datetime></created>
+<modified><datetime dst="true">20210329T102408,90+01</datetime></modified>
+<revised><datetime>20210312T165630,51+00</datetime></revised>
+<lastaccessed><datetime dst="true">20210329T102408,89+01</datetime></lastaccessed>
+<addedtofile><datetime dst="true">20210329T102408,89+01</datetime></addedtofile></noteinfo>
+<updatedby><name>CN=Domino Template Development/O=Domino</name><name>CN=Paul Withers/OU=UK/O=PNPHCL</name></updatedby>
+<wassignedby><name>CN=Paul Withers/OU=UK/O=PNPHCL</name></wassignedby>
+<item name="$ImagesHigh" sign="true"><number>1</number></item>
+<item name="$ImagesColorize" sign="true"><number>0</number></item>
+<item name="$WebBrowserCompatible" sign="true"><number>1</number></item>
+<item name="$ImagesWide" sign="true"><number>2</number></item>
+<item name="$TITLE" sign="true"><textlist><text>ActionButton.gif</text><text>ActionButton.gif</text></textlist></item>
+<item name="$DesignerVersion" sign="true"><text>6</text></item>
+<item name="$LANGUAGE" sign="true"><text>en</text></item>
+
+
+
+
+<item name="$MimeType" sign="true"><text>image/gif</text></item>
+<item name="$FileModDT" sign="true"><datetime>20210312T165609,85+00</datetime></item>
+<item name="$Flags"><text>34CiQv</text></item>
+<item name="$ImageNames" sign="true"><text>ActionButton.gif</text></item></note>

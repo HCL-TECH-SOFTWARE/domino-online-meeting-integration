@@ -1,0 +1,354 @@
+'++LotusScript Development Environment:2:5:(Options):0:74
+%REM
+	Library JsonDateTime
+	Created Dec 10, 2020 by Paul Withers/UK/PNPHCL
+	Utilities for creating JSON Date Time strings 
+	
+%END REM
+Option Public
+Option Declare
+Use "enhLogClass"
+
+'++LotusScript Development Environment:2:5:(Forward):0:1
+Declare Function notesDateTimeToJsonOffsetZulu(dt As NotesDateTime) As String
+Declare Function notesDateTimeToJson(dt As NotesDateTime) As String
+Declare Function notesDateTimeToJsonOffsetColon(dt As NotesDateTime) As String
+Declare Function getOffsetString(dt As NotesDateTime) As String
+Declare Function getOffsetStringColon(dt As NotesDateTime) As String
+
+'++LotusScript Development Environment:2:5:(Declarations):0:10
+Private Const LIB_PREFIX = |Library: JsonDateTime.|
+
+'++LotusScript Development Environment:2:1:notesDateTimeToJsonOffsetZulu:9:8
+%REM
+	Function notesDateTimeToJsonOffsetZulu
+	Description: Formats a DateTime according to RFC 3339 section 5.6 using a ZULU "Z" offset
+	NotesDateTime could be one of three formats:
+	- Date/Time (.localtime = date, time and timezone
+	- Date (.localtime = date only)
+	- Time (.lslocaltime = time only)
+%END REM
+Function notesDateTimeToJsonOffsetZulu(dt As NotesDateTime) As String
+	Dim localTime As String
+	Dim result As String
+
+	On Error GoTo ErrorTrap
+
+	localTime = dt.Localtime
+	If (localTime = dt.Dateonly) Then
+		result = Format(dt.Lsgmttime, "yyyy-mm-dd")
+	Else
+		If (localTime = dt.Timeonly) Then
+			result = Format(dt.Lsgmttime, "hh:nn:ss")
+		Else
+			result = Format(dt.Lsgmttime, "yyyy-mm-dd") & "T" & Format(dt.Lsgmttime, "hh:nn:ss")
+		End If
+		result = result & |Z|
+	End If
+	
+
+ExitPoint:
+	notesDateTimeToJsonOffsetZulu = result
+	Exit Function
+	
+ErrorTrap:
+	On Error GoTo ErrorTrap
+	enhLogException LIB_PREFIX, || 
+	Resume ExitPoint
+End Function
+
+'++LotusScript Development Environment:2:1:notesDateTimeToJson:9:8
+%REM
+	Function notesDateTimeToJson
+	Description: Formats a DateTime according to RFC 3339 section 5.6
+	NotesDateTime could be one of three formats:
+	- Date/Time (.localtime = date, time and timezone
+	- Date (.localtime = date only)
+	- Time (.lslocaltime = time only)
+%END REM
+Function notesDateTimeToJson(dt As NotesDateTime) As String
+	Dim localTime As String
+	Dim result As String
+
+	On Error GoTo ErrorTrap
+
+	localTime = dt.Localtime
+	If (localTime = dt.Dateonly) Then
+		result = Format(dt.LSLocaltime, "yyyy-mm-dd")
+	Else
+		If (localTime = dt.Timeonly) Then
+			result = Format(dt.LSlocaltime, "hh:nn:ss")
+		Else
+			result = Format(dt.Lslocaltime, "yyyy-mm-dd") & "T" & Format(dt.LSlocaltime, "hh:nn:ss")
+		End If
+		result = result & getOffsetString(dt)
+	End If
+	
+	
+ExitPoint:
+	notesDateTimeToJson = result
+	Exit Function
+	
+ErrorTrap:
+	On Error GoTo ErrorTrap
+	enhLogException LIB_PREFIX, || 
+	Resume ExitPoint
+End Function
+
+'++LotusScript Development Environment:2:1:notesDateTimeToJsonOffsetColon:9:8
+%REM
+	Function notesDateTimeToJsonOffsetColon
+	Description: Formats a DateTime according to RFC 3339 section 5.6 using a colon to separate the offset hours and minutes
+	NotesDateTime could be one of three formats:
+	- Date/Time (.localtime = date, time and timezone
+	- Date (.localtime = date only)
+	- Time (.lslocaltime = time only)
+%END REM
+Function notesDateTimeToJsonOffsetColon(dt As NotesDateTime) As String
+	Dim localTime As String
+	Dim result As String
+
+	On Error GoTo ErrorTrap
+
+	localTime = dt.Localtime
+	If (localTime = dt.Dateonly) Then
+		result = Format(dt.LSLocaltime, "yyyy-mm-dd")
+	Else
+		If (localTime = dt.Timeonly) Then
+			result = Format(dt.LSlocaltime, "hh:nn:ss")
+		Else
+			result = Format(dt.Lslocaltime, "yyyy-mm-dd") & "T" & Format(dt.LSlocaltime, "hh:nn:ss")
+		End If
+		result = result & getOffsetStringColon(dt)
+	End If
+	
+ExitPoint:
+	notesDateTimeToJsonOffsetColon = result
+	Exit Function
+	
+ErrorTrap:
+	On Error GoTo ErrorTrap
+	enhLogException LIB_PREFIX, || 
+	Resume ExitPoint
+End Function
+
+'++LotusScript Development Environment:2:1:getOffsetString:6:8
+%REM
+	Function getOffset
+	Description: Converts Domino timezone to +/- format for RFC 3339.
+	
+%END REM
+Function getOffsetString(dt As NotesDateTime) As String
+	
+	Dim dominoTz As String
+	Dim Offset As String
+	Dim isDst As Boolean
+
+	On Error GoTo ErrorTrap
+	
+	If (dt.localTime = dt.gmttime) Then
+		Offset = "Z"
+		GoTo ExitPoint 
+	End If
+
+	dominoTz = StrRightBack(dt.Localtime, " ")
+	isDst = dt.Isdst
+	Select Case dominoTz
+		Case "YW1":
+			Offset = "Z"
+		Case "ZW1", "YW2":
+			offset = "-0100"
+		Case "ZW2", "YW3":
+			offset = "-0200"
+		Case "NDT":
+			Offset = "-0230"
+		Case "ZW3", "ADT":
+			Offset = "-0300"
+		Case "NST":
+			Offset = "-0330"
+		Case "AST", "EDT":
+			Offset = "-0400"
+		Case "EST", "CDT":
+			Offset = "-0500"
+		Case "CST", "MDT":
+			Offset = "-0600"
+		Case "MST", "PDT":
+			Offset = "-0700"
+		Case "PST", "YDT":
+			Offset = "-0800"
+		Case "YST", "HDT":
+			Offset = "-0900"
+		Case "ZW9B":
+			Offset = "-0930"
+		Case "HST", "BDT":
+			Offset = "-1000"
+		Case "BST":
+			Offset = "-1100"
+		Case "ZW12":
+			Offset = "-1200"
+		Case "ZE12C":
+			Offset = "+1245"
+		Case "ZE12":
+			Offset = "+1200"
+		Case "ZE11B":
+			Offset = "+1130"
+		Case "ZE11":
+			Offset = "+1100"
+		Case "ZE10B":
+			Offset = "+1030"
+		Case "ZE10":
+			Offset = "+1000"
+		Case "ZE9B":
+			Offset = "+0930"
+		Case "ZE9":
+			Offset = "+0900"
+		Case "ZE8":
+			Offset = "+0800"
+		Case "ZE7":
+			Offset = "+0700"
+		Case "ZE6B":
+			Offset = "+0630"
+		Case "ZE6":
+			Offset = "+0600"
+		Case "ZE5C":
+			Offset = "+0545"
+		Case "ZE5B":
+			Offset = "+0530"
+		Case "ZE5":
+			Offset = "+0500"
+		Case "ZE4B":
+			Offset = "+0430"
+		Case "ZE4":
+			Offset = "+0400"
+		Case "ZE3B":
+			Offset = "+0330"
+		Case "ZE3":
+			Offset = "+0300"
+		Case "ZE2", "CEDT":
+			Offset = "+0200"
+		Case "CET", "GDT":
+			Offset = "+0100"
+		Case Else:
+			
+	End Select
+		
+ExitPoint:
+	getOffsetString = Offset
+	Exit Function
+	
+ErrorTrap:
+		On Error GoTo ErrorTrap
+		enhLogException LIB_PREFIX, || 
+		Resume ExitPoint 
+End Function
+
+'++LotusScript Development Environment:2:1:getOffsetStringColon:6:8
+%REM
+	Function getOffsetStringColon using the format for MS Graph
+	Description: Converts Domino timezone to +/- format for RFC 3339.
+	
+%END REM
+Function getOffsetStringColon(dt As NotesDateTime) As String
+	
+	Dim dominoTz As String
+	Dim Offset As String
+	Dim isDst As Boolean
+
+	On Error GoTo ErrorTrap
+	
+	If (dt.localTime = dt.gmttime) Then
+		Offset = "Z"
+		GoTo ExitPoint 
+	End If
+
+	dominoTz = StrRightBack(dt.Localtime, " ")
+	isDst = dt.Isdst
+	Select Case dominoTz
+		Case "YW1":
+			Offset = "Z"
+		Case "ZW1", "YW2":
+			offset = "-01:00"
+		Case "ZW2", "YW3":
+			offset = "-02:00"
+		Case "NDT":
+			Offset = "-02:30"
+		Case "ZW3", "ADT":
+			Offset = "-03:00"
+		Case "NST":
+			Offset = "-03:30"
+		Case "AST", "EDT":
+			Offset = "-04:00"
+		Case "EST", "CDT":
+			Offset = "-05:00"
+		Case "CST", "MDT":
+			Offset = "-06:00"
+		Case "MST", "PDT":
+			Offset = "-07:00"
+		Case "PST", "YDT":
+			Offset = "-08:00"
+		Case "YST", "HDT":
+			Offset = "-09:00"
+		Case "ZW9B":
+			Offset = "-09:30"
+		Case "HST", "BDT":
+			Offset = "-10:00"
+		Case "BST":
+			Offset = "-11:00"
+		Case "ZW12":
+			Offset = "-12:00"
+		Case "ZE12C":
+			Offset = "+12:45"
+		Case "ZE12":
+			Offset = "+12:00"
+		Case "ZE11B":
+			Offset = "+11:30"
+		Case "ZE11":
+			Offset = "+11:00"
+		Case "ZE10B":
+			Offset = "+10:30"
+		Case "ZE10":
+			Offset = "+10:00"
+		Case "ZE9B":
+			Offset = "+09:30"
+		Case "ZE9":
+			Offset = "+09:00"
+		Case "ZE8":
+			Offset = "+08:00"
+		Case "ZE7":
+			Offset = "+07:00"
+		Case "ZE6B":
+			Offset = "+06:30"
+		Case "ZE6":
+			Offset = "+06:00"
+		Case "ZE5C":
+			Offset = "+05:45"
+		Case "ZE5B":
+			Offset = "+05:30"
+		Case "ZE5":
+			Offset = "+05:00"
+		Case "ZE4B":
+			Offset = "+04:30"
+		Case "ZE4":
+			Offset = "+04:00"
+		Case "ZE3B":
+			Offset = "+03:30"
+		Case "ZE3":
+			Offset = "+03:00"
+		Case "ZE2", "CEDT":
+			Offset = "+02:00"
+		Case "CET", "GDT":
+			Offset = "+01:00"
+		Case Else:
+			
+	End Select
+		
+	
+ExitPoint:
+	getOffsetStringColon = Offset
+	Exit Function
+		
+ErrorTrap:
+	On Error GoTo ErrorTrap
+	enhLogException LIB_PREFIX, || 
+	Resume ExitPoint
+End Function

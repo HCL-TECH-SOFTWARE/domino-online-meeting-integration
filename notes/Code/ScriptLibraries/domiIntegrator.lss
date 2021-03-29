@@ -1,0 +1,2349 @@
+'++LotusScript Development Environment:2:5:(Options):0:74
+%REM
+	Library domiIntegrator
+	Created March 2021 by Devin Olson/USA/PNPHCL
+
+	Domino Online Meeting Integrator  
+
+	Copyright 2021 HCL Software
+	Licensed under the Apache License, Version 2.0 (the "License"); 
+	you may not use this file except in compliance with the License. 
+	You may obtain a copy of the License at
+
+	http://www.apache.org/licenses/LICENSE-2.0
+
+	Unless required by applicable law or agreed to in writing, 
+	software distributed under the License is distributed on an "AS IS" BASIS, 
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
+	See the License for the specific language governing permissions and limitations under the License
+%END REM
+Option Public
+Option Explicit 
+
+Use |domiUtilsBE| 
+Use |JsonDateTime|
+
+'++LotusScript Development Environment:2:5:(Forward):0:1
+Declare Class DominoOnlineMeetingIntegrator 
+Declare Private Function replaceMultipleItems(target As NotesDocument, itemvalues As VariantList) As Boolean 
+Declare Private Function getMeetingBodyArgs(context As NotesDocument, ndtStart As NotesDateTime, ndtEnd As NotesDateTime, meetingtime As MeetingTimeCarrier, meetingservice$, body$) As VariantList 
+Declare Private Function getEmptyStringArray() As Variant  
+Declare Private Function getDOMIitemNames() As Variant 
+
+'++LotusScript Development Environment:2:5:(Declarations):0:10
+
+
+Private Const LIB_PREFIX = |Library: domiIntegrator.|
+
+
+%REM
+	Type MeetingTimeCarrier
+	Carrier for Meeting Time Information 
+%END REM
+Private Type MeetingTimeCarrier 
+	' The online meeting platforms all require date/time values to be presented as strings in the ITC format - yyyy-mm-ddThh:mm:ss offset, 
+	' e.g. 2021-02-11T16:00:00-0500
+	' or (for MS_Graph) 2021-02-11T16:00:00-05:00
+
+	startITC As String
+	endITC As String
+	timeDiff As Long
+End Type
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+%REM
+	Class DominoOnlineMeetingIntegrator
+	Helper class for Domino Online Meeting Integration operations
+%END REM
+Class DominoOnlineMeetingIntegrator 
+
+	Private m_database As NotesDatabase 
+	Private m_restconsumer As NotesRESTconsumer
+	Private m_jsonhelper As NotesAgent_JsonHTTPHelper 
+	
+	Private m_copynodes As StringList 
+	
+	Private m_meetingservice As String 
+	Private m_universalid As String 
+	Private m_loginemail As String 
+	Private m_authtoken As String 
+	Private m_refreshtoken As String 
+	Private m_errormessage As String
+	Private m_responsecode As String
+	
+	
+	Private m_errorcode As Integer
+	Private m_httpstatuscode As Integer
+	Private m_validationflag As Integer 
+	
+	Private m_oauthFailed As Boolean 
+	Private m_connectionFailed As Boolean 
+	
+
+	Private Property Get CLASS_PREFIX As String 
+		CLASS_PREFIX = LIB_PREFIX & |Class: DominoOnlineMeetingIntegrator.|
+	End Property 
+
+
+	%REM
+		Clears the object's ErrorCode and ErrorMessage
+	%END REM
+	Private Function clearError() 
+		me.m_errorcode = 0
+		me.m_errormessage = ||
+		me.m_oauthFailed = False 
+		me.m_connectionFailed = False 
+	End Function
+
+	%REM
+		Clears the object's ResponseCode 
+	%END REM
+	Private Function clearResponseCodes() 
+		me.m_httpstatuscode = 0
+		me.m_responsecode = ||
+	End Function
+
+	
+
+
+	%REM
+		Function instantiate
+		Instantiates the object using the source document. 
+		
+		@param source Domino Online Meeting Integration credentials document. 
+		
+		@throws ERR_PARAMETER_INVALID if the document is not valid Domino Online Meeting Credentials document. 
+	%END REM
+	Private Function instantiate(source As NotesDocument) As Boolean 
+		On Error GoTo ErrorTrap
+		
+		' exception variables
+		Dim extendedinfo List As String 
+		Dim msg$
+		
+		Dim itemname$
+		Dim rstr$
+		
+		Dim result As Boolean
+		
+		
+		' BEGIN CODE
+		If (source Is Nothing) Then GoTo ExitPoint
+		
+		
+		Set me.m_database = source.ParentDatabase 
+		
+		itemname$ = |Form|
+		extendedinfo(|Item Name|) = itemname$
+		rstr$ = source.getFirstItem(itemname$).Text 
+		If (0 <> StrComp(DOMI_FORMNAME_CREDS, rstr$, 5)) Then Error ERR_PARAMETER_INVALID, |Invalid form "| & rstr$ & |", requires "| & DOMI_FORMNAME_CREDS & |"| 
+	
+		me.m_universalid = source.UniversalID 
+		
+		itemname$ = |service|
+		extendedinfo(|Item Name|) = itemname$
+		If source.hasitem(itemname$) Then me.m_meetingservice = source.getFirstItem(itemname$).Text 
+	
+		itemname$ = |LoginEmail|
+		extendedinfo(|Item Name|) = itemname$
+		If source.hasitem(itemname$) Then me.m_loginemail = source.getFirstItem(itemname$).Text 
+		
+		itemname$ = DOMI_TOKEN_AUTH
+		extendedinfo(|Item Name|) = itemname$
+		If source.hasitem(itemname$) Then me.m_authtoken = source.getFirstItem(itemname$).Text 
+		
+		itemname$ = DOMI_TOKEN_REFRESH
+		extendedinfo(|Item Name|) = itemname$
+		If source.hasitem(itemname$) Then me.m_refreshtoken = source.getFirstItem(itemname$).Text 
+		
+		
+	ExitPoint: 
+		If (0 <> me.m_errorcode) Then Error me.m_errorcode, me.m_errormessage
+		instantiate = result
+		Exit Function 
+	ErrorTrap:
+		On Error GoTo 0
+		me.m_errorcode = Err() 
+		me.m_errormessage = Error() 
+		enhLogException CLASS_PREFIX, ||
+		ForAll s In extendedinfo
+			enhLogExtendedContent ||, ||, ListTag(s) & |: | & s
+		End ForAll
+		enhLogExtendedContent ||, ||, ||
+		Resume ExitPoint
+	End Function
+
+
+	%REM
+		Function refreshFromDocument
+		Attempts to refresh the object from the underlying document 
+	%END REM
+	Private Function refreshFromDocument() As Boolean 
+		On Error GoTo ErrorTrap
+
+		' exception variables
+		Dim extendedinfo List As String 
+		Dim msg$
+
+		Dim ndoc As NotesDocument
+		 	
+		Dim itemname$ 	
+		Dim result As Boolean 
+		
+	
+	
+		' BEGIN CODE
+		me.m_universalid = ||
+		me.m_authtoken = ||
+		me.m_refreshtoken = ||
+		me.m_loginemail = ||
+		
+		Set ndoc = me.Document 
+		If Not (ndoc Is Nothing) Then result = me.instantiate(ndoc) 
+
+
+	ExitPoint: 
+		refreshFromDocument = result
+		Exit Function 
+	ErrorTrap:
+		On Error GoTo 0
+		enhLogException CLASS_PREFIX, ||
+		ForAll s In extendedinfo
+			enhLogExtendedContent ||, ||, ListTag(s) & |: | & s
+		End ForAll
+		enhLogExtendedContent ||, ||, ||
+		Resume ExitPoint
+	End Function
+
+
+
+
+
+
+	%REM
+		Property Get MeetingService
+		Meeting Service in use for the object
+	%END REM
+	Property Get MeetingService As String
+		MeetingService = me.m_meetingservice 
+	End Property
+
+	%REM
+		Property Get MeetingServiceLabel
+		Meeting Service Label for the object's Meeting Service
+	%END REM
+	Property Get MeetingServiceLabel As String
+		MeetingServiceLabel = getDOMIserviceLabel(me.MeetingService) 
+	End Property
+
+	%REM
+		Property Get UniversalID
+		UniversalID of the Domino Online Credentials Integration Configuration document for the object. 
+	%END REM
+	Property Get UniversalID As String
+		If isBlankString(me.m_universalid) Then Call me.refreshFromDocument() 
+		UniversalID = me.m_universalid
+	End Property
+
+	%REM
+		Property Get AuthToken
+		Authorization Token in use for the object
+	%END REM
+	Property Get AuthToken As String 
+		If isBlankString(me.m_authtoken) Then Call me.refreshFromDocument() 
+		AuthToken = me.m_authtoken
+	End Property
+
+	%REM
+		Property Get RefreshToken
+		Refresh Token in use for the object
+	%END REM
+	Property Get RefreshToken As String 
+		If isBlankString(me.m_refreshtoken) Then Call me.refreshFromDocument() 
+		RefreshToken = me.m_refreshtoken
+	End Property
+
+
+	%REM
+		Property Get LoginEmail
+		Login Email in use for the object
+	%END REM
+	Property Get LoginEmail As String 
+		If isBlankString(me.m_loginemail) Then Call me.refreshFromDocument() 
+		LoginEmail = me.m_loginemail
+	End Property
+		
+	%REM
+		Property Get ErrorCode
+		Error Code from most recent operation
+	%END REM
+	Property Get ErrorCode As Integer 
+		ErrorCode = me.m_errorcode 
+	End Property
+	
+	%REM
+		Property Get ErrorMessage
+		Error Message from most recent operation
+	%END REM
+	Property Get ErrorMessage As String 
+		ErrorMessage = me.m_errormessage
+	End Property
+	
+	%REM
+		Property Get ResponseCode
+		HTTP Response code from most recent operation
+	
+		ex: "HTTP1/1 200"	
+	%END REM
+	Property Get ResponseCode As String
+		ResponseCode = me.m_responsecode 
+	End Property
+	
+			
+	%REM
+		Property Get HTTPstatusCode
+		HTTP Status code number from most recent operation
+	%END REM
+	Property Get HTTPstatusCode As Integer
+		HTTPstatusCode = me.m_httpstatuscode
+	End Property
+	
+	%REM
+		Property Get HTTPstatusCodeType
+		HTTP Status code type from most recent operation
+	%END REM
+	Property Get HTTPstatusCodeType As String
+		HTTPstatusCodeType = getHTTPStatusCodeType(me.HTTPstatusCode)
+	End Property
+
+	
+	
+	%REM
+		Property Get CopyNodes
+		Tags and Node names used to parse the response JSON and add nodes when processing DOMI JSON 
+			k = Node name used to add the retrieved value to the resulting JSON content.
+			v = Properly formatted JSON tag this will be used to retrieve a value from the JSON content. 
+	%END REM
+	Property Get CopyNodes As StringList
+		If (me.m_copynodes Is Nothing) Then Set me.m_copynodes = New StringList() 
+		Set CopyNodes = me.m_copynodes 
+	End Property		
+		
+		
+	%REM
+		Property Set CopyNodes
+		Tags and Node names used to parse the response JSON and add nodes when processing DOMI JSON 
+			k = Node name used to add the retrieved value to the resulting JSON content.
+			v = Properly formatted JSON tag this will be used to retrieve a value from the JSON content. 
+	%END REM
+	Property Set CopyNodes As StringList
+		Set me.m_copynodes = CopyNodes 
+	End Property
+
+
+
+	%REM
+		Property Set MeetingService
+		MeetingService in use for the object
+		
+		@throws ERR_PARAMETER_INVALID if meetingservice not currently supported. 
+	%END REM
+	Property Set MeetingService As String 
+		If Not isDOMIserviceSupported(MeetingService) Then Error ERR_PARAMETER_INVALID, |Unsupported Meeting Service: | & meetingservice$
+
+		me.m_meetingservice = MeetingService 
+		Call me.refreshFromDocument() 
+	End Property
+	
+	
+	%REM
+		Property Get Database As NotesDatabase
+		Database in use for the object
+	%END REM
+	Property Get Database As NotesDatabase  
+		Set Database = me.m_database 
+	End Property
+	
+	
+	%REM
+		Property Get Document 
+		Domino Online Meeting Integration Credentials Document
+		
+		@throws ERR_PARAMETER_BLANK if object's Database is Nothing or meetingservice$ is blank. 
+		@throws ERR_VIEW_NOT_FOUND if DOMI_VIEWNAME_CREDENTIALS cannot be found   		
+	%END REM
+	Property Get Document As NotesDocument 
+		If (me.Database Is Nothing) Or isBlankString(meetingservice$) Then Error ERR_PARAMETER_BLANK, MSG_PARAMETER_BLANK  
+		On Error GoTo ErrorTrap 
+
+		' exception variables
+		Dim extendedinfo List As String 
+		Dim msg$
+		
+		Dim result As NotesDocument
+		
+		Dim itemname$
+		Dim unid$
+		Dim errmsg$
+		Dim errcode% 
+		
+		
+		' BEGIN CODE
+		' all references to the universalid within this method must reference the variable m_universalid
+		' Referencing the property me.UniversalID will cause an infinite loop
+		extendedinfo(|UniversalID|) = me.m_universalid
+		extendedinfo(|Meeting Service|) = meetingservice$
+		
+		If Not isBlankString(me.m_universalid) Then Set result = me.Database.getDocumentByUNID(me.m_universalid)  
+		If (result Is Nothing) Then 
+			Set result = me.getDOMIdocument(me.Database, me.MeetingService) 	
+			If Not (result Is Nothing) Then Call me.instantiate(result)
+		End If 
+		
+	ExitPoint:
+		If (0 <> errcode%) Then Error errcode%, errmsg$ 
+		Set Document = result
+		Exit Property
+
+	ErrorTrap:
+		On Error GoTo 0
+		errcode% = Err() 
+		errmsg$ = Error$()
+		enhLogException CLASS_PREFIX, ||
+		ForAll s In extendedinfo
+			enhLogExtendedContent ||, ||, ListTag(s) & |: | & s
+		End ForAll
+		enhLogExtendedContent ||, ||, ||
+		Resume ExitPoint
+	End Property 
+	
+	%REM
+		Property Set Document
+		Domino Online Meeting Integration Credentials Document
+		
+		@throws ERR_PARAMETER_BLANK if the document is Nothing
+		@throws ERR_PARAMETER_INVALID if the document is not valid Domino Online Meeting Credentials document. 
+	%END REM
+	Property Set Document As NotesDocument 
+		If Document Is Nothing Then Error ERR_PARAMETER_BLANK, MSG_PARAMETER_BLANK
+		
+		Call me.instantiate(Document)
+	End Property
+	
+	
+	
+	%REM
+		Property Get RESTconsumer
+		NotesRestConsumer instance for the object 
+	%END REM
+	Property Get RESTconsumer As NotesRESTconsumer 
+		On Error GoTo ErrorTrap
+	
+		' BEGIN CODE
+		If (me.m_restconsumer Is Nothing) Then Set me.m_restconsumer = New NotesRESTconsumer(DOMI_JSON_NODES_EXCLUDE_FROM_LOG) 
+	
+	ExitPoint: 
+		Set RESTconsumer = me.m_restconsumer 
+		Exit Property 
+	ErrorTrap:
+		enhLogException CLASS_PREFIX, ||
+		Resume ExitPoint
+	End Property
+
+	%REM
+		Property Get JSONhelper
+		NotesAgent_JsonHTTPHelper instance for the object 
+	%END REM
+	Property Get JSONhelper As NotesAgent_JsonHTTPHelper 
+		On Error GoTo ErrorTrap
+		
+		' BEGIN CODE
+		If (me.m_jsonhelper Is Nothing) Then Set me.m_jsonhelper = spawnJsonHttpHelper(Nothing, False, True) 
+		
+	ExitPoint: 
+		Set JSONhelper = me.m_jsonhelper 
+		Exit Property 
+	ErrorTrap:
+		enhLogException CLASS_PREFIX, ||
+		Resume ExitPoint
+	End Property
+
+	%REM
+		Property Get MeetingValues
+		Values for the meeting (used for the calendar document) 
+	%END REM
+	Property Get MeetingValues As VariantList 
+		On Error GoTo ErrorTrap
+
+		Dim result As New VariantList()
+		Dim rvar As Variant 
+
+		' exception variables
+		Dim extendedinfo List As String 
+		Dim msg$
+
+		Dim tag$
+		
+		
+		' BEGIN CODE
+		If me.CopyNodes Is Nothing Then GoTo ExitPoint
+		
+		ForAll nodename In me.CopyNodes.content 
+			extendedinfo(|NodeName|) = nodename
+			tag$ = ListTag(nodename) 
+			If me.JSONhelper.findScalarByPointer(tag$, rvar) Then result.content(tag$) = rvar 
+		End ForAll
+		
+	ExitPoint: 
+		Set MeetingValues = result
+		Exit Property 
+	ErrorTrap:
+		On Error GoTo 0
+		enhLogException CLASS_PREFIX, ||
+		ForAll s In extendedinfo
+			enhLogExtendedContent ||, ||, ListTag(s) & |: | & s
+		End ForAll
+		enhLogExtendedContent ||, ||, ||
+		Resume ExitPoint
+	End Property
+
+	%REM
+		Property Get isServiceSpecified
+		Flag indicating if the Meeting Service is specified for the object 
+	%END REM
+	Property Get isServiceSpecified As Boolean  
+		isServiceSpecified = Not isBlankString(me.m_meetingservice)
+	End Property
+
+	%REM
+		Property Get isContextCalendarEntry
+		Flag indicating if the Context document is a Calendar Entry document (form = "Appointment")  
+	%END REM
+	Property Get isContextCalendarEntry As Boolean  
+		isContextCalendarEntry = Not (1 And me.m_validationflag) 
+	End Property
+
+	%REM
+		Property Get isSubjectPopulated
+		Flag indicating if the Subject field on the Context document has a value.
+	%END REM
+	Property Get isSubjectPopulated As Boolean  
+		isSubjectPopulated = Not (2 And me.m_validationflag) 
+	End Property
+
+	%REM
+		Property Get isStartDatePopulated
+		Flag indicating if the Start Date field on the Context document has a value.
+	%END REM
+	Property Get isStartDatePopulated As Boolean  
+		isStartDatePopulated = Not (4 And me.m_validationflag) 
+	End Property
+
+	%REM
+		Property Get isStartTimePopulated
+		Flag indicating if the Start Time field on the Context document has a value.
+	%END REM
+	Property Get isStartTimePopulated As Boolean  
+		isStartTimePopulated = Not (8 And me.m_validationflag) 
+	End Property
+
+	%REM
+		Property Get isStartZonePopulated
+		Flag indicating if the Start Zone field on the Context document has a value.
+	%END REM
+	Property Get isStartZonePopulated As Boolean  
+		isStartZonePopulated = Not (16 And me.m_validationflag) 
+	End Property
+
+	%REM
+		Property Get isStartNotBeforeNow
+		Flag indicating if the Start Date/Time is not before now. 
+	%END REM
+	Property Get isStartNotBeforeNow As Boolean  
+		isStartNotBeforeNow = Not (32 And me.m_validationflag) 
+	End Property
+
+	%REM
+		Property Get isEndDatePopulated
+		Flag indicating if the End Date field on the Context document has a value.
+	%END REM
+	Property Get isEndDatePopulated As Boolean  
+		isEndDatePopulated = Not (64 And me.m_validationflag) 
+	End Property
+
+	%REM
+		Property Get isEndTimePopulated
+		Flag indicating if the End Time field on the Context document has a value.
+	%END REM
+	Property Get isEndTimePopulated As Boolean  
+		isEndTimePopulated = Not (128 And me.m_validationflag) 
+	End Property
+
+	%REM
+		Property Get isEndZonePopulated
+		Flag indicating if the End Zone field on the Context document has a value.
+	%END REM
+	Property Get isEndZonePopulated As Boolean  
+		isEndZonePopulated = Not (256 And me.m_validationflag) 
+	End Property
+
+	%REM
+		Property Get isEndNotBeforeStart
+		Flag indicating if the End Date/Time is not before the Start Date/Time. 
+	%END REM
+	Property Get isEndNotBeforeStart As Boolean  
+		isEndNotBeforeStart = Not (512 And me.m_validationflag) 
+	End Property
+
+	%REM
+		Property Get hasOAUTHfailed
+		Flag indicating if OAUTH authentication has failed for the object 
+	%END REM
+	Property Get hasOAUTHfailed As Boolean  
+		hasOAUTHfailed = me.m_oauthFailed
+	End Property
+
+	%REM
+		Property Get hasConnectionFailed
+		Flag indicating if Service Network Connection has failed for the object 
+	%END REM
+	Property Get hasServiceConnectionFailed As Boolean  
+		hasServiceConnectionFailed = me.m_connectionfailed 
+	End Property
+
+
+	%REM
+		Property Get ContextValidationFlag
+		Flag indication results of context validation (context being the Calendar Entry document for the object) 
+		
+		@return	Flag indicating 
+			-1 		Validation Passed
+			0		Validation Unknown 
+			1 		Form not "Appointment"
+			2 		Subject is blank
+			4 		StartDate not populated or ot interpretable as a date time
+			8 		StartTime not populated or ot interpretable as a date time
+			16		StartTimeZone not populated or not interpretable as a time zone 
+			32		Start Date/Time is before NOW (Current Date/Time) 
+			64 		EndDate not populated or ot interpretable as a date time
+			128 	EndTime not populated or ot interpretable as a date time
+			256 	EndTimeZone not populated or not interpretable as a time zone 
+			512		End Date/Time is before Start Date/Time 		
+	%END REM
+	Property Get ContextValidationFlag As Integer  
+		ContextValidationFlag = me.m_validationflag 
+	End Property
+
+	%REM
+		Property Get ContextValidationFlag
+		Context Validation Failure Messages  (context being the Calendar Entry document for the object) 
+						
+		@return	Array of Strings with messages as follows: 
+			-1 		Validation Passed
+			0		Validation Unknown 
+			1 		Form not "Appointment"
+			2 		Subject is blank
+			4 		StartDate not populated or ot interpretable as a date time
+			8 		StartTime not populated or ot interpretable as a date time
+			16		StartTimeZone not populated or not interpretable as a time zone 
+			32		Start Date/Time is before NOW (Current Date/Time) 
+			64 		EndDate not populated or ot interpretable as a date time
+			128 	EndTime not populated or ot interpretable as a date time
+			256 	EndTimeZone not populated or not interpretable as a time zone 
+			512		End Date/Time is before Start Date/Time 		
+	%END REM
+	Property Get ContextValidationMessages As Variant  
+		ContextValidationMessages = getDOMIvalidationFailureMessages(me.m_validationflag) 
+	End Property
+
+
+
+	%REM
+		Constructor
+		
+		Constructs a new Domino Online Meeting Integrator object 
+		
+		@param source 		NotesDatabase containing the Domino Online Meeting Integration Credentials documents.
+		
+		@param tags			Tags and Node names used to parse the response JSON and add nodes when processing DOMI JSON 
+								k = Node name used to add the retrieved value to the resulting JSON content.
+								v = Properly formatted JSON tag this will be used to retrieve a value from the JSON content.
+			 
+		@param service$ 	Meeting Service used for the object. 
+		
+		@throws ERR_PARAMETER_BLANK if the source Database is Nothing. 
+		@throws ERR_DATABASE_NOTOPEN is the source Database cannot be opened.
+		@throws ERR_PARAMETER_INVALID if Meeting Service not currently supported. 
+	%END REM 
+	Sub New(source As NotesDatabase, tags As StringList, service$) 
+		On Error GoTo ErrorTrap
+		
+		Dim nnam As NotesName 
+		
+		' exception variables
+		Dim extendedinfo List As String 
+		Dim msg$
+		
+		Dim errmsg$
+		Dim errcode% 
+		
+		
+		' BEGIN CODE 
+		extendedinfo(|Meeting Service|) = service$ 
+		If (source Is Nothing) Then Error ERR_PARAMETER_BLANK, MSG_PARAMETER_BLANK
+		
+		If isBlankString(source.Server) Then 
+			Set nnam = New NotesName(getCurrentSession().EffectiveUserName) 
+			extendedinfo(|Source Database Server|) = |Local Client for | & nnam.Abbreviated 
+		Else 
+			extendedinfo(|Source Database Server|) = source.Server 
+		End If
+		
+		extendedinfo(|Source Database Filepath|) = source.Filepath 
+		If Not source.Isopen Then  
+			Call source.open(source.Server, source.Filepath)
+			If Not source.Isopen Then Error ERR_DATABASE_NOTOPEN, MSG_DATABASE_NOTOPEN 
+		End If  
+		
+		Set me.m_database = source 
+		Set me.CopyNodes = tags 
+		me.m_meetingservice = service$
+
+	ExitPoint: 
+		If (0 <> errcode%) Then Error errcode%, errmsg$
+		Exit Sub 
+	ErrorTrap:
+		On Error GoTo 0
+		errcode% = Err() 
+		errmsg$ = Error() 
+		enhLogException CLASS_PREFIX, ||
+		ForAll s In extendedinfo
+			enhLogExtendedContent ||, ||, ListTag(s) & |: | & s
+		End ForAll
+		enhLogExtendedContent ||, ||, ||
+		Resume ExitPoint
+	End Sub 
+
+
+
+	%REM
+	Function doMeetingRequest
+		Performs a Domino Online Meeting Integration Request specified meeting service and method.  
+			
+		In the event of an authentication failure, 
+			1) attempts to refresh the authentication token and...
+			2) ...if successful, attempts to perform the DOMI Request a second time. 
+		
+		@param bodyargs 		Body parameters to be included (as JSON) when creating the meeting. 
+		@param target	  		[OUTBOUND] NotesJSONNavigator contining information about the spawned meeting.  Nothing on error. 
+		@param meetingid$  		[INBOUND / OUTBOUND] The Meeting ID (spawned on create) 
+		@param method% 			DOMI_HTTP_METHOD_XXX Constant indicating the method to call (DOMI_HTTP_METHOD_GET, DOMI_HTTP_METHOD_POST, DOMI_HTTP_METHOD_DETETE, etc) 
+			
+		@return Flag indicating success / failure of the operation
+		
+		@throws ERR_PARAMETER_BLANK if meetingservice is blank.
+		@throws ERR_PARAMETER_INVALID if meetingservice or method are invalid. 
+	%END REM
+	Function doMeetingRequest(bodyargs As VariantList, target As NotesJSONNavigator, meetingid$, method%) As Boolean 
+		If isBlankString(meetingservice$) Then Error ERR_PARAMETER_BLANK, MSG_PARAMETER_BLANK 
+		On Error GoTo ErrorTrap
+		On Error ERR_PARAMETER_INVALID GoTo Error_PARAMETER_INVALID ' bubble up parameter errors
+		
+		' exception variables
+		Dim errmsg$
+		Dim errcode% 
+		
+		Dim authtokennew$
+		
+		Dim hasAuthError As Boolean 
+		Dim result As Boolean 
+		
+		
+		' BEGIN CODE 
+		%REM 
+		Get the token for the specified service, and use it to perform the DOMI Request. 
+		If an Invalid Authentication Token error ocuurs: 
+			1) Attempt to refresh the Authentication token
+			2) If successful, then update the token document
+			3) Use the new token to perform the DOMI Request.
+		%END REM
+		
+		result = me.doMeetingRequestRAW(bodyargs, target, meetingid$, method%)
+		If result Then GoTo ExitPoint ' Success  
+		If me.hasServiceConnectionFailed Then GoTo ExitPoint ' no point in continuing
+		If (target Is Nothing) Then GoTo ExitPoint ' doMeetingRequestRaw failed to retrieve any content
+
+		Call me.JSONhelper.loadJson(getCurrentSession(), target.Stringify())
+		Call me.JSONhelper.findBooleanByPointer(DOMI_TAG_AUTH_FAILURE, hasAuthError)
+		If hasAuthError Then 
+			' Authentication failed.  Attempt to refresh token and perform the request again.
+			If me.refreshAuthToken(True) Then result = me.doMeetingRequestRAW(bodyargs, target, meetingid$, method%)
+		End If 
+		
+		
+	ExitPoint:
+		If (0 <> errcode%) Then Error errcode%, errmsg$
+		doMeetingRequest = result
+		Exit Function	
+	Error_PARAMETER_INVALID:
+		' bubble up parameter invalid errors  
+		On Error GoTo 0  
+		errcode% = Err()
+		errmsg$ = Error$() 
+		Resume ExitPoint 
+	ErrorTrap:
+		On Error GoTo 0
+		enhLogException CLASS_PREFIX, |Meeting Service | & meetingservice$
+
+		If Not (bodyargs Is Nothing) Then 
+			Call bodyargs.logJSONExtended(DOMI_JSON_NODES_EXCLUDE_FROM_LOG, ||, ||, |Body JSON|)
+			enhLogExtendedContent ||, ||, ||
+		End If 
+		
+		Resume ExitPoint 
+	End Function
+
+	%REM
+	Function doMeetingRequestRAW
+		Performs a Domino Online Meeting Integration Request specified meeting service and method.  
+		
+		@param bodyargs 		Body parameters to be included (as JSON) when creating the meeting. 
+		@param target	  		[OUTBOUND] 	NotesJSONNavigator contining information about the spawned meeting.  Nothing on error. 
+		@param meetingid$  		[INBOUND / OUTBOUND] The Meeting ID (spawned on create) 
+		@param method% 			DOMI_HTTP_METHOD_XXX Constant indicating the method to call (DOMI_HTTP_METHOD_GET, DOMI_HTTP_METHOD_POST, DOMI_HTTP_METHOD_DETETE, etc) 
+			
+		@return Flag indicating success / failure of the operation
+		
+		@throws ERR_PARAMETER_BLANK meetingservice is blank.
+		@throws ERR_PARAMETER_INVALID if meetingservice or method are invalid. 
+	%END REM
+	Private Function doMeetingRequestRAW(bodyargs As VariantList, target As NotesJSONNavigator, meetingid$, method%) As Boolean 
+		If isBlankString(meetingservice$) Then Error ERR_PARAMETER_BLANK, MSG_PARAMETER_BLANK & |Meeting Service.| 
+		On Error GoTo ErrorTrap
+		On Error ERR_PARAMETER_INVALID GoTo Error_PARAMETER_INVALID ' bubble up parameter errors
+		On Error 4844 GoTo Error4844 ' Error 4844 = Unable To establish connection to remote server. 
+		
+		Const CONTENT_TYPE = |application/json| 
+		Const TOKEN_TYPE = |Bearer|
+
+		' exception variables
+		Dim extendedinfo List As String 
+		Dim msg$
+		Dim errmsg$
+		Dim errcode%
+
+		Dim element As NotesJSONElement 
+
+		Dim headers As New StringList() 
+		
+		Dim rvar As Variant 
+		
+		Dim elementtypename$
+		Dim meetingurl$ 
+		Dim tag$
+		Dim responseJSON$
+		Dim rstr$ 
+		
+		Dim elementtype%
+		Dim range%
+		
+		Dim hasError As Boolean 
+		Dim hasAuthError As Boolean 
+		Dim result As Boolean 
+		
+		
+		' BEGIN CODE
+		Call me.clearError()
+		Call me.clearResponseCodes() 
+		extendedinfo(|Meeting Service|) = me.MeetingService 
+		extendedinfo(|TOKEN TYPE|) = TOKEN_TYPE
+		
+		If (me.Document Is Nothing) Then GoTo ExitPoint ' no token document found  
+
+		meetingurl$ = me.getDOMIurl(me.MeetingService, meetingid$, method%) 
+		extendedinfo(|Meeting URL|) = meetingurl$
+		
+		If Not (bodyargs Is Nothing) Then 
+			If bodyargs.hasContent Then headers.content(|Content-Type|) = CONTENT_TYPE ' only include content type if body content is being sent.
+		End If
+		
+		
+		headers.content(|Authorization|) = TOKEN_TYPE & | | & me.AuthToken
+		
+		' get the http response code and NotesJSONNavigator 
+		me.m_responsecode = me.RESTconsumer.processRequest(headers, bodyargs, target, meetingurl$, method%) 
+		extendedinfo(DOMI_TAG_RESPONSECODE) = me.ResponseCode
+		me.m_httpstatuscode = nrcParseResponseCode(me.ResponseCode)
+		If (target Is Nothing) Then Error ERR_OBJECT_CREATE_FAILED, MSG_OBJECT_CREATE_FAILED
+
+		' We want to know the response Code in case creating the result throws an error. 
+		target.AppendElement responseCode$, DOMI_TAG_RESPONSECODE 
+
+
+		' Load the JSON into the JSON Helper (it is valid because creating result did not throw an exception)
+		responseJSON$ = stripCRLF(target.Stringify())
+		extendedinfo(DOMI_TAG_RESPONSEJSON) = responseJSON$
+		Call me.JSONhelper.loadJson(getCurrentSession(), responseJSON$)
+
+
+		range% = getHTTPStatusCodeRange(me.HTTPstatusCode)
+		Select Case range% 
+			Case 300: 
+				enhLogWarning CLASS_PREFIX, responseCode$
+				
+			Case 400:
+				hasAuthError = NotesHttpStatusCodes_ClientAuth.hasTag(CStr(me.HTTPstatusCode))
+				hasError = True
+				If 418 = me.HTTPstatusCode Then enhLogAction CLASS_PREFIX, NotesHttpStatusCodes_ClientError.getValue(me.HTTPstatusCode) 
+				
+			Case 500: 
+				hasError = True 
+
+		End Select
+
+		If hasAuthError Then target.AppendElement hasAuthError, DOMI_TAG_AUTH_FAILURE
+		If hasError Then Error ERR_HTTP_REQUEST_FAILURE, MSG_HTTP_REQUEST_FAILURE
+
+		If Not (Me.CopyNodes Is Nothing) Then 
+			' Add service specific nodes to the target NotesJSONNavigator
+			ForAll nodename In Me.CopyNodes.content 
+				tag$ = ListTag(nodename) 
+				extendedinfo(|Tag|) = tag$ 
+				extendedinfo(|Node Name|) = nodename 
+				
+				If isBlankString(nodename) Then 
+					' fail condition
+					enhLogWarning CLASS_PREFIX, |Response Node Name not specified for Target copy node: | & tag$ 
+				Else 
+					If Not me.JSONhelper.findElementByPointer(tag$, element) Then
+						' only add the node if it does not already exist 
+						If me.JSONhelper.findElementByPointer(nodename, element) Then
+							elementtype% = element.Type 
+							extendedinfo(|JSON Element Type|) = CStr(elementtype%) 
+							extendedinfo(|JSON Element Type Name|) = || ' clear the element in case an exception is thrown 
+							elementtypename$ = getJSONelementTypeName(elementtype%)
+							extendedinfo(|JSON Element Type Name|) = elementtypename$ 
+							target.AppendElement element.Value, tag$ 
+						End If
+					End If 
+				End If				
+			End ForAll
+		End If
+		
+		Call me.JSONhelper.findStringByPointer(|/| & DOMI_TAG_ERROR, rstr$) 
+		result = isBlankString(rstr$)		
+		
+	ExitPoint: 
+		If (0 <> errcode%) Then Error errcode%, errmsg$ ' bubble up parameter invalid or 4844 errors  
+		doMeetingRequestRAW = result
+		If Not (target Is Nothing) Then 
+			Call me.JSONhelper.loadJson(getCurrentSession(), stripCRLF(target.Stringify()))
+			If me.JSONhelper.findScalarByPointer(|meetingID|, rvar) Then meetingid$ = CStr(rvar) 
+		End If 
+		Exit Function 
+	Error4844:
+		' Error 4844 = Unable To establish connection To remote server.
+		' bubble up 4844 Errors by falling through to Error_PARAMETER_INVALID
+		On Error GoTo 0 
+		me.m_connectionfailed = True
+		result = False 
+	Error_PARAMETER_INVALID:
+		' bubble up errors
+		On Error GoTo 0  
+		errcode% = Err()
+		errmsg$ = Error$() 
+		Resume ExitPoint 			
+	ErrorTrap:
+		On Error GoTo 0
+		me.m_errorcode = Err() 
+		me.m_errormessage = Error$()
+
+		enhLogException CLASS_PREFIX, me.ResponseCode
+
+		If hasAuthError Then 
+			me.m_oauthFailed = True
+			If Not (target Is Nothing) Then target.AppendElement hasAuthError, DOMI_TAG_AUTH_FAILURE
+		End If 
+
+		ForAll s In extendedinfo
+			enhLogExtendedContent ||, ||, ListTag(s) & |: | & s 
+		End ForAll
+		enhLogExtendedContent ||, ||, ||
+		
+		enhLogExtendedContent ||, ||, |Body JSON|
+		enhLogExtendedContent ||, ||, bodyargs.json 
+		enhLogExtendedContent ||, ||, ||
+		
+		Resume ExitPoint 
+	End Function
+
+
+	%REM
+		Function refreshAuthToken
+		Refreshes the Authentication Token and if successful updates and conditionally saves the credentials document.
+		
+		@param saveDocument Flag indicating if the credentials document should be saved.   
+		
+		@return Flag indicating if the token was refreshed and the document successfully updated. 
+	%END REM
+	Function refreshAuthToken(saveDocument As Boolean) As Boolean 
+		On Error GoTo ErrorTrap
+
+		Const CONTENT_TYPE = |application/json| 
+		Const TOKEN_TYPE = |Bearer|
+
+		
+		Dim target As NotesDocument
+		Dim response As NotesJSONNavigator
+		
+		Dim headers As New StringList()
+		Dim tokens As New StringList() 
+		
+		' exception variables
+		Dim extendedinfo List As String 
+		Dim msg$
+
+		Dim meetingservice$ 
+		Dim refreshURL$
+		Dim responsecode$ 
+		Dim responsejson$ 
+		Dim authtoken_new$
+		Dim refreshtoken_new$ 
+
+		Dim rstr$ 
+		
+		Dim result As Boolean 
+
+
+		' BEGIN CODE
+		meetingservice$ = me.MeetingService
+		extendedinfo(|Meeting Service|) = meetingservice$ 
+		
+		refreshURL$= getDOMIrootURL(meetingservice$) & |Refresh|
+		extendedinfo(|Refresh URL|) = refreshURL$
+
+		extendedinfo(|CONTENT_TYPE|) = CONTENT_TYPE
+		extendedinfo(|TOKEN TYPE|) = TOKEN_TYPE
+		
+		extendedinfo(|REFRESH_TOKEN|) = me.RefreshToken
+		headers.content(|Content-Type|) = CONTENT_TYPE
+		headers.content(|Authorization|) = TOKEN_TYPE & | | & refreshtoken$
+		
+		responsecode$ = Me.RESTconsumer.httpGET(refreshURL$, headers, response)
+		extendedinfo(DOMI_TAG_RESPONSECODE) = responsecode$
+		
+		If (response Is Nothing) Then Error ERR_OBJECT_CREATE_FAILED, MSG_OBJECT_CREATE_FAILED
+
+		responsejson$ = stripCRLF(response.Stringify()) 
+		extendedinfo(DOMI_TAG_RESPONSEJSON) = responsejson$
+		Call me.JSONhelper.loadJson(getCurrentSession(), responsejson$)
+		
+		Call me.JSONhelper.findStringByPointer(|/| & DOMI_TAG_ERROR, rstr$) 
+		If Not isBlankString(rstr$) Then extendedinfo(DOMI_TAG_ERROR) = rstr$ 
+		
+		Call me.JSONhelper.findStringByPointer(|/access_token|, rstr$) 
+		If Not isBlankString(rstr$) Then tokens.content(DOMI_TOKEN_AUTH) = rstr$
+
+		Call me.JSONhelper.findStringByPointer(|/refresh_token|, rstr$) 
+		If Not isBlankString(rstr$) Then tokens.content(DOMI_TOKEN_REFRESH) = rstr$
+		
+		If Not tokens.hasTag(DOMI_TOKEN_AUTH) _ 
+		And tokens.hasTag(DOMI_TOKEN_REFRESH) _ 
+		Then Error ERR_OPERATION_FAILED, |Failed to Refresh the Authorzation Token|
+		
+		authtoken_new$ = tokens.getValue(DOMI_TOKEN_AUTH) 
+		If isBlankString(authtoken_new$) Then Error ERR_PARAMETER_BLANK, MSG_PARAMETER_BLANK & |Authorization Token is blank.|
+		me.m_authtoken = authtoken_new$
+
+		refreshtoken_new$ = tokens.getValue(DOMI_TOKEN_REFRESH) 
+		If isBlankString(refreshtoken_new$) Then Error ERR_PARAMETER_BLANK, MSG_PARAMETER_BLANK & |Refresh Token is blank.|
+		me.m_refreshtoken = refreshtoken_new$
+		
+		' Update and save the Notes document 
+		Set target = me.Document 
+		Call target.replaceItemValue(DOMI_TOKEN_AUTH, authtoken_new$) 
+		Call target.replaceItemValue(DOMI_TOKEN_REFRESH, refreshtoken_new$) 
+		If saveDocument Then 
+			If Not target.Save(True, False) Then Error ERR_DOC_NOT_SAVED, ERR_DOC_NOT_SAVED & |Could not save the Credentials Configuration|  
+		End If 
+		
+		result = True 
+		
+	ExitPoint: 
+		If result Then enhLogMethodResult CLASS_PREFIX, |Refreshed Authorization Token for Service: | & meetingservice$ 
+		refreshAuthToken = result
+		me.m_oauthFailed = Not result 
+		Exit Function 
+	ErrorTrap:
+		On Error GoTo 0
+		enhLogException CLASS_PREFIX, ||
+		ForAll s In extendedinfo
+			enhLogExtendedContent ||, ||, ListTag(s) & |: | & s
+		End ForAll
+		enhLogExtendedContent ||, ||, ||
+		
+		If Not (headers Is Nothing) Then 
+			Call headers.logJSONExtended(DOMI_JSON_NODES_EXCLUDE_FROM_LOG, ||, ||, |Headers JSON|)
+			enhLogExtendedContent ||, ||, ||
+		End If 
+		
+		If Not (tokens Is Nothing) Then 
+			Call tokens.logJSONExtended(DOMI_JSON_NODES_EXCLUDE_FROM_LOG, ||, ||, |Tokens JSON|)
+			enhLogExtendedContent ||, ||, ||
+		End If 
+		
+			
+
+		Resume ExitPoint
+	End Function
+	
+	
+	%REM
+		Function revokeAuthToken
+		Refreshes the Authentication Token and if successful updates and conditionally saves the credentials document.
+		
+		@param saveDocument Flag indicating if the credentials document should be saved.   
+		
+		@return Flag indicating if the token was refreshed and the document successfully updated. 
+	%END REM
+	Function revokeAuthToken(saveDocument As Boolean) As Boolean 
+		On Error GoTo ErrorTrap
+
+		Const CONTENT_TYPE = |application/json| 
+		Const TOKEN_TYPE = |Bearer|
+
+		
+		Dim target As NotesDocument
+		Dim response As NotesJSONNavigator
+		
+		Dim headers As New StringList()
+		
+		' exception variables
+		Dim extendedinfo List As String 
+		Dim msg$
+
+		Dim meetingservice$ 
+		Dim revokeURL$
+		Dim responsecode$ 
+		Dim responsejson$ 
+
+		Dim rstr$ 
+		
+		Dim result As Boolean 
+
+
+		' BEGIN CODE
+		meetingservice$ = me.MeetingService
+		extendedinfo(|Meeting Service|) = meetingservice$ 
+		
+		revokeURL$= getDOMIrootURL(meetingservice$) & |Revoke|
+		extendedinfo(|Revoke URL|) = revokeURL$
+
+		extendedinfo(|CONTENT_TYPE|) = CONTENT_TYPE
+		extendedinfo(|TOKEN TYPE|) = TOKEN_TYPE
+		
+		headers.content(|Content-Type|) = CONTENT_TYPE
+		headers.content(|Authorization|) = TOKEN_TYPE & | | & authtoken$
+		
+		responsecode$ = Me.RESTconsumer.httpGET(revokeURL$, headers, response)
+		extendedinfo(DOMI_TAG_RESPONSECODE) = responsecode$
+		me.m_httpstatuscode = nrcParseResponseCode(responsecode$)
+		If (response Is Nothing) Then Error ERR_OBJECT_CREATE_FAILED, MSG_OBJECT_CREATE_FAILED
+		
+		If (me.m_httpstatuscode = 200) Then
+			me.m_authtoken = ""
+			me.m_refreshtoken = ""
+			
+			' Update and save the Notes document 
+			Set target = me.Document 
+			Call target.replaceItemValue(DOMI_TOKEN_AUTH, "-INVALID-") 
+			Call target.replaceItemValue(DOMI_TOKEN_REFRESH, "-INVALID-") 
+			If saveDocument Then 
+				If Not target.Save(True, False) Then Error ERR_DOC_NOT_SAVED, ERR_DOC_NOT_SAVED & |Could not save the Credentials Configuration|  
+			End If 
+			
+			result = True
+		Else 
+			responsejson$ = stripCRLF(response.Stringify()) 
+			extendedinfo(DOMI_TAG_RESPONSEJSON) = responsejson$
+			Call me.JSONhelper.loadJson(getCurrentSession(), responsejson$)
+			
+			Call me.JSONhelper.findStringByPointer(|/| & DOMI_TAG_ERROR, rstr$) 
+			If Not isBlankString(rstr$) Then extendedinfo(DOMI_TAG_ERROR) = rstr$
+			
+			Error ERR_OPERATION_FAILED, MSG_OPERATION_FAILED
+		End If
+		
+	ExitPoint: 
+		If result Then enhLogMethodResult CLASS_PREFIX, |Revoked Authorization Token for Service: | & meetingservice$ 
+		RevokeAuthToken = result
+		me.m_oauthFailed = Not result 
+		Exit Function 
+	ErrorTrap:
+		On Error GoTo 0
+		enhLogException CLASS_PREFIX, ||
+		ForAll s In extendedinfo
+			enhLogExtendedContent ||, ||, ListTag(s) & |: | & s
+		End ForAll
+		enhLogExtendedContent ||, ||, ||
+
+		Resume ExitPoint
+	End Function
+
+
+	%REM
+		Function getDOMIdocument
+		Description: Gets the Domino Online Meeting Integration Credentials Document
+		
+		@param source 			NotesDatabase from which to retrieve the document 
+		@param meetingservice$  Service name identifying the document to retrieve
+		
+		@return Domino Online Meeting Integration Credentials document for the specified service.  Nothing on error.
+		
+		@throws ERR_PARAMETER_BLANK if source Database is Nothing or meetingservice$ is blank. 
+		@throws ERR_VIEW_NOT_FOUND if DOMI_VIEWNAME_CREDENTIALS cannot be found   
+	%END REM
+	Private Function getDOMIdocument(source As NotesDatabase, meetingservice$) As NotesDocument 
+		If (source Is Nothing) Or isBlankString(meetingservice$) Then Error ERR_PARAMETER_BLANK, MSG_PARAMETER_BLANK  
+		On Error GoTo ErrorTrap
+
+		Dim tokenView As NotesView
+
+		' exception variables
+		Dim extendedinfo List As String 
+		Dim msg$
+
+		Dim unid$
+
+
+		Dim tmpdoc As NotesDocument 
+		Dim result As NotesDocument 
+		
+		
+		' BEGIN CODE
+		extendedinfo(|Meeting Service|) = meetingservice$
+		extendedinfo(|View Name|) = DOMI_VIEWNAME_CREDS
+		Set tokenView = source.getView(DOMI_VIEWNAME_CREDS)
+		If tokenView Is Nothing Then Error ERR_VIEW_NOT_FOUND, MSG_VIEW_NOT_FOUND
+		
+		Set tmpdoc = tokenView.getDocumentByKey(LCase$(meetingservice$), True)
+		If tmpdoc Is Nothing Then 
+			Set tokenView = Nothing 
+			Set tokenView = source.getView(DOMI_VIEWNAME_CREDS)
+			Call tokenView.Refresh() 
+			Set tmpdoc = tokenView.getDocumentByKey(LCase$(meetingservice$), True)
+		End If
+		If tmpdoc Is Nothing Then Error ERR_DOCUMENT_NOT_FOUND, MSG_DOCUMENT_NOT_FOUND
+		
+		unid$ = tmpdoc.UniversalID
+		extendedinfo(|UniversalID|) = unid$  
+		Set tmpdoc = Nothing 
+		Set tokenview = Nothing 
+		
+		Set result = source.getDocumentByUNID(unid$) 
+		
+	ExitPoint:
+		Set getDOMIdocument = result
+		Exit Function
+
+	ErrorTrap:
+		On Error GoTo 0
+		ForAll s In extendedinfo
+			If isBlankString(msg$) Then 
+				msg$ = ListTag(s) & |: | & s
+			Else 
+				msg$ = msg$ & |, | & Chr(10) & ListTag(s) & |: | & s
+			End If
+		End ForAll
+		enhLogException CLASS_PREFIX, msg$
+		Resume ExitPoint 
+	End Function
+
+
+	%REM
+		Function getDOMIurl
+		
+		Gets (generates) the Domino Online Meeting Interface URL for the specified meetingservice, meetingid, and method.
+	
+		@param meetingservice$  DOMI_SERVICE_XXX Meeting service (from domiConstantsBE)
+		@param meetingid$ 		ID of the Meeting (if applicable) 
+		@param method% 			DOMI_HTTP_METHOD_XXX Constant indicating the method to call (DOMI_HTTP_METHOD_GET, DOMI_HTTP_METHOD_POST, DOMI_HTTP_METHOD_DETETE, etc)  
+		
+		@return DOMI Url for the specified meethingservice, meetingid, and method. 
+		
+		@throws ERR_PARAMETER_INVALID if meetingservice or method are not currently supported. 
+	%END REM
+	Private Function getDOMIurl(meetingservice$, meetingid$, method%) As String
+		On Error GoTo ErrorTrap
+		On Error ERR_PARAMETER_INVALID GoTo Error_PARAMETER_INVALID ' bubble up errors 
+		
+		Dim replacements As New StringList()
+		
+		' exception variables
+		Dim extendedinfo List As String 
+		Dim msg$
+		Dim errmsg$ 
+		Dim errcode% 
+		
+		Dim result$
+		
+		' BEGIN CODE
+		extendedinfo(|Meeting Service|) = meetingservice$
+		If Not isDOMIserviceSupported(meetingservice$) Then Error ERR_PARAMETER_INVALID, |Unsupported Meeting Service: | & meetingservice$
+
+		extendedinfo(|Meeting ID|) = meetingid$
+		extendedinfo(|Method|) = CStr(method%)
+		extendedinfo(|Method Name|) = nrcGetHTTPmethodName(method%)
+		replacements.content(|{{meetingid}}|) = meetingid$  
+		
+
+		Select Case method% 
+			Case DOMI_HTTP_METHOD_POST: 
+				result$ = getDOMIendpointURL(meetingservice$, |create|, Nothing) 
+				
+			Case DOMI_HTTP_METHOD_GET: 
+				result$ = getDOMIendpointURL(meetingservice$, |read|, replacements) 
+				
+			Case DOMI_HTTP_METHOD_PUT, DOMI_HTTP_METHOD_PATCH: 
+				result$ = getDOMIendpointURL(meetingservice$, |update|, replacements) 
+				
+			Case DOMI_HTTP_METHOD_DELETE: 
+				result$ = getDOMIendpointURL(meetingservice$, |delete|, replacements) 
+		End Select
+		
+	ExitPoint: 
+		If (0 <> errcode%) Then Error errcode%, errmsg$
+		getDOMIurl = result$
+		Exit Function 
+	Error_PARAMETER_INVALID:
+		' bubble up parameter invalid errors  
+		On Error GoTo 0  
+		errcode% = Err()
+		errmsg$ = Error$() 
+		Resume ExitPoint 		
+	ErrorTrap:
+		On Error GoTo 0
+		enhLogException CLASS_PREFIX, ||
+		ForAll s In extendedinfo
+			enhLogExtendedContent ||, ||, ListTag(s) & |: | & s
+		End ForAll
+		enhLogExtendedContent ||, ||, ||
+		Resume ExitPoint
+	End Function
+
+	
+
+
+
+
+	%REM
+		Function createMeeting
+		Creates a meeting using information from a document.  
+		
+		Performs an approriate meeting request and updates the document with response information. 
+		
+		@param context 	[INBOUND / OUTBOUND] Document (Calendar Entry) carrying information about a meeting.
+		@param body$ 	Body text from the Calendar entry 
+		
+		@return Flag indicating success / failure of the operation.  
+		
+		@throws ERR_PARAMETER_BLANK if the context document is Nothing
+		@throws ERR_PARAMETER_INVALID if the context document is not a Calendar Entry (Form = "Appointment") 
+	%END REM
+	Function createMeeting(context As NotesDocument, body$) As Boolean 
+		On Error GoTo ErrorTrap
+		
+		Dim meetingid$
+		
+		' exception variables
+		Dim extendedinfo List As String 
+		Dim msg$
+		Dim errmsg$
+		Dim errcode%
+		
+		Dim result As Boolean
+		
+		
+		' BEGIN CODE
+		result = me.pushMeeting(context, body$, meetingid$, DOMI_HTTP_METHOD_POST) 
+		
+		
+ExitPoint:
+		If (0 <> errcode%) Then Error errcode%, errmsg$ ' bubble up errors 
+		If result Then enhLogMethodResult ||, |Created meeting | & meetingid$ 
+		
+		createMeeting = result
+		Exit Function 
+ErrorTrap:
+		On Error GoTo 0
+		errcode% = Err() 
+		errmsg$ = Error$()
+		ForAll s In extendedinfo
+			If isBlankString(msg$) Then 
+				msg$ = ListTag(s) & |: | & s
+			Else 
+				msg$ = msg$ & |, | & Chr(10) & ListTag(s) & |: | & s
+			End If
+		End ForAll
+		enhLogException CLASS_PREFIX, msg$
+		Resume ExitPoint 
+	End Function
+		
+
+	%REM
+		Function updateMeeting
+		Updates a meeting using information from a document.  
+		
+		Performs an approriate meeting request and updates the document with response information. 
+		
+		@param context 	[INBOUND / OUTBOUND] Document (Calendar Entry) carrying information about a meeting.
+		@param body$ 	Body text from the Calendar entry 
+		
+		@return Flag indicating success / failure of the operation.  
+		
+		@throws ERR_PARAMETER_BLANK if the context document is Nothing
+		@throws ERR_PARAMETER_INVALID if the context document is not a Calendar Entry (Form = "Appointment") 
+	%END REM
+	Function updateMeeting(context As NotesDocument, body$) As Boolean 
+		On Error GoTo ErrorTrap
+		
+		Dim existingMeetingValues As New VariantList()
+		
+		Dim meetingid_Old$
+		Dim meetingid_New$
+		
+		' exception variables
+		Dim extendedinfo List As String 
+		Dim msg$
+		Dim errmsg$
+		Dim errcode% 
+		
+		Dim result As Boolean
+				
+
+		' BEGIN CODE
+		If (context Is Nothing) Or isBlankString(me.MeetingService) Then Error ERR_PARAMETER_BLANK, MSG_PARAMETER_BLANK 
+		If Not(|Appointment| = context.getItemValue(|Form|)(0)) Then Error ERR_PARAMETER_INVALID, MSG_PARAMETER_INVALID & |Context document is not a Calendar Entry.  |
+
+		If context.hasItem(|meetingID|) Then 
+			meetingid_Old$ = context.getItemValue(|meetingID|)(0)
+			meetingid_New$ = meetingid_Old$
+		End If  
+
+		' Some services return no response content on success
+		' Get the existing meeting item values
+		ForAll itemname In getDOMIitemNames() 
+			extendedinfo(|Item Name|) = itemname 
+			If context.hasItem(itemname) Then existingMeetingValues.content(itemname) = context.getItemValue(itemname)(0)  
+		End ForAll
+		extendedinfo(|Item Name|) = || 
+		
+
+		Select Case Me.MeetingService 
+			Case DOMI_SERVICE_TEAMS: 
+				' meeting service does not support updates. 
+				' delete the original meeting and create a new one.
+
+				If me.deleteMeeting(context) Then
+					result = me.createMeeting(context, body$)
+				Else 
+					' the delete failed, add the items back in 
+					Call replaceMultipleItems(context, existingMeetingValues) 
+				End If
+				
+				
+			Case DOMI_SERVICE_GTM:
+				' use PUT
+				result = me.pushMeeting(context, body$, meetingid_New$, DOMI_HTTP_METHOD_PUT)
+				If result Then 
+					' GTM returns no response content on success.  Replace the (now blank) item values with the old ones.
+					Call replaceMultipleItems(context, existingMeetingValues) 
+				End If 
+				
+			Case DOMI_SERVICE_WEBEX:
+				' use PUT
+				result = me.pushMeeting(context, body$, meetingid_New$, DOMI_HTTP_METHOD_PUT) 
+
+
+			Case DOMI_SERVICE_ZOOM:
+				' use PATCH 
+				result = me.pushMeeting(context, body$, meetingid_New$, DOMI_HTTP_METHOD_PATCH) 
+				If result Then 
+					' ZOOM returns no response content on success.  Replace the (now blank) item values with the old ones.
+					Call replaceMultipleItems(context, existingMeetingValues) 
+				End If 
+				
+				
+			Case Else 
+				' use PATCH
+				result = me.pushMeeting(context, body$, meetingid_New$, DOMI_HTTP_METHOD_PATCH) 
+		End Select
+
+		
+		
+	ExitPoint:
+		If (0 <> errcode%) Then Error errcode%, errmsg$ ' bubble up errors 
+		If result Then 
+			enhLogMethodResult ||, |Updated meeting | & meetingid_New$
+			If (0 <> StrComp(meetingid_Old$, meetingid_New$, 5)) Then enhLogExtendedContent ||, ||, |Old meeting id: | & meetingid_Old$
+		End If  
+
+		updateMeeting = result
+		Exit Function 
+ErrorTrap:
+		On Error GoTo 0
+		errcode% = Err() 
+		errmsg$ = Error$()
+		ForAll s In extendedinfo
+			If isBlankString(msg$) Then 
+				msg$ = ListTag(s) & |: | & s
+			Else 
+				msg$ = msg$ & |, | & Chr(10) & ListTag(s) & |: | & s
+			End If
+		End ForAll
+		enhLogException CLASS_PREFIX, msg$
+		Resume ExitPoint 
+	End Function
+
+	%REM
+		Function pushMeeting
+		Pushes information about meeting using information from a document.  
+		
+		Performs an approriate meeting request and pushs the document with response information. 
+		
+		@param context 		[INBOUND / OUTBOUND] Document (Calendar Entry) carrying information about a meeting.
+		@param body$ 		Body text from the Calendar entry 
+		@param meetingid$  	[INBOUND / OUTBOUND] The Meeting ID (spawned on create) 
+		@param method% 		DOMI_HTTP_METHOD_XXX Constant indicating the method to call (DOMI_HTTP_METHOD_GET, DOMI_HTTP_METHOD_POST, DOMI_HTTP_METHOD_DETETE, etc) 
+			
+		@return Flag indicating success / failure of the operation.  
+		
+		@throws ERR_PARAMETER_BLANK if the context document is Nothing
+		@throws ERR_PARAMETER_INVALID if the context document is not a Calendar Entry (Form = "Appointment")
+		@throws ERR_PARAMETER_INVALID if method not supported.
+	%END REM
+	Private Function pushMeeting(context As NotesDocument, body$, meetingid$, method%) As Boolean 
+		On Error GoTo ErrorTrap
+		
+		Dim response As NotesJSONNavigator 
+		Dim ndtStart As NotesDateTime 
+		Dim ndtEnd As NotesDateTime 
+
+		Dim bodyargs As VariantList
+		Dim mv As VariantList 
+
+		Dim meetingtime As MeetingTimeCarrier
+
+		Dim fldList List As Variant
+
+		Dim bodymsg As String
+
+		' throwaway variables 
+		Dim rstr$
+		
+		' exception variables
+		Dim extendedinfo List As String 
+		Dim msg$
+		Dim errmsg$
+		Dim errcode%
+		
+		Dim result As Boolean
+		
+		
+		
+		
+		' BEGIN CODE
+		If Not me.validateContext(context, ndtStart, ndtEnd) Then GoTo ExitPoint 
+		If isBlankString(me.MeetingService) Then Error ERR_PARAMETER_BLANK, MSG_PARAMETER_BLANK & |Meeting Service not Specified| 
+		
+		If (context Is Nothing) Or isBlankString(me.MeetingService) Then Error ERR_PARAMETER_BLANK, MSG_PARAMETER_BLANK 
+		If Not(|Appointment| = context.getItemValue(|Form|)(0)) Then Error ERR_PARAMETER_INVALID, MSG_PARAMETER_INVALID & |Context document is not a Calendar Entry.  |
+		
+		
+		' perform the meeting request
+		Set bodyargs = getMeetingBodyArgs(context, ndtStart, ndtEnd, meetingtime, me.MeetingService, body$)
+		result = me.doMeetingRequest(bodyargs, response, meetingid$, method%)
+		If me.hasServiceConnectionFailed Then GoTo ExitPoint ' no point in continuing
+		
+		me.JSONhelper.findStringByPointer |/| & DOMI_TAG_RESPONSECODE, rstr$
+		extendedinfo(DOMI_TAG_RESPONSECODE) = rstr$ 
+
+		me.JSONhelper.findStringByPointer |/error/code|, rstr$
+		extendedinfo(DOMI_TAG_ERROR) = rstr$ 
+		result = isBlankString(rstr$) And result 
+		
+		Set mv = me.MeetingValues
+		If Not (mv Is Nothing) Then 
+			' add the content from meeting values to the Calendar entry doc 	
+			ForAll v In mv.content 
+				Call context.ReplaceItemValue(ListTag(v), v) 
+			End ForAll
+		End If 
+
+
+		' add additional meeting items to the context document 
+		fldList(|meetingService|) = me.MeetingService
+		fldList(|meetingServiceLabel|) = me.MeetingServiceLabel
+		fldList(|meetingStartStr|) = meetingtime.startITC
+		fldList(|meetingEndStr|) = meetingtime.endITC
+		fldList(|meetingDuration|) = meetingtime.timeDiff
+		fldList(|meetingJSON|) = response.Stringify() 
+
+		' these fields give us the "Join Online" link below the Location on the Calendar Entry
+		fldList(|OnlineMeeting|) = |1|
+		fldList(|SametimeType|) = |0|
+
+
+		' this puts the link and PW into the Location field of the Calendar Entry
+		Select Case me.MeetingService
+			Case DOMI_SERVICE_WEBEX:
+				If MeetingValues.hasTag(|meetingURL|) Then
+					If meetingValues.hasTag(|meetingURL|) Then
+						bodyMsg = bodyMsg & |Attendee Link: | & CStr(meetingValues.getValue(|meetingURL|))
+						bodyMsg = bodyMsg & Chr(10) & |Password: | & CStr(meetingValues.getValue(|meetingPassword|))
+						bodyMsg = bodyMsg & Chr(10) & |SIP Link: | & CStr(meetingValues.getValue(|meetingSipAddress|))
+						bodyMsg = bodyMsg & Chr(10) & |Phone/Video Password: | & CStr(MeetingValues.getValue(|meetingPhoneVideoPassword|))
+					End If
+				End If				
+				
+			Case DOMI_SERVICE_ZOOM	
+				If MeetingValues.hasTag(|meetingURL|) Then
+					If meetingValues.hasTag(|meetingURL|) Then
+						bodyMsg = bodyMsg & |Attendee Link: | & CStr(meetingValues.getValue(|meetingURL|))
+						If Not(CStr(meetingValues.getValue(|meetingPassword|)) = "") Then
+							bodyMsg = bodyMsg & Chr(10) & |Password: | & CStr(meetingValues.getValue(|meetingPassword|))
+						End If					
+					End If
+				End If	
+				
+			Case Else: 
+				If meetingValues.hasTag(|meetingURL|) Then bodyMsg = bodyMsg & |Attendee Link: | & CStr(meetingValues.getValue(|meetingURL|))
+
+		End Select
+
+			
+		
+		fldList(|meetingInfoInsert|) = bodyMsg
+		fldList(|Location|) = bodyMsg
+
+		' now that we have all of our field values, push the Calendar Entry doc
+		ForAll f In fldList
+			Call context.Replaceitemvalue(ListTag(f), f)
+		End ForAll
+
+		
+	ExitPoint:
+		Select Case errcode%
+			Case ERR_PARAMETER_BLANK, ERR_PARAMETER_INVALID: 
+				Error errcode%, errmsg$
+			Case Else:
+				' do nothing
+		End Select 
+'		If result Then enhLogMethodResult ||, |Pushed meeting | & meetingid$ 
+		
+		pushMeeting = result
+		Exit Function 
+	ErrorTrap:
+		On Error GoTo 0
+		errcode% = Err()
+		errmsg$ = Error$()
+		enhLogException CLASS_PREFIX, ||
+		ForAll s In extendedinfo
+			enhLogExtendedContent ||, ||, ListTag(s) & |: | & s
+		End ForAll
+		enhLogExtendedContent ||, ||, ||
+		Resume ExitPoint
+	End Function
+
+
+
+	%REM
+		Function deleteMeeting
+		Deletes a meeting using information from a document.  
+		
+		Performs an approriate meeting request and updates the document with response information. 
+		
+		@param context 	[INBOUND / OUTBOUND] Document (Calendar Entry) carrying information about a meeting.
+
+		@return Flag indicating success / failure of the operation.  
+		
+		@throws ERR_PARAMETER_BLANK if the context document is Nothing
+		@throws ERR_PARAMETER_INVALID if the context document is not a Calendar Entry (Form = "Appointment") 
+	%END REM
+	Function deleteMeeting(context As NotesDocument) As Boolean 
+		On Error GoTo ErrorTrap
+		
+		Dim response As NotesJSONNavigator 
+		Dim fldList List As Variant
+
+		Dim meetingid$
+		
+		' throwaway variables 
+		Dim rstr$
+		
+		' exception variables
+		Dim extendedinfo List As String 
+		Dim msg$
+		Dim errmsg$ 
+		Dim errcode%
+		
+		Dim result As Boolean
+		
+		
+		
+		
+		' BEGIN CODE
+		If (context Is Nothing) Or isBlankString(me.MeetingService) Then Error ERR_PARAMETER_BLANK, MSG_PARAMETER_BLANK 
+		If Not(|Appointment| = context.getItemValue(|Form|)(0)) Then Error ERR_PARAMETER_INVALID, MSG_PARAMETER_INVALID & |Context document is not a Calendar Entry.  |
+		
+		If context.hasItem(|meetingId|) Then meetingid$ = context.getFirstItem(|meetingId|).Text 
+		If isBlankString(meetingid$) Then GoTo ExitPoint 
+		
+		extendedinfo(|Meeting ID|) = meetingid$ 
+		
+		
+		' perform the meeting request 
+		result = me.doMeetingRequest(Nothing, response, meetingid$, DOMI_HTTP_METHOD_DELETE)		
+		If me.hasServiceConnectionFailed Then GoTo ExitPoint ' no point in continuing
+		
+		
+		me.JSONhelper.findStringByPointer |/| & DOMI_TAG_RESPONSECODE, rstr$
+		extendedinfo(DOMI_TAG_RESPONSECODE) = rstr$ 
+
+		me.JSONhelper.findStringByPointer |/error/code|, rstr$
+		extendedinfo(DOMI_TAG_ERROR) = rstr$ 
+		result = isBlankString(rstr$) And result 
+		
+		If result Then 
+			' Clear all of the meeting items from the Calendar Entry doc 
+			' Removing item does not work because this was called from a UI doc
+			ForAll itemname In getDOMIitemNames() 
+				extendedinfo(|Item Name|) = itemname 
+				Call context.replaceItemValue(itemname, ||) 
+			End ForAll
+		End If
+
+
+	ExitPoint:
+		Select Case errcode%
+			Case ERR_PARAMETER_BLANK, ERR_PARAMETER_INVALID: 
+				Error errcode%, errmsg$
+			Case Else:
+				' do nothing
+		End Select 
+
+		If result Then enhLogMethodResult ||, |Deleted meeting | & meetingid$ 
+		deleteMeeting = result
+		Exit Function 
+	ErrorTrap:
+		On Error GoTo 0
+		errcode% = Err() 
+		errmsg$ = Error$()
+		ForAll s In extendedinfo
+			If isBlankString(msg$) Then 
+				msg$ = ListTag(s) & |: | & s
+			Else 
+				msg$ = msg$ & |, | & Chr(10) & ListTag(s) & |: | & s
+			End If
+		End ForAll
+		enhLogException CLASS_PREFIX, msg$
+		Resume ExitPoint 
+	End Function
+	
+	%REM
+		Function getMeeting
+		Gets information about meeting using information from a document.  
+		
+		Performs an approriate meeting request and gets the document with response information. 
+		
+		@param context 		[INBOUND / OUTBOUND] Document (Calendar Entry) carrying information about a meeting.
+			
+		@return Flag indicating success / failure of the operation.  
+		
+		@throws ERR_PARAMETER_BLANK if the context document is Nothing
+		@throws ERR_PARAMETER_INVALID if the context document is not a Calendar Entry (Form = "Appointment")
+	%END REM
+	Function getMeeting(context As NotesDocument) As Boolean 
+		On Error GoTo ErrorTrap
+		
+		
+		Dim response As NotesJSONNavigator 
+
+		Dim mv As VariantList 
+
+		Dim fldList List As Variant
+
+		Dim bodyMsg As String 
+		
+		Dim meetingid$
+
+		' throwaway variables 
+		Dim rstr$
+		
+		' exception variables
+		Dim extendedinfo List As String 
+		Dim msg$
+		Dim errmsg$ 
+		Dim errcode%
+		
+		Dim result As Boolean
+		
+		
+		
+		
+		' BEGIN CODE
+		If (context Is Nothing) Or isBlankString(me.MeetingService) Then Error ERR_PARAMETER_BLANK, MSG_PARAMETER_BLANK 
+		If Not(|Appointment| = context.getItemValue(|Form|)(0)) Then Error ERR_PARAMETER_INVALID, MSG_PARAMETER_INVALID & |Context document is not a Calendar Entry.  |
+		
+		
+		extendedinfo(|Item Name|) = |meetingID|
+		meetingid$ = context.getItemValue(|meetingID|)(0) 
+		
+		' perform the meeting request
+'		Set bodyargs = getMeetingBodyArgs(context, meetingtime, me.MeetingService, body$)
+		result = me.doMeetingRequest(Nothing, response, meetingid$, DOMI_HTTP_METHOD_GET)
+		If me.hasServiceConnectionFailed Then GoTo ExitPoint ' no point in continuing
+		
+		me.JSONhelper.findStringByPointer |/| & DOMI_TAG_RESPONSECODE, rstr$
+		extendedinfo(DOMI_TAG_RESPONSECODE) = rstr$ 
+
+		me.JSONhelper.findStringByPointer |/error/code|, rstr$
+		extendedinfo(DOMI_TAG_ERROR) = rstr$ 
+		result = isBlankString(rstr$) And result 
+		
+		Set mv = me.MeetingValues
+		If Not (mv Is Nothing) Then 
+			' add the content from meeting values to the Calendar entry doc 	
+			ForAll v In mv.content 
+				Call context.ReplaceItemValue(ListTag(v), v) 
+			End ForAll
+		End If 
+
+
+		' add additional meeting items to the context document 
+		fldList(|meetingService|) = me.MeetingService
+		
+		' TODO retrieve meetingtime info from JSON  
+'		fldList(|meetingStartStr|) = meetingtime.startITC
+'		fldList(|meetingEndStr|) = meetingtime.endITC
+'		fldList(|meetingDuration|) = meetingtime.timeDiff
+
+
+		fldList(|meetingJSON|) = response.Stringify() 
+
+		' these fields give us the "Join Online" link below the Location on the Calendar Entry
+		fldList(|OnlineMeeting|) = |1|
+		fldList(|SametimeType|) = |0|
+
+		' this puts the link and PW into the Location field of the Calendar Entry
+		If meetingValues.hasTag(|meetingURL|) Then bodyMsg = bodyMsg & |Attendee Link: | & CStr(meetingValues.getValue(|meetingURL|))
+		
+		fldList(|meetingInfoInsert|) = bodyMsg
+		fldList(|Location|) = bodyMsg
+
+		' now that we have all of our field values, get the Calendar Entry doc
+		ForAll f In fldList
+			Call context.Replaceitemvalue(ListTag(f), f)
+		End ForAll
+
+		
+	ExitPoint:
+		Select Case errcode%
+			Case ERR_PARAMETER_BLANK, ERR_PARAMETER_INVALID: 
+				Error errcode%, errmsg$
+			Case Else:
+				' do nothing
+		End Select 
+		
+		If result Then enhLogMethodResult ||, |Retrieved meeting | & meetingid$ 
+		getMeeting = result
+		Exit Function 
+	ErrorTrap:
+		On Error GoTo 0
+		errcode% = Err()
+		errmsg$ = Error$()
+		enhLogException CLASS_PREFIX, ||
+		ForAll s In extendedinfo
+			enhLogExtendedContent ||, ||, ListTag(s) & |: | & s
+		End ForAll
+		enhLogExtendedContent ||, ||, ||
+		Resume ExitPoint
+	End Function
+
+
+	%REM
+		Function validateContext
+		Validates a context document for Domino Online Meeting Integration 
+		
+		Verifies the following: 
+	
+		Form is "Appointment"
+		Subject is not blank.
+	
+		Start Date is populated
+		Start Time is populated
+		Start Time Zone is populated 
+		Start Date/Time is not before NOW 
+	
+		End Date is populated
+		End Time is populated 
+		End Time Zone is populated 
+		End Date/Time is not before Start Date/Time  
+		
+		@param context 		[INBOUND / OUTBOUND] Document (Calendar Entry) carrying information about a meeting.
+		@param ndtStart 	[OUTBOUND] The Start date/time of the meeting. 
+		@param ndtEnd 		[OUTBOUND] The End date/time of the meeting 
+		
+		@return Flag indicating if the Context document passes validation. 	
+	%END REM
+	Function validateContext(context As NotesDocument, ndtStart As NotesDateTime, ndtEnd As NotesDateTime) As Boolean 
+		On Error GoTo ErrorTrap
+	
+	
+		Dim validationFailureMessages As Variant 
+		
+		' exception variables
+		Dim extendedinfo List As String 
+		Dim msg$
+		Dim failuremsg$
+	
+		Dim result As Boolean 
+
+		
+		' BEGIN CODE
+		me.m_validationflag = domiValidateCalendarEntry(context, ndtStart, ndtEnd) 
+		result = (me.m_validationflag < 1)
+
+		
+	ExitPoint:
+		If Not result Then 
+			validationFailureMessages = getDOMIvalidationFailureMessages(me.m_validationflag) 
+			enhLogWarning LIB_PREFIX, |Context document failed validation|
+			ForAll v In validationFailureMessages 
+				failuremsg$ = CStr(v) 
+				enhLogExtendedContent ||, ||, failuremsg$
+			End ForAll
+			enhLogExtendedContent ||, ||, || 						
+		End If
+		
+		validateContext = result
+		Exit Function 
+	ErrorTrap:
+		On Error GoTo 0
+		ForAll s In extendedinfo
+			If isBlankString(msg$) Then 
+				msg$ = ListTag(s) & |: | & s
+			Else 
+				msg$ = msg$ & |, | & Chr(10) & ListTag(s) & |: | & s
+			End If
+		End ForAll
+		enhLogException CLASS_PREFIX, msg$
+		Resume ExitPoint
+	End Function
+
+
+End Class
+'++LotusScript Development Environment:2:1:replaceMultipleItems:12:8
+%REM
+	Function replaceMultipleItems
+	Replaces multiple item values on a target document. 
+	
+	@param target 		The document for which item values will be replaced.  
+	@param itemvalues  	Values to be written to the target document. 
+			k = item name 
+			v = item value 
+			
+	@return Flag indicating the success / failure of the operation. 
+%END REM
+Private Function replaceMultipleItems(target As NotesDocument, itemvalues As VariantList) As Boolean 
+	On Error GoTo ErrorTrap
+	
+	' exception variables
+	Dim extendedinfo List As String 
+	Dim msg$
+	
+	Dim result As Boolean 
+	
+	' BEGIN CODE
+	If itemvalues.hasContent Then 
+		ForAll variantvalue In itemvalues.content  
+			extendedinfo(|Item Name|) = ListTag(variantvalue)  
+			Call target.replaceItemValue(ListTag(variantvalue), variantvalue) 
+		End ForAll
+		
+		result = True 
+	End If 
+
+	
+ExitPoint: 
+	replaceMultipleItems = result
+	Exit Function 
+ErrorTrap:
+	On Error GoTo 0
+	result = False
+	ForAll s In extendedinfo
+		If isBlankString(msg$) Then 
+			msg$ = ListTag(s) & |: | & s
+		Else 
+			msg$ = msg$ & |, | & Chr(10) & ListTag(s) & |: | & s
+		End If
+	End ForAll
+	enhLogException LIB_PREFIX, msg$
+	Resume ExitPoint
+End Function
+
+'++LotusScript Development Environment:2:1:getMeetingBodyArgs:14:8
+%REM
+	Function getMeetingBodyArgs
+	Gets the Body Arguments using information from the context document. 
+	
+	@param context 			Document (Calendar Entry) carrying information about a meeting. 
+	@param ndtStart 		Start Date/Time of the meeting. 
+	@param ndtEnd 			End Date/Time of the meeting.
+	@param meetingtime 		[OUTBOUND] Meeting Time information
+	@param meetingservice$ 	DOMI_SERVICE_XXX Meeting service (from domiConstantsBE)
+	@param body$ 			Body text from the Calendar entry 
+				
+	@return Body parameters to be included (as JSON) in the request.   Nothing on Error
+%END REM
+Private Function getMeetingBodyArgs(context As NotesDocument, ndtStart As NotesDateTime, ndtEnd As NotesDateTime, meetingtime As MeetingTimeCarrier, meetingservice$, body$) As VariantList 
+	On Error GoTo ErrorTrap
+	
+	' exception variables
+	Dim extendedinfo List As String 
+	Dim msg$
+	
+	
+	Dim rvar As Variant 
+	
+	Dim result As New VariantList()
+	
+	
+	' BEGIN CODE
+	If (context Is Nothing) Then Error ERR_PARAMETER_BLANK, MSG_PARAMETER_BLANK & |Context document is Nothing. |
+	If isBlankString(meetingservice$) Then Error ERR_PARAMETER_BLANK, MSG_PARAMETER_BLANK & |Meeting Service is blank. |
+
+	extendedinfo(|Meeting Service|) = meetingservice$ 
+
+	
+	meetingtime.timeDiff = ndtEnd.Timedifference(ndtEnd)/60  ' zoom takes the ndtStart and the duration in minutes, not the end DT
+	' The online meeting platforms all require date/time values to be presented as strings in the ITC format - yyyy-mm-ddThh:mm:ss offset, 
+	' e.g. 2021-02-11T16:00:00-0500
+	' or (for MS_Graph) 2021-02-11T16:00:00-05:00
+
+	Select Case meetingservice$
+		Case DOMI_SERVICE_GTM:
+			' offset zulu pattern
+			meetingtime.startITC = notesDateTimeToJsonOffsetZulu(ndtStart)
+			meetingtime.endITC = notesDateTimeToJsonOffsetZulu(ndtEnd)	
+			
+				%REM 
+			{
+				"subject": "string",
+				"starttime": "2019-08-24T14:15:22Z",
+				"endtime": "2019-08-24T14:15:22Z",
+				"passwordrequired": true,
+				"conferencecallinfo": "string",
+				"timezonekey": "string",
+				"meetingtype": "immediate"
+			}
+				%END REM
+
+			extendedinfo(|Item Name|) = |Subject| 
+			result.content(|subject|) = context.getItemValue(|Subject|)(0)
+
+			result.content(|starttime|) = meetingtime.startITC
+			result.content(|endtime|) = meetingtime.endITC	
+			result.content(|passwordrequired|) = False ' TODO: future enhancement idea, how to set password
+			
+			result.content(|conferencecallinfo|) = |hybrid| ' TODO: how to decide these values?? 
+			%REM conferencecallinfo	
+				A required string. Can be one of the following options: 
+				PSTN (PSTN only)
+				Free (PSTN and VoIP)
+				Hybrid (PSTN and VoIP)
+				Private (you provide numbers and access code)
+				VoIP (VoIP only)
+				You may also enter plain text for numbers and access codes with a limit of 255 characters					
+			%END REM
+					
+					
+			result.content(|meetingtype|) = |scheduled| 
+			%REM meetingtype 
+				A required string. Can be one of the following options: 
+				immediate 
+				recurring 
+				scheduled 					
+			%END REM
+					
+					
+		Case DOMI_SERVICE_TEAMS:
+			' offset colon pattern
+			meetingtime.startITC = notesDateTimeToJsonOffsetColon(ndtStart)
+			meetingtime.endITC = notesDateTimeToJsonOffsetColon(ndtEnd)	
+			
+			extendedinfo(|Item Name|) = |Subject| 
+			result.content(|subject|) = context.getItemValue(|Subject|)(0)
+
+			result.content(|startDateTime|) = meetingtime.startITC
+			result.content(|endDateTime|) = meetingtime.endITC	
+			
+			
+		Case DOMI_SERVICE_WEBEX:
+			' offset normal pattern
+			meetingtime.startITC = notesDateTimeToJson(ndtStart)
+			meetingtime.endITC = notesDateTimeToJson(ndtEnd)								
+			
+			%REM
+				title
+				stringRequired
+				Meeting title. The title can be a maximum of 128 characters long.
+				
+				agenda
+				string
+				Meeting agenda. The agenda can be a maximum of 2500 characters long.
+				
+				password
+				string
+				Meeting password. Must conform to the site's password complexity settings. Read password management for details. If not specified, a random password conforming to the site's password rules will be generated automatically.
+				
+				start
+				stringRequired
+				Date and time for the start of meeting in any ISO 8601 compliant format. start cannot be before current date and time or after end. Duration between start and end cannot be shorter than 10 minutes or longer than 24 hours.
+				
+				end
+				stringRequired
+				Date and time for the end of meeting in any ISO 8601 compliant format. end cannot be before current date and time or before start. Duration between start and end cannot be shorter than 10 minutes or longer than 24 hours.
+				
+				timezone
+				string
+				Time zone in which meeting was originally scheduled (conforming with the IANA time zone database).
+				
+				recurrence
+				string
+				Meeting series recurrence rule (conforming with RFC 2445), applying only to meeting series. It doesn't apply to a scheduled meeting or an ended or ongoing meeting instance.
+				
+				enabledAutoRecordMeeting
+				booleanRequired
+				Whether or not meeting is recorded automatically.
+				
+				allowAnyUserToBeCoHost
+				boolean
+				Whether or not to allow any attendee with a host account on the target site to become a cohost when joining the meeting. The target site is specified by siteUrl parameter when creating the meeting; if not specified, it's user's preferred site.
+				
+				enabledJoinBeforeHost
+				boolean
+				Whether or not to allow any attendee to join the meeting before the host joins the meeting.
+				
+				enableConnectAudioBeforeHost
+				boolean
+				Whether or not to allow any attendee to connect audio in the meeting before the host joins the meeting. This attribute is only applicable if the enabledJoinBeforeHost attribute is set to true.
+				
+				joinBeforeHostMinutes
+				string
+				the number of minutes an attendee can join the meeting before the host joins. This attribute is only applicable if the enabledJoinBeforeHost attribute is set to true.
+				
+				allowFirstUserToBeCoHost
+				boolean
+				Whether or not to allow the first attendee of the meeting with a host account on the target site to become a cohost. The target site is specified by siteUrl parameter when creating the meeting; if not specified, it's user's preferred site.
+				
+				allowAuthenticatedDevices
+				boolean
+				Whether or not to allow authenticated video devices in the meeting's organization to start or join the meeting without a prompt.
+				
+				invitees
+				array
+				Invitees for meeting. The maximum size of invitees is 1000.
+				
+				hostEmail
+				string
+				Email address for the meeting host. This attribute should only be set if the user or application calling the API has the admin-level scopes. When used, the admin may specify the email of a user in a site they manage to be the meeting host.
+				
+				siteUrl
+				string
+				URL of the Webex site which the meeting is created on. If not specified, the meeting is created on user's preferred site. All available Webex sites and preferred site of the user can be retrieved by Get Site List API.	
+			%END REM			
+
+			result.content(|title|) = context.getItemValue(|Subject|)(0)
+			result.content(|agenda|) = body$
+			result.content(|start|) = meetingtime.startITC
+			result.content(|end|) = meetingtime.endITC
+			rvar = context.Getitemvalue(|MeetingPassword|)(0)
+			If Not (isBlankString(CStr(rvar))) Then
+				result.content(|password|) = rvar
+			End If
+
+					
+					
+			
+		Case DOMI_SERVICE_ZOOM:
+			' offset normal pattern
+			meetingtime.startITC = notesDateTimeToJson(ndtStart)
+			meetingtime.endITC = notesDateTimeToJson(ndtEnd)								
+			
+			extendedinfo(|Item Name|) = |Subject| 
+			result.content(|topic|) = context.getItemValue(|Subject|)(0)
+			result.content(|type|) = 2
+			result.content(|start_time|) = meetingtime.startITC
+			result.content(|duration|) = meetingtime.timeDiff
+			result.content(|agenda|) = body$ 
+
+
+		Case Else 
+			Error ERR_PARAMETER_INVALID, MSG_PARAMETER_INVALID & |Service "| & meetingservice$ & |"|  
+	End Select
+
+
+					
+ExitPoint: 
+	Set getMeetingBodyArgs = result
+	Exit Function 
+ErrorTrap:
+	On Error GoTo 0
+	ForAll s In extendedinfo
+		If isBlankString(msg$) Then 
+			msg$ = ListTag(s) & |: | & s
+		Else 
+			msg$ = msg$ & |, | & Chr(10) & ListTag(s) & |: | & s
+		End If
+	End ForAll
+	enhLogException LIB_PREFIX, msg$
+	Resume ExitPoint
+End Function
+
+'++LotusScript Development Environment:2:1:getEmptyStringArray:5:8
+%REM
+	Function getEmptyStringArray
+	Gets an array of strings with a single blank element 
+%END REM
+Private Function getEmptyStringArray() As Variant  
+	On Error GoTo ErrorTrap
+	
+	Dim result(0) As String 
+	result(0) = ||
+	
+ExitPoint: 
+	getEmptyStringArray = result
+	Exit Function 
+ErrorTrap:
+	On Error GoTo 0
+	enhLogException LIB_PREFIX, ||
+	Resume ExitPoint
+End Function
+
+'++LotusScript Development Environment:2:1:getDOMIitemNames:10:8
+
+
+
+
+
+%REM
+	Function getDOMIitemNames
+	Array of Strings containing the ItemNames used by DOMI 
+%END REM
+Private Function getDOMIitemNames() As Variant 
+	On Error GoTo ErrorTrap
+	
+	Dim result(17) As String
+	
+	' BEGIN CODE
+	
+	result(0) 	= |meetingId|
+	result(1) 	= |meetingService|
+	result(2) 	= |meetingType|
+	result(3) 	= |meetingPassword|
+	result(4) 	= |meetingTitle|
+	result(5) 	= |meetingAgenda|
+	result(6) 	= |meetingChairURL|
+	result(7) 	= |meetingURL|
+	result(8) 	= |meetingStartStr|
+	result(9) 	= |meetingEndStr|
+	result(10) 	= |meetingDuration|
+	result(11) 	= |meetingJSON|
+	result(12) 	= |OnlineMeeting|
+	result(13) 	= |ApptUNIDURL|
+	result(14) 	= |SametimeType|
+	result(15) 	= |MeetingPassword|
+	result(16) 	= |meetingBodyInsert|
+	result(17) 	= |Location|		
+
+
+ExitPoint: 
+	getDOMIitemNames = result
+	Exit Function 
+ErrorTrap:
+	On Error GoTo 0
+	enhLogException LIB_PREFIX, ||
+	Resume ExitPoint
+End Function
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?><note xmlns="http://www.lotus.com/dxl" class="filter" maintenanceversion="1.0" replicaid="8525867000756EB9" version="11.0">
+<noteinfo noteid="1d36" sequence="1" unid="AF899FD34FCAE1854A49C1467D156673">
+<created><datetime>85211112T071904,83+10</datetime></created>
+<modified><datetime dst="true">20210329T102409,44+01</datetime></modified>
+<revised><datetime>20210325T170646,80-05</datetime></revised>
+<lastaccessed><datetime dst="true">20210329T102409,43+01</datetime></lastaccessed>
+<addedtofile><datetime dst="true">20210329T102409,43+01</datetime></addedtofile></noteinfo>
+<updatedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name><name>CN=Devin Olson/O=azlighthouse</name><name>CN=Devin Olson/OU=USA/O=PNPHCL</name><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name><name>CN=Devin Olson/OU=USA/O=PNPHCL</name><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name><name>CN=Devin Olson/OU=USA/O=PNPHCL</name><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name><name>CN=Devin Olson/OU=USA/O=PNPHCL</name><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name><name>CN=Devin Olson/OU=USA/O=PNPHCL</name><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name><name>CN=Devin Olson/OU=USA/O=PNPHCL</name><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name><name>CN=Devin Olson/OU=USA/O=PNPHCL</name><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name><name>CN=Devin Olson/OU=USA/O=PNPHCL</name><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name><name>CN=Devin Olson/OU=USA/O=PNPHCL</name><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name><name>CN=Michael Alexander/OU=USA/O=PNPHCL</name><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name></updatedby>
+<wassignedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></wassignedby>
+<item name="$TITLE" sign="true"><text>enhLogClass</text></item>
+<item name="$Flags"><text>s34Q</text></item>
+<item name="$PublicAccess" sign="true"><text>1</text></item>
+<item name="$POID"><datetime dst="true">20190626T055254,45-04</datetime></item>
+<item name="$Comment"><text>Carrier for the EnhancedLog class.</text></item>
+
+
+
+
+
+</note>

@@ -1,0 +1,42 @@
+<?xml version='1.0' encoding='utf-8'?>
+<note class='form' xmlns='http://www.lotus.com/dxl' version='11.0' maintenanceversion='1.0'
+ replicaid='8525867000756EB9'>
+<noteinfo noteid='1bfe' unid='CF46407462E2C9498525869D003FBC86' sequence='1'>
+<created><datetime>20210319T063610,30-05</datetime></created>
+<modified><datetime dst='true'>20210329T102408,91+01</datetime></modified>
+<revised><datetime>20210319T063610,30-05</datetime></revised>
+<lastaccessed><datetime dst='true'>20210329T102408,90+01</datetime></lastaccessed>
+<addedtofile><datetime dst='true'>20210329T102408,90+01</datetime></addedtofile></noteinfo>
+<updatedby><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name></updatedby>
+<wassignedby><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name></wassignedby>
+<item name='$TITLE'><text>$DBIcon</text></item>
+<item name='$Flags'><text>34Ci~Q</text></item>
+<item name='$ImagesWide' sign='true'><number>1</number></item>
+<item name='$ImagesHigh' sign='true'><number>1</number></item>
+<item name='$ImagesColorize' sign='true'><number>0</number></item>
+<item name='$FileSize' sign='true'><number>884</number></item>
+<item name='$ImageData' sign='true'>
+<rawitemdata type='1'>
+mQAcAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAH0AHAAAAAIAAAAAAHQDAAABAAAAAQAAAAAAAAB8
+AH4DAAB0A3QDiVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAIAAAD8GO2jAAAAAXNSR0IArs4c6QAA
+AARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAMJSURBVEhL5ZZLSJRRGIZPdPFu
+aiqOWl6CSig1ytQsFemyEk3toi1ECjO1sZJgvKSJkqijWaYZQosSpY1MM6IhgeSljVjYQpIwDENz
+HBfOqAmJf6//d8ZGmUEXf4vqWRze7/3OOS/DnDlnmPCH+ScD1KpXjLEdjG0Vx71e3kX5+bxnQoFC
+ge4qp05Gzs7O8p4JZgI0ajUWbGdsCy01Mmcw8BmCEBESSqavh+xY8GHSYG7u9xzCTEC7RoOprvYO
+VC4u/vCVecJxc3AkR6NSibuxrs5OcoCTtQ2c05FRvDZiMcDJxpbXgqDVasUN2YfB9yixC3RocDB1
+iZbmZprDayObCgCOVtYwnzU1QXu7uUMXFxRSi5icmFjZnrHvk5PcEtlsgL+nF8xaZQ20i6099NP6
+BmoRy9hL5MvoKLdENhtAX/jL1lbo/T6+0LdvyKlFfB4ZEacw/dqzZDHA2STgdUcHX6xfWXwh/hw0
+ji91CWVFBc3htRGLAS62dgvz87rp6cb6elqZGBtLEz4ND5OTK88hp7+3h5zsjOvkrGImQG08haac
+iYrmbZG7efm8YYL/2s9EmAl42929b49PSGDQkYOHoo9HFCoUH4eGeM+Evp7eyLAwz12uHk7OB3z9
+HtU84I21mAmQlv85YHkZv62NsRhQXlpGZ2OnlTW3RN719ZMPyClU5EEfDQykch0WAx7XPsQyXNpg
+fmGBu4JwKSERjhVjuJvIqbxfDudsTAyV69ggICggAGNDXR13BWEbY34yT7xF0gSUFBVhxA+CzMGB
+AZRl90owShNQq6yOiTgBQWZqcgr017ExyQJwJTQ9aYRQtbXBhPDxkJGQJuBOzi1oCNx02qkpiNoq
+5c+lJckCbmZmQzvb2OHJzUq/Bken0+n1eskCcjKzoHPlcmi8Obvd3FHOzMxIEFBTWYVlGVeuQq8+
+AKXFJShX/wOIE4Wy4pVDFRUeTuU6LAa86epKiotref6CytSUy8mJSd/Gx6ENBsP5+Pj0tDRqdWja
+LyYkVldWUrkOiwFS8bcHCMIvTbZrpz8PniUAAAAASUVORK5CYII=
+</rawitemdata></item>
+<item name='$MimeType' sign='true'><text>image/png</text></item>
+<item name='$FileModDT' sign='true'><datetime>20210319T063552,38-05</datetime></item>
+<item name='$ImageNames' sign='true'><text>C:\Users\rockne.oliver\Pictures\Work\domi_01.png</text></item>
+<item name='$DesignerVersion'><text>8.5.3</text></item></note>
+

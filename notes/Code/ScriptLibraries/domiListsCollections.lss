@@ -1,0 +1,3880 @@
+'++LotusScript Development Environment:2:5:(Options):0:74
+%REM ***************************************************************************
+ ************************************************************************************
+	Lists & Collections Lotusscript Library
+
+	Lists and Collections 
+	Copyright &copy; 2002 - 2052, Devin S. Olson
+	http://www.azlighthouse.com
+
+	Author: Devin S. Olson  (devin.olson@azlighthouse.com)
+	http://www.devinolson.net
+
+	Last updated: 03/2021
+
+ ************************************************************************************
+%END REM *********************************************************************
+
+%REM  Released under the Apache License, Version 2.0
+	' ************************************************************************************
+	' *  Copyright 2002 Devin S. Olson
+	' *  
+	' *  Licensed under the Apache License, Version 2.0 (the "License"); 
+	' *  you may not use this file except in compliance with the License. 
+	' *  You may obtain a copy of the License at 
+	' *  
+	' *  http://www.apache.org/licenses/LICENSE-2.0 
+	' *  	
+	' *  Unless required by applicable law or agreed to in writing, software 
+	' *  distributed under the License is distributed on an "AS IS" BASIS, 
+	' *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
+	' *  See the License for the specific language governing permissions and 
+	' *  limitations under the License. 
+	' *  	
+ 	' ************************************************************************************
+ 	' ************************************************************************************
+	' BEGIN NOTICE	
+	' *	NOTICE
+	' *		azlwAppUtils 
+	' *		Copyright (c) 2002 - 2052 Devin S. Olson.  All rights reserved.
+	' *
+	' *  Developed by: Devin S. Olson
+	' *                azlighthouse works, llc.
+	' *                http://www.azlighthouse.com
+	' *  
+	' *  Permission is hereby granted, free of charge, to any person obtaining a copy
+	' *  of this software and associated documentation files (the "Software"), to
+	' *  deal with the Software without restriction, including without limitation the
+	' *  rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+	' *  sell copies of the Software, and to permit persons to whom the Software is
+	' *  furnished to do so, subject to the following conditions:
+	' *  
+	' *    1. Redistributions of source code must retain the above copyright notice,
+	' *       this list of conditions and the following disclaimers.
+	' *  
+	' *    2. Redistributions in binary form must reproduce the above copyright
+	' *       notice, this list of conditions and the following disclaimers in the
+	' *       documentation and/or other materials provided with the distribution.
+	' *  
+	' *    3. Neither the names of Devin S. Olson, azlighthouse works, nor the names  
+	' *       of its contributors may be used to endorse or promote products derived 
+	' *       from this Software without specific prior written permission.
+	' *  
+	' *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
+	' *  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+	' *  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE 
+	' *  CONTRIBUTORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
+	' *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+	' *  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
+	' *  WITH THE SOFTWARE.
+	' *  
+	' *  NOTICE TRANSLATION: 
+	' *  	You can give away this code.  
+	' *  	You can sell this code.  
+	' *  	You can use this code in your programs, either to give away or to sell.  
+	' *  	You can to whatever you want to do with this code, 
+	' *  	AS LONG AS YOU CREDIT THE AUTHOR AND INCLUDE THE ABOVE LICENSE AND NOTICE.  
+	' *  	It's pretty simple: don't be a jerk and claim that you wrote the code.
+	' *	END NOTICE
+ 	' ************************************************************************************
+%END REM
+Option Public
+Option Explicit 
+Use "enhLogClass" 
+Use "domiConstantsBE"
+
+'++LotusScript Development Environment:2:5:(Forward):0:1
+Declare Public Class azlwListCarrier
+Declare Public Class BooleanList As azlwListCarrier 
+Declare Public Class DateList As azlwListCarrier 
+Declare Public Class IntegerList As azlwListCarrier 
+Declare Public Class VariantList As azlwListCarrier 
+Declare Class KeyedNotesDateTime 
+Declare Public Class StringList As azlwListCarrier 
+Declare Public Class LongList As azlwListCarrier 
+Declare Public Class SingleList As azlwListCarrier 
+Declare Public Class DoubleList As azlwListCarrier 
+Declare Public Class CurrencyList As azlwListCarrier 
+Declare Class KeyedString 
+Declare Class KeyedStringList As azlwListCarrier 
+Declare Public Class StringSet As azlwListCarrier 
+Declare Class ExceptionCarrier 
+Declare Public Class ExceptionCarrierStack 
+Declare Public Class StringSetList As azlwListCarrier 
+Declare Class IntegerPairList As azlwListCarrier 
+Declare Public Class IntegerPair 
+Declare Sub Initialize
+Declare Function updateDocumentStringSet(source As StringSet, itemname$, target As NotesDocument) As Boolean  
+Declare Function ampersandEncode(source$) As String
+Declare Function jsonArrayToStringList(source As NotesJSONArray) As StringList 
+Declare Function stripCRLF(source$) As String 
+Declare Public Function at_urlEncode(source$) As String
+Declare Public Sub shellSortStrings(source As Variant)
+Declare Function replaceCRLF(source$, replacement$) As String 
+Declare Private Sub enhLogComplexElement(source As Variant, tagname$) 
+Declare Function jsonObjectToStringList(source As NotesJSONObject) As StringList 
+Declare Function getErrorMessages() As StringList
+Declare Function getAmpersandSequences() As StringList 
+Declare Public Function jsonToStringList(source$) As StringList
+Declare Public Function getSortedListTags(source As Variant) As Variant 
+Declare Sub pushExceptionCarrier(classname$) 
+Declare Private Sub logJSONValue(source As Variant, excludeNodes As BooleanList, prefix$, depth%, appendComma As Boolean) 
+Declare Function getJSONelementTypeName(source%) As String  
+Declare Public Function getExceptionCarrierStack() As ExceptionCarrierStack
+Declare Function spawnExceptionCarrier(classname$) As ExceptionCarrier 
+Declare Public Function jsonElementToStringList(source As NotesJSONElement) As StringList 
+Declare Function ampersandDecode(source$) As String 
+Declare Private Function toJSONvalue(source As Variant) As String 
+Declare Function popExceptionCarrier() As ExceptionCarrier 
+
+'++LotusScript Development Environment:2:5:(Declarations):0:10
+
+
+
+Private Const LIB_PREFIX = |Library domiListsCollections.| 
+
+%REM ***************************************************************************
+ ************************************************************************************
+	LSI_THREAD_xxxxx CONSTANTS  
+	LSI constants declared here to avoid conflicts with 
+	other libraries using lsconst.lss; which has its own 
+	%INCLUDE "lsprcval.lss" command.
+ ************************************************************************************
+%END REM *********************************************************************
+Private Const LIB_LSI_THREAD_LINE = 0
+Private Const LIB_LSI_THREAD_PROC = 1
+Private Const LIB_LSI_THREAD_MODULE = 2
+Private Const LIB_LSI_THREAD_VERSION = 3
+Private Const LIB_LSI_THREAD_LANGUAGE = 4
+Private Const LIB_LSI_THREAD_COUNTRY = 5
+Private Const LIB_LSI_THREAD_TICKS = 6
+Private Const LIB_LSI_THREAD_TICKS_PER_SEC = 7
+Private Const LIB_LSI_THREAD_PROCESS_ID = 8
+Private Const LIB_LSI_THREAD_TASK_ID = 9
+Private Const LIB_LSI_THREAD_CALLPROC = 10
+Private Const LIB_LSI_THREAD_CALLMODULE = 11
+Private Const LIB_LSI_THREAD_STACKINFO = 14 
+
+
+Private Const V_EMPTY = 0 
+Private Const V_NULL = 1
+Private Const V_INTEGER = 2
+Private Const V_LONG = 3 
+Private Const V_SINGLE = 4
+Private Const V_DOUBLE = 5
+Private Const V_CURRENCY = 6
+Private Const V_DATE = 7
+Private Const V_STRING = 8
+Private Const V_DISPATCH = 9 
+Private Const V_ERROR = 10 
+Private Const V_BOOLEAN = 11 
+Private Const V_VARIANT = 12 
+Private Const V_IUNKNOWN = 13
+Private Const V_BYTE = 17 
+Private Const V_LSOBJ = 34
+Private Const V_PRODOBJ = 35
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+%REM
+	Class azlwListCarrier
+	Base Class for List Carriers 
+%END REM
+Public Class azlwListCarrier
+	
+	Private Property Get CLASS_PREFIX As String 
+		CLASS_PREFIX = LIB_PREFIX & |Class: azliListCarrier.|
+	End Property
+
+	Property Get json As String 
+		On Error GoTo ErrorTrap
+		
+		Dim result$
+		
+		If me.hasContent Then 
+			result$ = toJSONvalue(me.getContent())
+		Else 
+			result$ = |{}|
+		End If
+		
+	ExitPoint:		
+		json = result$
+		Exit Property 
+	ErrorTrap:
+		On Error GoTo 0
+		enhLogException me.CLASS_PREFIX, ||
+		result$ = |{}|
+		Resume ExitPoint 
+	End Property
+	
+	Property Get jsonAllStrings As String 
+		On Error GoTo ErrorTrap
+
+		Dim pair(1) As String 
+		Dim valuesarray() As String 
+
+		Dim result$
+		Dim tag$
+		Dim stringvalue$
+		Dim i%
+		
+		If me.hasContent Then 
+			ReDim valuesarray(me.size - 1) As String 
+
+			ForAll element In me.getContent()
+				tag$ = ListTag(element)
+				stringvalue$ = toJSONvalue(element)
+				If isBlankString(stringvalue$) Then 
+					stringvalue$ = ""
+				ElseIf (|"| <> Left$(stringvalue$, 1)) Then
+					stringvalue$ = |"| & stringvalue$ & |"|
+				End If
+
+				pair(0) = |"| & ampersandEncode(tag$) & |"|
+				pair(1) = stringvalue$
+				
+				valuesarray(i%) = Join(pair, |:|)
+				i% = i% + 1
+			End ForAll
+			
+			result$ = |{| & Join(valuesarray, |,|) & |}|
+		Else 
+			result$ = |{}|
+		End If
+		
+ExitPoint:		
+		jsonAllStrings = result$
+		Exit Property 
+ErrorTrap:
+		On Error GoTo 0
+		enhLogException me.CLASS_PREFIX, |tag: | & tag$ & Chr(10) & |stringvalue: | & stringvalue$
+		result$ = |{}|
+		Resume ExitPoint 
+	End Property
+	
+
+	%REM
+		Function getContent
+		Description: Gets the content list for the object
+		
+		This method is designed to be overriden by child classes
+	%END REM
+	Function getContent() As Variant	
+		Error ERR_PARENT_METHOD_NOT_ALLOWED, MSG_PARENT_METHOD_NOT_ALLOWED
+	End Function
+
+	
+	%REM
+		Function hasTag 
+		Indicates if the specified tag represents an element in the internal List 
+		
+		@param tag$  ListTag for the element 
+		
+		@return Flag indicating if the tag represents an element in the internal list   
+	%END REM
+	Function hasTag(tag$) As Boolean 
+		hasTag = IsList(me.getContent()) And IsElement(me.getContent()(tag$)) 
+	End Function 
+	
+	
+	%REM
+		Property listTags
+		Description: array of all ListTags
+	%END REM
+	Property Get listTags As Variant 
+		listTags =  getListTags(me.getContent()) 
+	End Property
+
+	
+	%REM
+		Property Get sortedListTags
+		Description: sorted Array of all ListTags
+	%END REM
+	Property Get sortedListTags As Variant 
+		sortedListTags = getSortedListTags(me.getContent()) 
+	End Property
+	
+	
+	Property Get size As Long 
+		size = getListSize(me.getContent()) 
+	End Property
+	
+	Property Get hasContent As Boolean
+		On Error GoTo ErrorTrap
+		
+		Dim result As Boolean 
+		
+		result = False 
+		ForAll element In me.getContent()  
+			result = True 
+			Exit ForAll 
+		End ForAll
+		
+	ExitPoint:
+		hasContent = result
+		Exit Property 
+	ErrorTrap:
+		On Error GoTo 0
+		enhLogException CLASS_PREFIX, || 
+		Resume ExitPoint 
+	End Property
+	
+	
+	
+	
+	%REM
+		Function equals
+		Description: Comares tags and values to another azlwListCarrier 
+		
+		@param source azlwListCarrier object to compare 
+		@return True if all tags and values are identical 
+	%END REM
+	Function equals(source As azlwListCarrier) As Boolean 
+		On Error GoTo ErrorTrap 
+		
+		Dim tag$
+		
+		Dim result As Boolean 
+		result = False 
+		
+		If (source Is Nothing) Then GoTo ExitPoint 
+		If (me.CLASS_PREFIX <> source.CLASS_PREFIX) Then GoTo ExitPoint ' Class Prefix must match
+		
+		' check all tags and values from this object
+		ForAll value In me.getContent() 
+			tag$ = ListTag(value) 
+			If Not source.hasTag(tag$) Then GoTo ExitPoint 
+			If (value <> source.getContent()(tag$)) Then GoTo ExitPoint 
+		End ForAll
+		
+		' check all tags and values from the passed in object
+		ForAll value In source.getContent()
+			tag$ = ListTag(value) 
+			If Not me.hasTag(tag$) Then GoTo ExitPoint 
+			If (value <> me.getContent()(tag$)) Then GoTo ExitPoint 
+		End ForAll
+		
+		' no differences found 
+		result = True
+		
+ExitPoint:
+		equals = result 
+		Exit Function 
+ErrorTrap:
+		On Error GoTo 0 
+		enhLogException me.CLASS_PREFIX, |ListTag: | & tag$ 
+		Resume ExitPoint 
+	End Function
+	
+	
+	%REM
+		Function isEqual
+		Description: Compares tags and values to another azlwListCarrier 
+		
+		@param source 	azlwListCarrier object to compare 
+		
+		@return 		Flag indicating all tags and values have equal values
+	%END REM
+	Function isEqual(source As azlwListCarrier) As Boolean 	
+		isEqual = me.equals(source) 
+	End Function
+
+
+	%REM
+		Sub logContent
+		Logs the content of the object (keys and values) using the EnhancedLog class 
+		
+		@param prefix$  		Prefix used for the first call to LogExtendedContent 
+		@param description$ 	Description used for the first call to LogExtendedContent 
+		@param content$ 		Content used for the first call to LogExtendedContent 
+		
+	%END REM
+'	Sub logContent(prefix$, description$, content$) 
+'		On Error GoTo ErrorTrap
+'		
+'		Dim values As Variant ' List as XXX container 
+'		
+''		 BEGIN CODE
+'		If (Len(Trim$(prefix$ & description$ & content$)) > 0) Then enhLogExtendedContent prefix$, description$, content$ 
+'		values = me.getContent() 
+'		ForAll element In values 
+'			enhLogComplexElement element, ListTag(element) 
+'		End ForAll
+'		
+'	ExitPoint: 
+'		Exit Sub 
+'	ErrorTrap:
+'		On Error GoTo 0
+'		enhLogException CLASS_PREFIX, ||
+'		Resume ExitPoint
+'	End Sub
+
+	%REM
+		Sub logJSON
+		Logs the content of the object (keys and values) using the EnhancedLog class 
+	%END REM
+	Sub logJSON()
+		me.logJSONExtended Nothing, ||, ||, ||
+	End Sub
+	
+	%REM
+		Sub logJSONExtended
+		Logs the content of the object (keys and values) using the EnhancedLog class 
+		
+		@param excludeNodes 	Names of JSON nodes to exclude from writing to the log
+		@param prefix$  		Prefix used for the first call to LogExtendedContent 
+		@param description$ 	Description used for the first call to LogExtendedContent 
+		@param content$ 		Content used for the first call to LogExtendedContent 		
+	%END REM
+	Sub logJSONExtended(excludeNodes As BooleanList, prefix$, description$, content$) 
+		On Error GoTo ErrorTrap
+		
+		' BEGIN CODE
+		If (Len(Trim$(prefix$ & description$ & content$)) > 0) Then enhLogExtendedContent prefix$, description$, content$ 
+		logJSONValue Me, excludeNodes, ||, 0, False 
+		
+	ExitPoint: 
+		Exit Sub 
+	ErrorTrap:
+		On Error GoTo 0
+		enhLogException CLASS_PREFIX, ||
+		Resume ExitPoint
+	End Sub
+
+
+End Class
+
+%REM
+	Class BooleanList 
+	Wrapper for a List As Boolean object, with extended functionality through the various properties and methods. 
+%END REM
+Public Class BooleanList As azlwListCarrier 
+	Public content List As Boolean
+
+	Public Sub New()
+	End Sub
+
+	Public Sub Delete()
+		Erase me.content
+	End Sub
+	
+	Private Property Get CLASS_PREFIX As String 
+		CLASS_PREFIX = LIB_PREFIX & |Class: BooleanList.|
+	End Property
+
+
+
+	%REM
+		Function getContent
+		Description: Gets the content list for the object
+	%END REM
+	Public Function getContent() As Variant 	
+		getContent = me.content 	
+	End Function
+
+	
+
+	
+	Sub addAll(source As BooleanList) 	
+		If (source Is Nothing) Then GoTo ExitPoint 
+		On Error GoTo ErrorTrap 
+		
+		Dim tag$ 
+
+		ForAll element In source.content
+			tag$ = ListTag(element) 
+			me.content(tag$) = element 
+		End ForAll
+		
+	ExitPoint: 
+		Exit Sub
+	ErrorTrap:
+		On Error GoTo 0
+		enhLogException me.CLASS_PREFIX, |tag: | & tag$
+		Resume ExitPoint 
+	End Sub
+	
+	
+	Function getValue(key$) As Boolean
+		Dim result As Boolean 
+		On Error GoTo ErrorTrap 
+		
+		result = False 
+		If isBlankString(key$) Then GoTo ExitPoint 
+		
+		If IsElement(me.content(key$)) Then 
+			result = me.content(key$) 
+		Else 
+			ForAll element In me.content 
+				If (0 = StrCompare(key$, ListTag(element), 5)) Then 
+					result = element 
+					Exit ForAll   
+				End If
+			End ForAll
+		End If
+		
+	ExitPoint: 
+		getValue = result 
+		Exit Function
+	ErrorTrap:
+		On Error GoTo 0
+		enhLogException me.CLASS_PREFIX, |key: | & key$
+		Resume ExitPoint 
+	End Function
+
+
+
+	%REM
+		Property trueOnly
+		Description: subset of all True values
+	%END REM
+	Property Get trueOnly As BooleanList
+		Dim result As New BooleanList() 
+		On Error GoTo ErrorTrap 
+		
+		ForAll booleanValue In me.content 
+			If (booleanValue) Then result.content(ListTag(booleanValue)) = booleanValue
+		End ForAll
+		
+	ExitPoint: 
+		Set trueOnly = result
+		Exit Property 
+	ErrorTrap:
+		On Error GoTo 0
+		enhLogException me.CLASS_PREFIX, ||
+		Resume ExitPoint 
+	End Property	
+	
+	%REM
+		Property falseOnly
+		Description: subset of all False values
+	%END REM
+	Property Get falseOnly As BooleanList
+		Dim result As New BooleanList() 
+		On Error GoTo ErrorTrap 
+		
+		ForAll booleanValue In me.content 
+			If (Not booleanValue) Then result.content(ListTag(booleanValue)) = booleanValue
+		End ForAll
+		
+	ExitPoint: 
+		Set falseOnly = result
+		Exit Property 
+	ErrorTrap:
+		On Error GoTo 0
+		enhLogException me.CLASS_PREFIX, ||
+		Resume ExitPoint 
+	End Property	
+	
+
+	
+	
+	%REM
+		Function isTrue
+		Description: Indicates if a key is a member of the internal list AND it's associated value is True. 
+	%END REM
+	Function isTrue(key$) As Boolean 
+		On Error GoTo ErrorTrap
+		isTrue = me.getValue(key$) 
+
+	ExitPoint:
+		Exit Function 
+	ErrorTrap:
+		On Error GoTo 0
+		isTrue = False
+		Resume ExitPoint  
+	End Function
+	
+	
+	%REM
+		Property Get hasTrue
+		Description: Flag indicating if the object contains a True value
+	%END REM
+	Property Get hasTrue As Boolean
+		hasTrue = False 
+		If me.hasContent Then 
+			ForAll element In me.content 
+				If (element) Then 
+					hasTrue = True 
+					Exit ForAll
+				End If  
+			End ForAll
+		End If
+	End Property
+	
+	
+	%REM
+		Property Get hasFalse
+		Description: Flag indicating if the object contains a False value
+	%END REM
+	Property Get hasFalse As Boolean
+		hasFalse = False 
+		If me.hasContent Then 
+			ForAll element In me.content 
+				If (Not element) Then 
+					hasFalse = True 
+					Exit ForAll
+				End If  
+			End ForAll
+		End If
+	End Property
+	
+
+	
+End Class
+
+%REM
+	Class DateList 
+	Wrapper for a List As Date object, with extended functionality through the various properties and methods. 
+%END REM
+Public Class DateList As azlwListCarrier 
+	Public content List As NotesDateTime 
+
+	Public Sub New()
+	End Sub
+
+	Public Sub Delete()
+		Erase me.content
+	End Sub
+	
+	Private Property Get CLASS_PREFIX As String 
+		CLASS_PREFIX = LIB_PREFIX & |Class: DateList.|
+	End Property
+
+
+	%REM
+		Function getContent
+		Description: Gets the content list for the object
+	%END REM
+	Public Function getContent() As Variant 	
+		getContent = me.content 	
+	End Function
+
+
+	
+	Sub addAll(source As DateList) 	
+		If (source Is Nothing) Then GoTo ExitPoint 
+		On Error GoTo ErrorTrap 
+		
+		Dim tag$ 
+
+		ForAll element In source.content
+			tag$ = ListTag(element) 
+			Set me.content(tag$) = element 
+		End ForAll
+		
+ExitPoint: 
+		Exit Sub
+ErrorTrap:
+		On Error GoTo 0
+		enhLogException me.CLASS_PREFIX, |tag: | & tag$
+		Resume ExitPoint 
+	End Sub
+	
+	
+	
+	Function getValue(key$) As NotesDateTime
+		Dim result As NotesDateTime  
+		On Error GoTo ErrorTrap 
+		
+		Set result = Nothing 
+		If isBlankString(key$) Then GoTo ExitPoint 
+		
+		If IsElement(me.content(key$)) Then 
+			Set result = me.content(key$)
+		Else 
+			ForAll element In me.content 
+				If (0 = StrCompare(key$, ListTag(element), 5)) Then 
+					Set result = element 
+					Exit ForAll   
+				End If
+			End ForAll
+		End If
+
+ExitPoint: 
+		Set getValue = result 
+		Exit Function
+ErrorTrap:
+		On Error GoTo 0
+		enhLogException me.CLASS_PREFIX, |key: | & key$
+		Resume ExitPoint 
+	End Function
+	
+	
+	%REM
+		Property listTagsByDateAsc
+		Description: array of all listTags, ordered by Date (Ascending) 
+	%END REM
+	Function getlistTagsByDate(ascending As Boolean) As Variant 
+		Dim kndtArray() As KeyedNotesDateTime
+		Dim kndt As KeyedNotesDateTime 	
+		
+		
+		Dim valuesArray() As String
+		Dim i#
+		On Error GoTo ErrorTrap 
+		
+		If (me.hasContent) Then
+			i# = me.size -1 
+			ReDim valuesArray(i#) As String 
+			ReDim kndtArray(i#) As KeyedNotesDateTime 
+			i# = 0
+
+			' populate the KeyedNotesDateTimes						
+			ForAll element In me.content
+				Set kndt = New KeyedNotesDateTime() 
+				kndt.key = ListTag(element) 
+				Set kndt.value = element
+				Set kndtArray(i#) = kndt
+				i# = i# + 1 
+			End ForAll
+			
+			' Sort the KeyedNotesDateTimes 
+			If (ascending) Then 
+				me.sortAsc kndtArray
+			Else 
+				me.sortDesc kndtArray
+			End If 
+			
+			
+			' Add the keys from kndt to the result
+			For i# = 0 To UBound(kndtArray) 
+				valuesArray(i#) = kndtArray(i#).key
+			Next
+			
+			getlistTagsByDate = valuesArray
+		Else 
+			getlistTagsByDate = Null  
+		End If 
+		
+ExitPoint: 
+		Exit Function 
+ErrorTrap:
+		On Error GoTo 0
+		enhLogException me.CLASS_PREFIX, ||
+		Resume ExitPoint 
+	End Function
+	
+	
+	Private Sub sortAsc(source() As KeyedNotesDateTime)
+		Dim kndt As KeyedNotesDateTime
+		Dim Lower As Integer
+		Dim Upper As Integer
+		Dim botMax As Integer
+		Dim i As Integer
+		Dim k As Integer
+		Dim h As Integer
+		
+		Lower% = LBound(source())
+		Upper% = UBound(source())
+
+		h% = 1
+		Do
+			h% = (3*h%) + 1
+		Loop Until h% > Upper%-Lower%+1
+
+		Do
+			h% = h% \ 3
+			botMax% = Lower% + h% - 1
+			For i% = botMax% + 1 To Upper%
+				Set kndt = source( i% )
+				k% = i%
+				While (source(k% - h%).value.timeDifferenceDouble(kndt.value) > 0)
+					Set source(k%) = source( k% - h% )
+					k% = k% - h%
+					If (k% <= botMax%) Then GoTo wOut
+				Wend
+wOut:
+				If (k% <> i%) Then Set source(k%) = kndt
+			Next
+		Loop Until h% = 1
+	End Sub
+	
+	Private Sub sortDesc(source() As KeyedNotesDateTime)
+		Dim kndt As KeyedNotesDateTime
+		Dim Lower As Integer
+		Dim Upper As Integer
+		Dim botMax As Integer
+		Dim i As Integer
+		Dim k As Integer
+		Dim h As Integer
+		
+
+		Lower% = LBound(source())
+		Upper% = UBound(source())
+
+		h% = 1
+		Do
+			h% = (3*h%) + 1
+		Loop Until h% > Upper%-Lower%+1
+
+		Do
+			h% = h% \ 3
+			botMax% = Lower% + h% - 1
+			For i% = botMax% + 1 To Upper%
+				Set kndt = source( i% )
+				k% = i%
+				While (kndt.value.timeDifferenceDouble(source(k% - h%).value) > 0)
+					Set source(k%) = source( k% - h% )
+					k% = k% - h%
+					If (k% <= botMax%) Then GoTo wOut
+				Wend
+wOut:
+				If (k% <> i%) Then Set source(k%) = kndt
+			Next
+		Loop Until h% = 1
+	End Sub
+	
+End Class
+
+%REM
+	Class IntegerList 
+	Wrapper for a List As Integer object, with extended functionality through the various properties and methods. 
+%END REM
+Public Class IntegerList As azlwListCarrier 
+	Public content List As Integer
+
+	Public Sub New()
+	End Sub
+
+	Public Sub Delete()
+		Erase me.content
+	End Sub
+	
+	Private Property Get CLASS_PREFIX As String 
+		CLASS_PREFIX = LIB_PREFIX & |Class: IntegerList.|
+	End Property
+
+	
+	%REM
+		Function getContent
+		Description: Gets the content list for the object
+	%END REM
+	Public Function getContent() As Variant 	
+		getContent = me.content 	
+	End Function
+
+	
+
+	Sub addAll(source As IntegerList) 	
+		If (source Is Nothing) Then GoTo ExitPoint 
+		On Error GoTo ErrorTrap 
+		
+		Dim tag$ 
+
+		ForAll element In source.content
+			tag$ = ListTag(element) 
+			me.content(tag$) = element 
+		End ForAll
+		
+ExitPoint: 
+		Exit Sub
+ErrorTrap:
+		On Error GoTo 0
+		enhLogException me.CLASS_PREFIX, |tag: | & tag$
+		Resume ExitPoint 
+	End Sub
+	
+	
+	
+	Function getValue(key$) As Integer
+		Dim result As Integer  
+		On Error GoTo ErrorTrap 
+		
+		result = 0
+		If isBlankString(key$) Then GoTo ExitPoint 
+		
+		If IsElement(me.content(key$)) Then 
+			result = me.content(key$)
+		Else 
+			ForAll element In me.content 
+				If (0 = StrCompare(key$, ListTag(element), 5)) Then 
+					result = element 
+					Exit ForAll   
+				End If
+			End ForAll
+		End If
+		
+ExitPoint: 
+		getValue = result 
+		Exit Function
+ErrorTrap:
+		On Error GoTo 0
+		enhLogException me.CLASS_PREFIX, |key: | & key$
+		Resume ExitPoint 
+	End Function
+	
+	
+End Class
+
+%REM
+	Class VariantList 
+	Wrapper for a List As Variant object, with extended functionality through the various properties and methods. 
+%END REM
+Public Class VariantList As azlwListCarrier 
+	Public content List As Variant 
+	
+	
+	Private Property Get CLASS_PREFIX As String 
+		CLASS_PREFIX = LIB_PREFIX & |Class: VariantList.|
+	End Property
+	
+
+	Public Sub New()
+	End Sub
+
+
+	Public Sub Delete()
+		Erase me.content
+	End Sub
+	
+	
+	%REM
+		Function getContent
+		NOTE: A List as Variant object cannot be returned as a variant due to LotusScript interpreter restrictions.
+		Developers should directly access the public .content variable instead.
+		
+		@throws ERR_OPERATION_PROHIBITED 
+		
+		@see content
+	%END REM
+	Public Function getContent() As Variant 	
+		Error ERR_OPERATION_PROHIBITED, MSG_OPERATION_PROHIBITED & |Directly use public .content instead.  |
+	End Function
+	
+	
+	Property Get hasContent As Boolean
+		On Error GoTo ErrorTrap
+		
+		Dim result As Boolean 
+
+		result = False 
+		ForAll element In me.content
+			result = True 
+			Exit ForAll 
+		End ForAll
+		
+	ExitPoint:
+		hasContent = result
+		Exit Property 
+	ErrorTrap:
+		On Error GoTo 0
+		enhLogException CLASS_PREFIX, || 
+		Resume ExitPoint 
+	End Property
+	
+	
+	Sub addAll(source As VariantList) 	
+		If (source Is Nothing) Then GoTo ExitPoint 
+		On Error GoTo ErrorTrap 
+		
+		Dim tag$ 
+
+		ForAll element In source.content
+			tag$ = ListTag(element) 
+			If IsObject(element) Then 
+				Set me.content(tag$) = element
+			Else 
+				me.content(tag$) = element
+			End If  
+		End ForAll
+		
+	ExitPoint: 
+		Exit Sub
+	ErrorTrap:
+		On Error GoTo 0
+		enhLogException me.CLASS_PREFIX, |tag: | & tag$
+		Resume ExitPoint 
+	End Sub
+	
+	
+	
+	
+	Function getValue(key$) As Variant
+		Dim result As Variant  
+		On Error GoTo ErrorTrap 
+		
+		result = Null  
+		If isBlankString(key$) Then GoTo ExitPoint 
+		
+		If IsElement(me.content(key$)) Then 
+			If IsObject(me.content(key$)) Then 
+				Set result = me.content(key$)
+			Else 
+				result = me.content(key$) 
+			End If 
+		Else 
+			ForAll element In me.content 
+				If (0 = StrCompare(key$, ListTag(element), 5)) Then 
+					If IsObject(me.content(key$)) Then 
+						Set result = me.content(key$)
+					Else 
+						result = me.content(key$) 
+					End If 
+					Exit ForAll   
+				End If
+			End ForAll
+		End If
+		
+	ExitPoint: 
+		If IsObject(result) Then 
+			Set getValue =result
+		Else 
+			getValue = result
+		End If 
+		Exit Function
+	ErrorTrap:
+		On Error GoTo 0
+		enhLogException me.CLASS_PREFIX, |key: | & key$
+		Resume ExitPoint 
+	End Function
+
+	Property Get json As String 
+		On Error GoTo ErrorTrap
+		
+		Dim result$
+
+		
+		If me.hasContent Then 
+			result$ = toJSONvalue(me.content)
+		Else 
+			result$ = |{}|
+		End If
+		
+	ExitPoint:		
+		json = result$
+		Exit Property 
+	ErrorTrap:
+		On Error GoTo 0
+		enhLogException me.CLASS_PREFIX, ||
+		result$ = |{}|
+		Resume ExitPoint 
+	End Property
+	
+	Property Get jsonAllStrings As String 
+		On Error GoTo ErrorTrap
+
+		Dim pair(1) As String 
+		Dim valuesarray() As String 
+
+		Dim result$
+		Dim tag$
+		Dim stringvalue$
+		Dim i%
+		
+		If me.hasContent Then 
+			ReDim valuesarray(me.size - 1) As String 
+
+			ForAll element In me.content
+				tag$ = ListTag(element)
+				stringvalue$ = toJSONvalue(element)
+				If isBlankString(stringvalue$) Then 
+					stringvalue$ = ""
+				ElseIf (|"| <> Left$(stringvalue$, 1)) Then
+					stringvalue$ = |"| & stringvalue$ & |"|
+				End If
+
+				pair(0) = |"| & ampersandEncode(tag$) & |"|
+				pair(1) = stringvalue$
+				
+				valuesarray(i%) = Join(pair, |:|)
+				i% = i% + 1
+			End ForAll
+			
+			result$ = |{| & Join(valuesarray, |,|) & |}|
+		Else 
+			result$ = |{}|
+		End If
+		
+	ExitPoint:		
+		jsonAllStrings = result$
+		Exit Property 
+	ErrorTrap:
+		On Error GoTo 0
+		enhLogException me.CLASS_PREFIX, |tag: | & tag$ & Chr(10) & |stringvalue: | & stringvalue$
+		result$ = |{}|
+		Resume ExitPoint 
+	End Property
+	
+
+	%REM
+		Function hasTag 
+		Indicates if the specified tag represents an element in the internal List 
+		
+		@param tag$  ListTag for the element 
+		
+		@return Flag indicating if the tag represents an element in the internal list   
+	%END REM
+	Function hasTag(tag$) As Boolean 
+		hasTag = IsList(me.content) And IsElement(me.content(tag$)) 
+	End Function 
+	
+	
+	%REM
+		Property listTags
+		Description: array of all ListTags
+	%END REM
+	Property Get listTags As Variant 
+		listTags =  getListTags(me.content) 
+	End Property
+
+	
+	%REM
+		Property Get sortedListTags
+		Description: sorted Array of all ListTags
+	%END REM
+	Property Get sortedListTags As Variant 
+		sortedListTags = getSortedListTags(me.content) 
+	End Property
+	
+	
+	Property Get size As Long 
+		size = getListSize(me.content) 
+	End Property
+	
+	
+	
+	
+	
+	%REM
+		Function equals
+		Description: Comares tags and values to another azlwListCarrier 
+		
+		@param source azlwListCarrier object to compare 
+		@return True if all tags and values are identical 
+	%END REM
+	Function equals(source As azlwListCarrier) As Boolean 
+		On Error GoTo ErrorTrap 
+		
+		Dim tag$
+		Dim vl As VariantList 
+		
+		Dim result As Boolean 
+		result = False 
+		
+		If (source Is Nothing) Then GoTo ExitPoint 
+		If (me.CLASS_PREFIX <> source.CLASS_PREFIX) Then GoTo ExitPoint ' Class Prefix must match
+		
+		Set vl = source 
+		
+		' check all tags and values from this object
+		ForAll value In me.content 
+			tag$ = ListTag(value) 
+			If Not vl.hasTag(tag$) Then GoTo ExitPoint 
+			If (value <> vl.content(tag$)) Then GoTo ExitPoint 
+		End ForAll
+		
+		' check all tags and values from the passed in object
+		ForAll value In vl.content
+			tag$ = ListTag(value) 
+			If Not me.hasTag(tag$) Then GoTo ExitPoint 
+			If (value <> me.content(tag$)) Then GoTo ExitPoint 
+		End ForAll
+		
+		' no differences found 
+		result = True
+		
+	ExitPoint:
+		equals = result 
+		Exit Function 
+	ErrorTrap:
+		On Error GoTo 0 
+		enhLogException me.CLASS_PREFIX, |ListTag: | & tag$ 
+		Resume ExitPoint 
+	End Function
+	
+	
+	%REM
+		Function isEqual
+		Description: Compares tags and values to another azlwListCarrier 
+		
+		@param source 	azlwListCarrier object to compare 
+		
+		@return 		Flag indicating all tags and values have equal values
+	%END REM
+	Function isEqual(source As azlwListCarrier) As Boolean 	
+		isEqual = me.equals(source) 
+	End Function
+
+
+End Class
+%REM
+	Class KeyedNotesDateTime
+	Description: Carrier for a key / value pair, where the value is a NotesDateTime object.
+%END REM
+Class KeyedNotesDateTime 
+	Public key As String 
+	Public value As NotesDateTime 
+
+	Public Sub New() 
+	End Sub
+End Class 
+
+%REM
+	Class StringList 
+	Wrapper for a List As String object, with extended functionality through the various properties and methods. 
+%END REM
+Public Class StringList As azlwListCarrier 
+	Public content List As String
+
+	Public Sub New()
+	End Sub
+
+	Public Sub Delete()
+		Erase me.content
+	End Sub
+	
+	
+	
+	
+	
+	
+	Private Property Get CLASS_PREFIX As String 
+		CLASS_PREFIX = LIB_PREFIX & |Class: StringList.|
+	End Property
+	
+	
+
+	
+
+
+	%REM
+		Function getContent
+		Description: Gets the content list for the object
+	%END REM
+	Public Function getContent() As Variant 	
+		getContent = me.content 	
+	End Function
+
+
+	
+	Sub addAll(source As StringList) 	
+		If (source Is Nothing) Then GoTo ExitPoint 
+		On Error GoTo ErrorTrap 
+		
+		Dim tag$ 
+
+		ForAll element In source.content
+			tag$ = ListTag(element) 
+			me.content(tag$) = element 
+		End ForAll
+		
+ExitPoint: 
+		Exit Sub
+ErrorTrap:
+		On Error GoTo 0
+		enhLogException me.CLASS_PREFIX, |tag: | & tag$
+		Resume ExitPoint 
+	End Sub
+	
+	
+	
+	
+	Function getValue(key$) As String
+		Dim result As String  
+		On Error GoTo ErrorTrap 
+		
+		result = || 
+		If isBlankString(key$) Then GoTo ExitPoint 
+		
+		If IsElement(me.content(key$)) Then 
+			result = me.content(key$)
+		Else 
+			ForAll element In me.content 
+				If (0 = StrCompare(key$, ListTag(element), 5)) Then 
+					result = element 
+					Exit ForAll   
+				End If
+			End ForAll
+		End If
+		
+ExitPoint: 
+		getValue = result 
+		Exit Function
+ErrorTrap:
+		On Error GoTo 0
+		enhLogException me.CLASS_PREFIX, |key: | & key$
+		Resume ExitPoint 
+	End Function
+	
+	
+	
+	%REM
+		Property Get uniqueValues
+		Description: array containing unique values 
+	%END REM
+	Property Get uniqueValues As Variant
+		On Error GoTo ErrorTrap
+		Dim valueTags List As String 
+		Dim valuesArray() As String
+		Dim i#
+		
+		If (me.hasContent) Then 
+			ForAll element In me.content 
+				valueTags(element) = ListTag(element) 
+			End ForAll
+
+			i# = me.size -1 
+			ReDim valuesArray(i) As String 
+			
+			i# = 0 
+			ForAll element In valueTags 
+				valuesArray(i#) = me.content(element) 
+				i# = i# + 1
+			End ForAll
+
+			uniqueValues = valuesArray 	
+		Else 
+			uniqueValues = Null
+		End If 	
+		
+ExitPoint: 
+		Exit Property 
+ErrorTrap:
+		On Error GoTo 0
+		enhLogException me.CLASS_PREFIX, || 
+		Resume ExitPoint
+	End Property	
+	
+	
+	%REM
+		Function equals
+		Description: Comares tags and values to another StringList 
+		@return True if all tags and values are identical 
+	%END REM
+	Function equals(source As azlwListCarrier) As Boolean 
+		On Error GoTo ErrorTrap 
+		
+		Dim tag$
+		
+		Dim result As Boolean 
+		result = False 
+		
+		If (source Is Nothing) Then GoTo ExitPoint 
+		If (me.CLASS_PREFIX <> source.CLASS_PREFIX) Then GoTo ExitPoint ' Class Prefix must match
+		
+		' check all tags and values from this object
+		ForAll value In me.content
+			tag$ = ListTag(value) 
+			If Not source.hasTag(tag$) Then GoTo ExitPoint 
+			If (0 <> StrComp(value, source.getContent()(tag$), 5)) Then GoTo ExitPoint 
+		End ForAll
+		
+		' check all tags and values from the passed in object
+		ForAll sourceValue In source.getContent()
+			tag$ = ListTag(sourceValue) 
+			If Not me.hasTag(tag$) Then GoTo ExitPoint 
+			If (0 <> StrComp(CStr(sourceValue), me.getValue(tag$), 5)) Then GoTo ExitPoint 
+		End ForAll
+		
+		' no differences found 
+		result = True
+		
+ExitPoint:
+		equals = result 
+		Exit Function 
+ErrorTrap:
+		On Error GoTo 0 
+		enhLogException me.CLASS_PREFIX, |ListTag: | & tag$ 
+		Resume ExitPoint 
+	End Function
+	
+	
+	
+End Class
+
+%REM
+	Class LongList 
+	Wrapper for a List As Long object, with extended functionality through the various properties and methods. 
+%END REM
+Public Class LongList As azlwListCarrier 
+	Public content List As Long
+
+	Public Sub New()
+	End Sub
+
+	Public Sub Delete()
+		Erase me.content
+	End Sub
+	
+	
+	Private Property Get CLASS_PREFIX As String 
+		CLASS_PREFIX = LIB_PREFIX & |Class: DominoDomainPerson.|
+	End Property
+	
+
+	%REM
+		Function getContent
+		Description: Gets the content list for the object
+	%END REM
+	Public Function getContent() As Variant 	
+		getContent = me.content 	
+	End Function
+
+
+	
+	Sub addAll(source As LongList) 	
+		If (source Is Nothing) Then GoTo ExitPoint 
+		On Error GoTo ErrorTrap 
+		
+		Dim tag$ 
+
+		ForAll element In source.content
+			tag$ = ListTag(element) 
+			me.content(tag$) = element 
+		End ForAll
+		
+ExitPoint: 
+		Exit Sub
+ErrorTrap:
+		On Error GoTo 0
+		enhLogException me.CLASS_PREFIX, |tag: | & tag$
+		Resume ExitPoint 
+	End Sub
+	
+	
+	
+	
+	Function getValue(key$) As Long
+		Dim result As Long  
+		On Error GoTo ErrorTrap 
+		
+		result = 0
+		If isBlankString(key$) Then GoTo ExitPoint 
+		
+		If IsElement(me.content(key$)) Then 
+			result = me.content(key$)
+		Else 
+			ForAll element In me.content 
+				If (0 = StrCompare(key$, ListTag(element), 5)) Then 
+					result = element 
+					Exit ForAll   
+				End If
+			End ForAll
+		End If
+		
+ExitPoint: 
+		getValue = result 
+		Exit Function
+ErrorTrap:
+		On Error GoTo 0
+		enhLogException me.CLASS_PREFIX, |key: | & key$
+		Resume ExitPoint 
+	End Function
+	
+	
+
+	
+	
+End Class
+
+%REM
+	Class SingleList 
+	Wrapper for a List As Single object, with extended functionality through the various properties and methods. 
+%END REM
+Public Class SingleList As azlwListCarrier 
+	Public content List As Single
+
+	Public Sub New()
+	End Sub
+
+	Public Sub Delete()
+		Erase me.content
+	End Sub
+	
+	Private Property Get CLASS_PREFIX As String 
+		CLASS_PREFIX = LIB_PREFIX & |Class: SingleList.|
+	End Property
+
+	%REM
+		Function getContent
+		Description: Gets the content list for the object
+	%END REM
+	Public Function getContent() As Variant 	
+		getContent = me.content 	
+	End Function
+
+	
+
+	Sub addAll(source As SingleList) 	
+		If (source Is Nothing) Then GoTo ExitPoint 
+		On Error GoTo ErrorTrap 
+		
+		Dim tag$ 
+
+		ForAll element In source.content
+			tag$ = ListTag(element) 
+			me.content(tag$) = element 
+		End ForAll
+		
+ExitPoint: 
+		Exit Sub
+ErrorTrap:
+		On Error GoTo 0
+		enhLogException me.CLASS_PREFIX, |tag: | & tag$
+		Resume ExitPoint 
+	End Sub
+	
+	
+	
+	Function getValue(key$) As Single
+		Dim result As Single  
+		On Error GoTo ErrorTrap 
+		
+		result = 0
+		If isBlankString(key$) Then GoTo ExitPoint 
+		
+		If IsElement(me.content(key$)) Then 
+			result = me.content(key$)
+		Else 
+			ForAll element In me.content 
+				If (0 = StrCompare(key$, ListTag(element), 5)) Then 
+					result = element 
+					Exit ForAll   
+				End If
+			End ForAll
+		End If
+		
+ExitPoint: 
+		getValue = result 
+		Exit Function
+ErrorTrap:
+		On Error GoTo 0
+		enhLogException me.CLASS_PREFIX, |key: | & key$
+		Resume ExitPoint 
+	End Function
+	
+	
+End Class
+
+%REM
+	Class DoubleList 
+	Wrapper for a List As Double object, with extended functionality through the various properties and methods. 
+%END REM
+Public Class DoubleList As azlwListCarrier 
+	Public content List As Double
+
+	Public Sub New()
+	End Sub
+
+	Public Sub Delete()
+		Erase me.content
+	End Sub
+	
+	Private Property Get CLASS_PREFIX As String 
+		CLASS_PREFIX = LIB_PREFIX & |Class: DoubleList.|
+	End Property
+
+
+	%REM
+		Function getContent
+		Description: Gets the content list for the object
+	%END REM
+	Public Function getContent() As Variant 	
+		getContent = me.content 	
+	End Function
+
+	
+
+	Sub addAll(source As DoubleList) 	
+		If (source Is Nothing) Then GoTo ExitPoint 
+		On Error GoTo ErrorTrap 
+		
+		Dim tag$ 
+
+		ForAll element In source.content
+			tag$ = ListTag(element) 
+			me.content(tag$) = element 
+		End ForAll
+		
+ExitPoint: 
+		Exit Sub
+ErrorTrap:
+		On Error GoTo 0
+		enhLogException me.CLASS_PREFIX, |tag: | & tag$
+		Resume ExitPoint 
+	End Sub
+	
+	
+	
+	Function getValue(key$) As Double
+		Dim result As Double  
+		On Error GoTo ErrorTrap 
+		
+		result = 0
+		If isBlankString(key$) Then GoTo ExitPoint 
+		
+		If IsElement(me.content(key$)) Then 
+			result = me.content(key$)
+		Else 
+			ForAll element In me.content 
+				If (0 = StrCompare(key$, ListTag(element), 5)) Then 
+					result = element 
+					Exit ForAll   
+				End If
+			End ForAll
+		End If
+		
+ExitPoint: 
+		getValue = result 
+		Exit Function
+ErrorTrap:
+		On Error GoTo 0
+		enhLogException me.CLASS_PREFIX, |key: | & key$
+		Resume ExitPoint 
+	End Function
+	
+	
+End Class
+
+%REM
+	Class CurrencyList 
+	Wrapper for a List As Currency object, with extended functionality through the various properties and methods. 
+%END REM
+Public Class CurrencyList As azlwListCarrier 
+	Public content List As Currency
+
+	Public Sub New()
+	End Sub
+
+	Public Sub Delete()
+		Erase me.content
+	End Sub
+	
+	Private Property Get CLASS_PREFIX As String 
+		CLASS_PREFIX = LIB_PREFIX & |Class: CurrencyList.|
+	End Property
+
+
+
+	%REM
+		Function getContent
+		Description: Gets the content list for the object
+	%END REM
+	Public Function getContent() As Variant 	
+		getContent = me.content 	
+	End Function
+
+	
+
+	Sub addAll(source As CurrencyList) 	
+		If (source Is Nothing) Then GoTo ExitPoint 
+		On Error GoTo ErrorTrap 
+		
+		Dim tag$ 
+
+		ForAll element In source.content
+			tag$ = ListTag(element) 
+			me.content(tag$) = element 
+		End ForAll
+		
+ExitPoint: 
+		Exit Sub
+ErrorTrap:
+		On Error GoTo 0
+		enhLogException me.CLASS_PREFIX, |tag: | & tag$
+		Resume ExitPoint 
+	End Sub
+	
+	
+	
+	Function getValue(key$) As Currency
+		Dim result As Currency  
+		On Error GoTo ErrorTrap 
+		
+		result = 0
+		If isBlankString(key$) Then GoTo ExitPoint 
+		
+		If IsElement(me.content(key$)) Then 
+			result = me.content(key$)
+		Else 
+			ForAll element In me.content 
+				If (0 = StrCompare(key$, ListTag(element), 5)) Then 
+					result = element 
+					Exit ForAll   
+				End If
+			End ForAll
+		End If
+		
+ExitPoint: 
+		getValue = result 
+		Exit Function
+ErrorTrap:
+		On Error GoTo 0
+		enhLogException me.CLASS_PREFIX, |key: | & key$
+		Resume ExitPoint 
+	End Function
+	
+	
+End Class
+%REM
+	Class KeyedNotesDateTime
+	Description: Carrier for a key / value pair, where the value is a String
+%END REM
+Class KeyedString 
+	Public key As String 
+	Public value As String 
+
+	Public Sub New() 
+	End Sub
+End Class
+%REM
+	Class KeyedStringList 
+	Wrapper for a List As KeyedString object, with extended functionality through the various properties and methods. 
+%END REM
+Class KeyedStringList As azlwListCarrier 
+	Public content List As KeyedString
+
+	Public Sub New()
+	End Sub
+
+	Public Sub Delete()
+		Erase me.content
+	End Sub
+	
+	Private Property Get CLASS_PREFIX As String 
+		CLASS_PREFIX = LIB_PREFIX & |Class: KeyedStringList.|
+	End Property
+
+
+
+	%REM
+		Function getContent
+		Description: Gets the content list for the object
+	%END REM
+	Public Function getContent() As Variant 	
+		getContent = me.content 	
+	End Function
+
+	
+
+	
+	Sub addAll(source As KeyedStringList) 	
+		If (source Is Nothing) Then GoTo ExitPoint 
+		On Error GoTo ErrorTrap 
+		
+		Dim tag$ 
+
+		ForAll element In source.content
+			tag$ = ListTag(element) 
+			Set me.content(tag$) = element 
+		End ForAll
+		
+ExitPoint: 
+		Exit Sub
+ErrorTrap:
+		On Error GoTo 0
+		enhLogException me.CLASS_PREFIX, |tag: | & tag$
+		Resume ExitPoint 
+	End Sub
+	
+	
+	
+	
+	Function getValue(key$) As KeyedString
+		Dim result As KeyedString 
+		On Error GoTo ErrorTrap 
+		
+		Set result = Nothing 
+		If isBlankString(key$) Then GoTo ExitPoint 
+		
+		If IsElement(me.content(key$)) Then 
+			Set result = me.content(key$) 
+		Else 
+			ForAll element In me.content 
+				If (0 = StrCompare(key$, ListTag(element), 5)) Then 
+					Set result = element 
+					Exit ForAll   
+				End If
+			End ForAll
+		End If
+		
+ExitPoint: 
+		Set getValue = result 
+		Exit Function
+ErrorTrap:
+		On Error GoTo 0
+		enhLogException me.CLASS_PREFIX, |key: | & key$
+		Resume ExitPoint 
+	End Function
+	
+	
+	
+End Class
+
+%REM
+	Class StringSet 
+	Carrier for a set of unique strings  
+%END REM
+Public Class StringSet As azlwListCarrier 
+	Public content List As Boolean
+
+	Public Sub New()
+	End Sub
+
+	Public Sub Delete()
+		Erase me.content
+	End Sub
+
+	
+	Private Property Get CLASS_PREFIX As String 
+		CLASS_PREFIX = LIB_PREFIX & |Class: StringSet.|
+	End Property
+
+
+
+	%REM
+		Function getContent
+		Description: Gets the content list for the object
+	%END REM
+	Public Function getContent() As Variant 	
+		getContent = me.content 	
+	End Function
+
+
+	%REM
+		Sub add
+		Adds an element to the set
+		
+		@param source$ String value to add to the set 
+	%END REM
+	Sub add(source$)   
+		If Not isBlankString(source$) Then me.content(source$) = False 
+	End Sub
+
+	
+	Sub addAll(source As StringSet) 	
+		If (source Is Nothing) Then GoTo ExitPoint 
+		On Error GoTo ErrorTrap 
+		
+		Dim tag$ 
+
+		ForAll element In source.getContent() 
+			tag$ = ListTag(element)
+			me.content(tag$) = CStr(element)
+		End ForAll
+		
+ExitPoint: 
+		Exit Sub
+ErrorTrap:
+		On Error GoTo 0
+		enhLogException me.CLASS_PREFIX, |tag: | & tag$
+		Resume ExitPoint 
+	End Sub
+	
+	
+	
+	%REM
+		Property Get Values
+		escription: sorted Array of all ListTags
+	%END REM
+	Property Get Values As Variant 
+		Values = me.sortedListTags 
+	End Property
+
+
+	Property Get json As String 
+		On Error GoTo ErrorTrap
+
+		Dim tmpvalues As Variant 
+		Dim valuesarray() As String 
+
+		Dim result$
+		Dim i%
+		
+		If me.hasContent Then 
+			ReDim valuesarray(me.size - 1) As String 
+
+			tmpvalues = me.Values 
+			ForAll element In tmpvalues
+				valuesarray(i%) = toJSONvalue(element) 
+				i% = i% + 1
+			End ForAll
+			
+			result$ = |[| & Join(valuesarray, |,|) & |]|
+		Else 
+			result$ = |[]|
+		End If
+		
+ExitPoint:		
+		json = result$
+		Exit Property 
+ErrorTrap:
+		On Error GoTo 0
+		enhLogException me.CLASS_PREFIX, ||
+		result$ = |[]|
+		Resume ExitPoint 
+	End Property
+	
+	Property Get jsonAllStrings As String 
+		On Error GoTo ErrorTrap
+
+		Dim valuesarray() As String 
+
+		Dim result$
+		Dim stringvalue$
+		Dim i%
+		
+		If me.hasContent Then 
+			ReDim valuesarray(me.size - 1) As String 
+
+			ForAll element In me.getContent()
+				stringvalue$ = toJSONvalue(element)
+				If isBlankString(stringvalue$) Then 
+					stringvalue$ = ""
+				ElseIf (|"| <> Left$(stringvalue$, 1)) Then
+					stringvalue$ = |"| & stringvalue$ & |"|
+				End If
+
+				valuesarray(i%) = stringvalue$
+				i% = i% + 1
+			End ForAll
+			
+			result$ = |[| & Join(valuesarray, |,|) & |]|
+		Else 
+			result$ = |[]|
+		End If
+		
+ExitPoint:		
+		jsonAllStrings = result$
+		Exit Property 
+ErrorTrap:
+		On Error GoTo 0
+		enhLogException me.CLASS_PREFIX, ||
+		result$ = |[]|
+		Resume ExitPoint 
+	End Property
+
+	
+End Class
+%REM
+	Class ExceptionCarrier
+	Carrier for Exception information
+%END REM
+Class ExceptionCarrier 
+	Private callingclassname_ As String 
+	Private callingmodule_ As String
+	Private callingprocedure_ As String 
+	Private timestamp_ As Double  
+	Private errcode_ As Integer 
+	Private errline_ As Integer 
+	
+	Private Property Get CLASS_PREFIX As String 
+		CLASS_PREFIX = LIB_PREFIX & |Class: ExceptionCarrier.|
+	End Property
+	
+	Public Sub New(errcode%, errmsg$, module$, classname$, procedure$, errorline%)  
+		me.timestamp_ = Now() 
+		me.errcode_ = errcode% 
+		me.callingmodule_ = module$
+		me.callingclassname_ = classname$
+		me.callingprocedure_ = procedure$
+		me.errline_ = errorline%
+		
+		getErrorMessages().content(CStr(errcode%)) = errmsg$
+	End Sub
+	
+	%REM
+		Property Get RawTime
+		Date and Time the object was instantiated, as a Variant of DataType 7 (Date/Time).
+		A date/time value is an eight-byte floating-point value. 
+		The integer part represents a serial day counted from the date January 1, 100 AD. 
+		The fractional part represents the time as a fraction of a day, measured from midnight on the preceding day.
+		
+		@return date/time of instantiation
+	%END REM
+	Public Property Get RawTime As Double 
+		RawTime = me.timestamp_ 
+	End Property
+	
+	%REM
+		Property Get Timestamp
+		Date and Time of instantiation, represented as a string with a trailing blank space.
+		
+		@return String representation of object's RawTime 
+	%END REM
+	Public Property Get Timestamp As String 
+		Timestamp = Format$(me.timestamp_, "yyyy/mm/dd hh:mm:ss") & | |
+	End Property
+	
+	
+	%REM
+		Property Get ErrorCode
+		The Error Number 
+	%END REM
+	Public Property Get ErrorCode As Integer 
+		ErrorCode = me.errcode_ 
+	End Property
+	
+	%REM
+		Property Get ErrorLine
+		The Error Line Number 
+	%END REM
+	Public Property Get ErrorLine As Integer 
+		ErrorLine = me.errline_ 
+	End Property
+	
+	%REM
+		Property Get ErrorMessage
+		The Error Message
+	%END REM
+	Public Property Get ErrorMessage As String 
+		ErrorMessage = getErrorMessages().getValue(CStr(me.errcode_))
+	End Property
+	
+	%REM
+		Property Get CallingModule
+		The Calling Module
+	%END REM
+	Public Property Get CallingModule As String 
+		CallingModule = me.callingmodule_
+	End Property
+	
+	%REM
+		Property Get CallingClassname
+		The Calling Module
+	%END REM
+	Public Property Get CallingClassname As String 
+		CallingClassname = me.callingclassname_ 
+	End Property
+	
+	%REM
+		Property Get CallingProcedure
+		The Calling Procedure
+	%END REM
+	Public Property Get CallingProcedure As String 
+		CallingProcedure = me.callingprocedure_
+	End Property
+	
+	%REM
+		Property Get ModuleClassProcdure
+		Concatenation of the CallingModule, Calling Class, and CallingProcedure
+	%END REM
+	Public Property Get ModuleClassProcdure As String 
+		On Error GoTo ErrorTrap
+
+		Dim chunks() As String
+		Dim i% 		
+		Dim result$ 
+		
+		If isBlankString(me.CallingModule) And isBlankString(me.CallingClassname) And isBlankString(me.CallingProcedure) Then GoTo ExitPoint 
+		
+		ReDim chunks(i%) As String 
+		If Not isBlankString(me.CallingModule) Then
+			ReDim Preserve chunks(i%) As String  
+			chunks(i%) = me.CallingModule 
+			i% = i% + 1
+		End If
+		If Not isBlankString(me.CallingClassname) Then
+			ReDim Preserve chunks(i%) As String  
+			chunks(i%) = me.CallingClassname 
+			i% = i% + 1
+		End If
+		If Not isBlankString(me.CallingProcedure) Then
+			ReDim Preserve chunks(i%) As String  
+			chunks(i%) = me.CallingProcedure 
+			i% = i% + 1
+		End If
+		
+		result$ = Join(chunks, |.|) 
+		
+ExitPoint:
+		ModuleClassProcdure = result$
+		Exit Property
+ErrorTrap:
+		On Error GoTo 0
+		enhLogException me.CLASS_PREFIX, ||
+		Resume ExitPoint 
+	End Property
+	
+	
+	%REM
+		SummaryShort
+		Summary consisting of the ModuleClassProcedure and  ErrorLine
+	%END REM
+	Public Property Get SummaryShort As String 
+		On Error GoTo ErrorTrap
+		
+		Dim mcp$
+		Dim result$ 
+		
+		mcp$ = me.ModuleClassProcdure 
+		If isBlankString(mcp$) And (0 = me.ErrorLine) Then GoTo ExitPoint
+		 
+		If isBlankString(mcp$) Then 
+			If (0 = me.ErrorLine) Then GoTo ExitPoint
+			result$ = |Line(|
+		Else 
+			result$ = mcp$ & |(|
+		End If
+		
+		If (0 <> me.ErrorLine) Then result$ = result$ & CStr(me.ErrorLine)
+		result$ = result$ & |)|
+		
+	ExitPoint:
+		SummaryShort = result$
+	  	Exit Property
+	ErrorTrap:
+	  	On Error GoTo 0
+	  	enhLogException me.CLASS_PREFIX, ||
+	  	Resume ExitPoint 
+	End Property
+	
+	
+	%REM
+		Property Get SummaryMedium
+		Summary consisting of Timestamp and SummaryShort
+	%END REM
+	Public Property Get SummaryMedium As String 
+		SummaryMedium = me.Timestamp & me.SummaryShort 
+	End Property
+	
+	
+	%REM
+		Property Get SummaryLong
+		Summary consisting of SummaryMedium, ErrorCode, and ErrorMessage
+	%END REM
+	Public Property Get SummaryLong As String 
+		On Error GoTo ErrorTrap
+		
+		Dim result$ 
+		result$ = me.SummaryMedium 
+		If (0 = me.ErrorCode) Then GoTo ExitPoint 
+			
+		result$ = result$ & | #| & CStr(me.ErrorCode) 
+		If isBlankString(me.ErrorMessage) Then GoTo ExitPoint 
+		
+		result$ = result$ & |: | & me.ErrorMessage 
+		
+ExitPoint:
+		SummaryLong = result$
+		Exit Property
+ErrorTrap:
+		On Error GoTo 0
+		enhLogException me.CLASS_PREFIX, ||
+		Resume ExitPoint 			
+		
+	End Property
+	
+End Class
+%REM
+	Class ExceptionCarrierStack
+	Stack Implementation ExceptionCarrier objects.
+%END REM
+Public Class ExceptionCarrierStack 
+	Private content_() As ExceptionCarrier 
+	Private hasContent_ As Boolean 
+	
+	
+	Public Sub New() 
+	End Sub
+
+	%REM
+		Property Get hasContent
+		Flag indicating if the object has content 
+	%END REM
+	Public Property Get hasContent As Boolean 
+		hasContent = me.hasContent_ 
+	End Property
+	
+
+	%REM
+		Sub Push
+		Adds an object to the top of the stack
+	%END REM
+	Public Sub push(source As ExceptionCarrier)
+		If me.hasContent Then 
+			ReDim Preserve me.content_(UBound(me.content_) + 1) As ExceptionCarrier
+			Set me.content_(UBound(me.content_)) = source
+		Else 
+			ReDim me.content_(0) As ExceptionCarrier 
+			Set me.content_(0) = source
+			me.hasContent_ = True 
+		End If
+	End Sub
+	
+	
+	%REM 
+		Function Pop
+		Gets the top (last added) object from the stack, then removes it from the stack.
+		
+		@return last added object from the stack, or nothing if stack is empty 
+	%END REM
+	Public Function pop() As ExceptionCarrier 
+		If me.hasContent Then 
+			Set pop = me.content_(UBound(me.content_)) 
+			If (UBound(me.content_) > 0) Then 
+				ReDim Preserve me.content_(UBound(me.content_) -1) As ExceptionCarrier
+			Else 
+				me.hasContent_ = False 
+				ReDim me.content_(0) As ExceptionCarrier 
+			End If
+		Else 
+			Set pop = Nothing 
+		End If
+	End Function
+	 
+End Class
+
+%REM
+	Class StringSetList 
+	Wrapper for a List As StringSet object, with extended functionality through the various properties and methods. 
+%END REM
+Public Class StringSetList As azlwListCarrier 
+	Public content List As StringSet 
+	
+	
+	Private Property Get CLASS_PREFIX As String 
+		CLASS_PREFIX = LIB_PREFIX & |Class: StringSetList.|
+	End Property
+	
+
+	Public Sub New()
+	End Sub
+
+	Public Sub Delete()
+		Erase me.content
+	End Sub
+	
+	
+	%REM
+		Function getContent
+		Description: Gets the content list for the object
+	%END REM
+	Public Function getContent() As Variant 	
+		getContent = me.content 	
+	End Function
+
+	
+	Sub addAll(source As StringSetList) 	
+		If (source Is Nothing) Then GoTo ExitPoint 
+		On Error GoTo ErrorTrap 
+		
+		Dim tag$ 
+
+		ForAll element In source.content
+			tag$ = ListTag(element) 
+			Set me.content(tag$) = element 
+		End ForAll
+		
+ExitPoint: 
+		Exit Sub
+ErrorTrap:
+		On Error GoTo 0
+		enhLogException me.CLASS_PREFIX, |tag: | & tag$
+		Resume ExitPoint 
+	End Sub
+	
+	
+	
+	
+	Function getValue(key$) As StringSet
+		Dim result As StringSet  
+		On Error GoTo ErrorTrap 
+		
+		Set result = Nothing  
+		If isBlankString(key$) Then GoTo ExitPoint 
+		
+		If IsElement(me.content(key$)) Then 
+			Set result = me.content(key$)
+		Else 
+			ForAll element In me.content 
+				If (0 = StrCompare(key$, ListTag(element), 5)) Then 
+					Set result = me.content(key$)
+					Exit ForAll   
+				End If
+			End ForAll
+		End If
+		
+ExitPoint: 
+		Set getValue =result
+		Exit Function
+ErrorTrap:
+		On Error GoTo 0
+		enhLogException me.CLASS_PREFIX, |key: | & key$
+		Resume ExitPoint 
+	End Function
+	
+	
+	
+End Class
+%REM
+	Class IntegerPairList 
+	Wrapper for a List As IntegerPair object, with extended functionality through the various properties and methods. 
+%END REM
+Class IntegerPairList As azlwListCarrier 
+	Public content List As IntegerPair
+
+	Public Sub New()
+	End Sub
+
+	Public Sub Delete()
+		Erase me.content
+	End Sub
+	
+	Private Property Get CLASS_PREFIX As String 
+		CLASS_PREFIX = LIB_PREFIX & |Class: IntegerPairList.|
+	End Property
+
+
+
+	%REM
+		Function getContent
+		Description: Gets the content list for the object
+	%END REM
+	Public Function getContent() As Variant 	
+		getContent = me.content 	
+	End Function
+
+	
+	Sub addAll(source As IntegerPairList) 	
+		If (source Is Nothing) Then GoTo ExitPoint 
+		On Error GoTo ErrorTrap 
+		
+		Dim tag$ 
+
+		ForAll element In source.content
+			tag$ = ListTag(element) 
+			Set me.content(tag$) = element 
+		End ForAll
+		
+ExitPoint: 
+		Exit Sub
+ErrorTrap:
+		On Error GoTo 0
+		enhLogException me.CLASS_PREFIX, |tag: | & tag$
+		Resume ExitPoint 
+	End Sub
+	
+	
+	
+	
+	Function getValue(key$) As IntegerPair
+		Dim result As IntegerPair 
+		On Error GoTo ErrorTrap 
+		
+		Set result = Nothing 
+		If isBlankString(key$) Then GoTo ExitPoint 
+		
+		If IsElement(me.content(key$)) Then 
+			Set result = me.content(key$) 
+		Else 
+			ForAll element In me.content 
+				If (0 = StrCompare(key$, ListTag(element), 5)) Then 
+					Set result = element 
+					Exit ForAll   
+				End If
+			End ForAll
+		End If
+		
+ExitPoint: 
+		Set getValue = result 
+		Exit Function
+ErrorTrap:
+		On Error GoTo 0
+		enhLogException me.CLASS_PREFIX, |key: | & key$
+		Resume ExitPoint 
+	End Function
+		
+End Class
+
+
+
+
+%REM
+	Type IntegerPair
+	Carrier for a pair of Integers
+%END REM
+Public Class IntegerPair 
+	Private first_ As Integer 
+	Private last_ As Integer
+	
+	
+	Private Property Get CLASS_PREFIX As String 
+		CLASS_PREFIX = LIB_PREFIX & |Class: IntegerPair.|
+	End Property
+	
+	Public Property Get First As Integer
+		First = me.first_ 
+	End Property
+
+	Public Property Get Last As Integer
+		Last = me.last_ 
+	End Property
+			
+	%REM
+		Constructor
+	%END REM
+	Public Sub New(first%, last%)  
+		me.first_ = first% 
+		me.last_ = last% 
+	End Sub
+End Class
+'++LotusScript Development Environment:2:2:Initialize:1:10
+Sub Initialize
+	
+	
+
+End Sub
+
+'++LotusScript Development Environment:2:1:updateDocumentStringSet:1:8
+Function updateDocumentStringSet(source As StringSet, itemname$, target As NotesDocument) As Boolean  
+	If isBlankString(itemname$) Then Error ERR_PARAMETER_BLANK, MSG_PARAMETER_BLANK & |Itemname is blank|
+	If (target Is Nothing) Then GoTo ExitPoint 
+
+	On Error GoTo ErrorTrap
+	
+	Dim hasNoContent As Boolean 
+	Dim result As Boolean 
+	
+	hasNoContent = (source Is Nothing) 
+	If Not hasNoContent Then hasNoContent = Not source.hasContent
+	
+	If hasNoContent Then 
+		If target.hasItem(itemname$) Then 
+			Call target.RemoveItem(itemname$) 
+			result = True 
+		End If
+	Else 
+		Call target.ReplaceItemValue(itemname$, source.values) 
+		result = True 
+	End If	
+	
+ExitPoint:
+	Exit Function
+ErrorTrap:
+	On Error GoTo 0 
+	enhLogException LIB_PREFIX, |Itemname: | & itemname$
+	Resume ExitPoint 		
+End Function
+
+'++LotusScript Development Environment:2:1:ampersandEncode:10:8
+%REM
+	Function ampersandEncode
+	Replaces special characters (quote, apostrophe, less than, greater than, ampersand, etc) in a string with ampersand sequences	
+	
+	@param source String to encode
+	 
+	@return Ampersand-Encoded representation of source   
+	
+%END REM
+Function ampersandEncode(source$) As String
+	On Error GoTo ErrorTrap 
+
+	Dim extendedinfo List As String 
+	Dim msg$
+
+	Dim result$
+	
+	' BEGIN CODE
+	If isBlankString(source$) Then GoTo ExitPoint
+	extendedinfo(|source|) = source$
+	
+	result$ = source$
+	ForAll sequence In getAmpersandSequences().content 
+		extendedinfo(|sequence|) = sequence 
+		result$ = Join(Split(result$, ListTag(sequence)), sequence)
+	End ForAll
+
+	
+ExitPoint:		
+	ampersandEncode = result$
+	Exit Function 
+ErrorTrap:
+	On Error GoTo 0
+	ForAll s In extendedinfo 
+		If isBlankString(msg$) Then 
+			msg$ = ListTag(s) & |: | & s
+		Else 
+			msg$ = msg$ & Chr(10) & ListTag(s) & |: | & s
+		End If
+	End ForAll
+	enhLogException LIB_PREFIX, msg$
+	Resume ExitPoint 
+End Function
+
+'++LotusScript Development Environment:2:1:jsonArrayToStringList:12:8
+%REM
+	Function jsonArrayToStringList
+	Converts a NotesJSONArray to a StringList 
+	
+	Empty strings, null, zero, and false values are not included in the result. 
+	
+	Note: StringLists are single level lists.  Array elements in JSON string will be flattened such that the last named element entry appears in the result. 
+	
+	@param source NotesJSONArray from which to construct the StringList 
+	@return StringList object constructed from the JSON source 
+%END REM
+Function jsonArrayToStringList(source As NotesJSONArray) As StringList 
+	On Error GoTo ErrorTrap
+	
+	' exception variables
+	Dim extendedinfo List As String 
+	Dim msg$
+	
+	
+	Dim result As New StringList()
+	Dim ss As StringList 
+	
+	Dim element As NotesJSONElement 
+	
+	
+	' BEGIN CODE
+	If (source Is Nothing) Then GoTo ExitPoint 
+	
+	extendedinfo(|Source Size|) = CStr(source.Size) 
+	Set element = source.getFirstElement()
+	While Not element Is Nothing
+		extendedinfo(|Element Name|) = element.Name
+		extendedinfo(|Element Type|) = CStr(element.Type) 
+		extendedinfo(|Element Type Name|) = getJSONelementTypeName(element.Type) 		
+		
+		
+		Set ss = jsonElementToStringList(element) 
+		If ss.hasContent Then result.addAll ss
+		Set element = source.getNextElement()
+	Wend
+
+		
+ExitPoint: 
+	Set jsonArrayToStringList = result
+	Exit Function 
+ErrorTrap:
+	On Error GoTo 0
+	ForAll s In extendedinfo
+		If isBlankString(msg$) Then 
+			msg$ = ListTag(s) & |: | & s
+		Else 
+			msg$ = msg$ & |, | & Chr(10) & ListTag(s) & |: | & s
+		End If
+	End ForAll
+	enhLogException LIB_PREFIX, msg$
+	Resume ExitPoint
+End Function
+
+'++LotusScript Development Environment:2:1:stripCRLF:10:8
+%REM
+	Function stripCRLF
+	Strips Carriage Returns and Line Feeds from a string and returns the result as a new FULLY Trimmed string. 
+	
+	NOTE: This is a convenience wrapper for replaceCRLF(source$, ||) 
+	
+	@param source$ String from which Carriage Returns and Line Feeds should be removed. 
+	@return source$ with all Carriage Returns and Line Feeds stripped out. 
+%END REM
+Function stripCRLF(source$) As String 
+	stripCRLF = FullTrim(replaceCRLF(source$, ||)) 
+End Function
+
+'++LotusScript Development Environment:2:1:at_urlEncode:5:8
+%REM 
+	Function at_urlEncode 
+	LotusScript implementation of @URLencode method
+%END REM
+Public Function at_urlEncode(source$) As String
+	On Error GoTo ErrorTrap 
+
+	Dim result$ 
+	
+	result$ = getScalarString(Evaluate(|@URLencode("Domino" ; "| & source$ & |")|)) 
+
+ExitPoint: 
+	at_urlEncode = result$
+	Exit Function
+ErrorTrap:
+	On Error GoTo 0
+	enhLogException LIB_PREFIX, |Source: | & source
+	Resume ExitPoint		
+End Function
+
+'++LotusScript Development Environment:2:2:shellSortStrings:5:8
+%REM
+	Function shellSortStrings
+	Performs a "divide and conquer" sort, based on an insertion sort algorithm.  
+%END REM
+Public Sub shellSortStrings(source As Variant)
+	On Error GoTo ErrorTrap
+	
+	Dim extendedinfo List As String 
+	Dim msg$
+	
+	Dim insertionValue$
+	
+	Dim errmsg$
+	Dim errcode%
+	
+	Dim lowerbound&
+	Dim upperbound&
+	Dim elementcount&
+	
+	Dim idxOuter&
+	Dim idxInner&
+	
+	Dim interval&
+	
+
+	lowerbound& = LBound(source)
+	extendedinfo(|lowerbound|) = CStr(lowerbound&)
+	
+	upperbound& = UBound(source)
+	extendedinfo(|upperbound|) = CStr(upperbound&)
+	
+	elementcount& = upperbound& - lowerbound& + 1
+	extendedinfo(|elementcount|) = CStr(elementcount&)
+	
+	interval& = 1
+	extendedinfo(|interval|) = CStr(interval&)
+	
+	
+	' Determine the interval 
+	While (interval& < (elementcount& / 3)) 
+		interval& = (3 * interval&) + 1
+		extendedinfo(|interval|) = CStr(interval&)	
+	Wend
+	
+	While (interval& > 0) 
+		idxOuter& = interval&
+		extendedinfo(|Outer Index|) = CStr(idxOuter&)	
+		While idxOuter& < elementcount&
+			
+			' get the insertion value 
+			insertionValue$ = source(idxOuter&) 
+			extendedinfo(|Insertion Value|) = insertionValue$ 
+			
+			idxInner& = idxOuter& 
+			extendedinfo(|Inner Index|) = CStr(idxInner&)	
+			
+			' shift the element to the right
+			Do While (idxInner& > (interval& -1)) 
+				If (StrCompare(source(idxInner& - interval&), insertionValue$) < 0) Then Exit Do 
+				source(idxInner&) = source(idxInner& - interval&) 
+				idxInner& = idxInner& - interval& 
+				extendedinfo(|Inner Index|) = CStr(idxInner&)				
+			Loop
+				
+			' insert the value 
+			source(idxInner&) = insertionValue$ 
+						
+			idxOuter& = idxOuter& + 1
+			extendedinfo(|Outer Index|) = CStr(idxOuter&)	
+		Wend
+
+		' recompute the interval 
+		interval& = (interval& -1) / 3		
+	Wend
+	
+	
+ExitPoint:
+	If (errcode% <> 0) Then Error errcode%, errmsg$
+	Exit Sub
+ErrorTrap:
+	On Error GoTo 0
+	errcode% = Err()
+	errmsg$ = Error$()
+	ForAll s In extendedinfo 
+		If isBlankString(msg$) Then 
+			msg$ = ListTag(s) & |: | & s
+		Else 
+			msg$ = msg$ & Chr(10) & ListTag(s) & |: | & s
+		End If
+	End ForAll
+	enhLogException LIB_PREFIX, msg$
+	Resume ExitPoint 	
+End Sub
+
+'++LotusScript Development Environment:2:1:replaceCRLF:9:8
+%REM
+	Function replaceCRLF
+	Replaces Carriage Returns and Line Feeds in a string with a new string and returns a new string. 
+	
+	@param source$  String from which Carriage Returns and Line Feeds should be removed. 
+	@param replacement$ New string to replace all CarriageReturns and Line Feeds.
+	@return source$ with all Carriage Returns and Line Feeds  replaced 
+%END REM
+Function replaceCRLF(source$, replacement$) As String 
+	On Error GoTo ErrorTrap
+	
+	' exception variables
+	Dim extendedinfo List As String 
+	Dim msg$
+
+	Dim result$
+
+	
+	' BEGIN CODE
+	extendedinfo(|source|) = source$
+	
+	result$ = source$
+	If IsBlankString(result$) Then GoTo ExitPoint 
+	
+	' replace carriage returns and line feeds
+	If (InStr(result$, CRLF) > 0) Then result$ = Join(Split(result$, CRLF), replacement$)
+	If (InStr(result$, CR) > 0) Then result$ = Join(Split(result$, CR), replacement$)
+	If (InStr(result$, LF) > 0) Then result$ = Join(Split(result$, LF), replacement$)
+
+	
+ExitPoint: 
+	replaceCRLF = result$
+	Exit Function 
+ErrorTrap:
+	On Error GoTo 0
+	ForAll s In extendedinfo
+		If isBlankString(msg$) Then 
+			msg$ = ListTag(s) & |: | & s
+		Else 
+			msg$ = msg$ & |, | & Chr(10) & ListTag(s) & |: | & s
+		End If
+	End ForAll
+	enhLogException LIB_PREFIX, msg$
+	Resume ExitPoint
+End Function
+
+'++LotusScript Development Environment:2:2:enhLogComplexElement:8:8
+%REM
+	Sub enhLogComplexElement
+	Logs an element using enhanced log extended content 
+	
+	@param source 	Element to log 
+	@param tagname	Name of element for logging 
+%END REM
+Private Sub enhLogComplexElement(source As Variant, tagname$) 
+	On Error GoTo ErrorTrap
+	
+	Static recursions As Integer 
+	
+	' exception variables
+	Dim extendedinfo List As String 
+	Dim msg$
+	
+	Dim sourcetype$
+	
+	
+	' BEGIN CODE 
+	If (recursions > 5) Then
+		enhLogWarning LIB_PREFIX, |Too many recursions, aborting|  
+		GoTo ExitPoint
+	End If  
+	
+	recursions = recursions + 1
+	extendedinfo(|TagName|) = tagname$ 
+	
+	sourcetype$ = TypeName(source) 
+	extendedinfo(|Source Type|) = sourcetype$ 
+	Select Case LCase(sourcetype$) 
+		Case |azlwlistcarrier|:
+			enhLogComplexElement source.getContent(), tagname$
+			
+		Case |booleanlist|, _ 
+		|currencylist|, _ 
+		|datelist|, _ 
+		|doublelist|, _ 
+		|integerlist|, _ 
+		|longlist|, _ 
+		|singlelist|, _ 
+		|stringlist|, _ 
+		|variantlist|: 
+			enhLogComplexElement source.content, tagname$
+
+		Case Else:
+			If IsScalar(source) Then
+				enhLogExtendedContent ||, ||, tagname$ & |: | & CStr(source)  
+			ElseIf IsList(source) Then 
+				enhLogExtendedContent ||, ||, tagname$
+				ForAll listElement In source 
+					enhLogComplexElement listElement, HT & ListTag(listElement)   			
+				End ForAll 
+				enhLogExtendedContent ||, ||, ||
+				
+			ElseIf IsArray(source) Then
+				enhLogExtendedContent ||, ||, tagname$
+				ForAll arrayelement In source 
+					enhLogComplexElement arrayelement, HT & HT  			
+				End ForAll 
+				enhLogExtendedContent ||, ||, ||
+			Else
+				enhLogExtendedContent ||, ||, tagname$ & |: - UNABLE TO LOG | & TypeName(source) 
+			End If 
+	End Select
+	
+	
+	
+	
+
+	
+ExitPoint: 
+	If (recursions > 0) Then recursions = recursions - 1
+	Exit Sub 
+ErrorTrap:
+	On Error GoTo 0
+	ForAll s In extendedinfo
+		If isBlankString(msg$) Then 
+			msg$ = ListTag(s) & |: | & s
+		Else 
+			msg$ = msg$ & |, | & Chr(10) & ListTag(s) & |: | & s
+		End If
+	End ForAll
+	enhLogException LIB_PREFIX, msg$
+	Resume ExitPoint
+End Sub
+
+'++LotusScript Development Environment:2:1:jsonObjectToStringList:12:8
+%REM
+	Function jsonObjectToStringList
+	Converts a NotesJSONObject  to a StringList 
+	
+	Empty strings, null, zero, and false values are not included in the result. 
+	
+	Note: StringLists are single level lists.  Array elements in JSON string will be flattened such that the last named element entry appears in the result. 
+	
+	@param source NotesJSONObject from which to construct the StringList 
+	@return StringList object constructed from the JSON source 
+%END REM
+Function jsonObjectToStringList(source As NotesJSONObject) As StringList 
+	On Error GoTo ErrorTrap
+	
+	' exception variables
+	Dim extendedinfo List As String 
+	Dim msg$
+	
+	Dim result As New StringList()
+	Dim ss As StringList 
+	
+	Dim element As NotesJSONElement 
+	
+
+	' BEGIN CODE
+	If (source Is Nothing) Then GoTo ExitPoint 
+
+	extendedinfo(|Source Size|) = CStr(source.Size) 
+	Set element = source.getFirstElement()
+	While Not element Is Nothing
+		extendedinfo(|Element Name|) = element.Name
+		extendedinfo(|Element Type|) = CStr(element.Type) 
+		extendedinfo(|Element Type Name|) = getJSONelementTypeName(element.Type) 
+
+		Set ss = jsonElementToStringList(element) 
+		If ss.hasContent Then result.addAll ss	
+		Set element = source.getNextElement()
+	Wend
+
+		
+ExitPoint: 
+	Set jsonObjectToStringList = result
+	Exit Function 
+ErrorTrap:
+	On Error GoTo 0
+	ForAll s In extendedinfo
+		If isBlankString(msg$) Then 
+			msg$ = ListTag(s) & |: | & s
+		Else 
+			msg$ = msg$ & |, | & Chr(10) & ListTag(s) & |: | & s
+		End If
+	End ForAll
+	enhLogException LIB_PREFIX, msg$
+	Resume ExitPoint
+End Function
+
+'++LotusScript Development Environment:2:1:getErrorMessages:9:8
+
+
+%REM
+	Function getErrorMessages
+	Gets the list of all errors that have been added. 
+	k = Error Number 
+	v = Error String 	
+%END REM
+Function getErrorMessages() As StringList
+	On Error GoTo ErrorTrap 
+	Static result As StringList 
+	
+	If (result Is Nothing) Then Set result = New StringList() 
+	
+ExitPoint: 
+	Set getErrorMessages = result	
+	Exit Function 
+ErrorTrap:
+	On Error GoTo 0
+	enhLogException LIB_PREFIX, ||
+	Resume ExitPoint 
+End Function
+
+'++LotusScript Development Environment:2:1:getAmpersandSequences:15:8
+
+
+%REM
+	Function getAmpersandSequences
+	Gets ampersand sequences for special characters (quote, apostrophe, less than, greater than, ampersand)
+
+	"   &quot;
+	'   &apos;
+	<   &lt;
+	>   &gt;
+	&   &amp;
+			
+	@return StringList containing ampersand sequences (k=special character, v=sequence) 
+%END REM
+Function getAmpersandSequences() As StringList 
+	On Error GoTo ErrorTrap
+	
+	Static result As StringList 
+	
+	If (result Is Nothing) Then 
+		Set result = New StringList()
+		result.content(|"|) = |&quot;|
+		result.content(|'|) = |&apos;|
+		result.content(|<|) = |&lt;|
+		result.content(|>|) = |&gt;|
+		result.content(|&|) = |&amp;|
+	End If
+	
+ExitPoint:		
+	Set getAmpersandSequences = result
+	Exit Function 
+ErrorTrap:
+	On Error GoTo 0
+	enhLogException LIB_PREFIX, ||
+	Resume ExitPoint 
+End Function
+
+'++LotusScript Development Environment:2:1:jsonToStringList:26:8
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+%REM
+	Function jsonToStringList
+	Converts a JSON string to a StringList object. 
+	
+	Empty strings, null, zero, and false values are not included in the result. 
+	
+	Note: StringLists are single level lists.  Array elements in JSON string will be flattened such that the last named element entry appears in the result. 
+	
+	@param source JSON string from which to construct the StringList 
+	@return StringList object constructed from the JSON source 
+%END REM
+Public Function jsonToStringList(source$) As StringList
+	On Error GoTo ErrorTrap
+	
+	' exception variables
+	Dim extendedinfo List As String 
+	Dim msg$
+	
+	
+	Dim result As New StringList()
+	Dim ss As StringList 
+	Dim nav As NotesJSONNavigator 
+	Dim element As NotesJSONElement 
+	
+	' BEGIN CODE
+	If isBlankString(source$) Then GoTo ExitPoint 
+	extendedinfo(|json|) = source$
+	
+	Set nav = getCurrentSession().createJSONnavigator(source$)
+	Set element = nav.getFirstElement()
+	While Not element Is Nothing
+		Set ss = jsonElementToStringList(element) 
+		If ss.hasContent Then result.addAll ss		
+		Set element = nav.getNextElement()
+	Wend
+
+
+ExitPoint: 
+	Set jsonToStringList = result
+'	If result.hasContent Then enhLogMethodResult LIB_PREFIX, result.json 
+	Exit Function 
+ErrorTrap:
+	On Error GoTo 0
+	ForAll s In extendedinfo
+		If isBlankString(msg$) Then 
+			msg$ = ListTag(s) & |: | & s
+		Else 
+			msg$ = msg$ & |, | & Chr(10) & ListTag(s) & |: | & s
+		End If
+	End ForAll
+	enhLogException LIB_PREFIX, msg$
+	Resume ExitPoint
+End Function
+
+'++LotusScript Development Environment:2:1:getSortedListTags:49:8
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+%REM
+	Function getSortedListTags
+	Description: Gets the Sorted listTags for a list 
+	@param source: List object from which to get the list tags 
+	@return sorted array of listTags from the list.  
+%END REM
+Public Function getSortedListTags(source As Variant) As Variant 
+	On Error GoTo ErrorTrap 
+
+	Dim result As Variant 
+
+	If IsList(source) Then 
+		result = getListTags(source) 
+		If IsNull(result) Then GoTo ExitPoint 
+		shellSortStrings result 
+	End If 
+	
+ExitPoint: 
+	getSortedListTags = result 
+	Exit Function 
+ErrorTrap:
+	On Error GoTo 0
+	enhLogException LIB_PREFIX, ||
+	Resume ExitPoint 
+End Function
+
+'++LotusScript Development Environment:2:2:pushExceptionCarrier:7:8
+%REM
+	Sub pushExceptionCarrier
+	If an error exists, spawns a new ExceptionCarrier and pushes it onto the stack.
+	
+	@param classname$ The name of the calling object's class, if one exists.
+%END REM
+Sub pushExceptionCarrier(classname$) 
+	On Error GoTo ErrorTrap
+	
+	Dim carrier As ExceptionCarrier 
+	
+	Set carrier = spawnExceptionCarrier(classname$) 
+	If (carrier Is Nothing) Then GoTo ExitPoint  
+	
+	Call getExceptionCarrierStack().push(carrier) 
+	
+ExitPoint: 
+	Exit Sub 
+ErrorTrap:
+	On Error GoTo 0
+	enhLogException LIB_PREFIX, ||
+	Resume ExitPoint 
+End Sub
+
+'++LotusScript Development Environment:2:2:logJSONValue:12:8
+%REM
+	Function logJSONValue
+	Converts a value to JSON and writes it to the log.
+	
+	@param source 			value to write to the log
+	@param excludeNodes 	Names of JSON nodes to exclude from writing to the log
+	@param prefix 			prefix (such as a json tag name) to be prepended to the json value
+	@param depth 			number of node into the jason from the outermost level.
+	@param appendComma  	Flag indicating if a comma should be appended 
+	
+%END REM
+Private Sub logJSONValue(source As Variant, excludeNodes As BooleanList, prefix$, depth%, appendComma As Boolean) 
+	On Error GoTo ErrorTrap
+	
+	Const INDENT = |  |
+	
+	Dim bl As BooleanList 
+
+	Dim chunks As Variant 
+	Dim elements As Variant 
+
+	Dim extendedinfo List As String 
+	Dim msg$
+
+	Dim sourcetype$
+	Dim lstr$
+	Dim nodename$ 
+	Dim result$
+
+	Dim indents$ 
+	Dim comma$ 
+	Dim lastchar$ 
+
+	Dim idx%
+	Dim upperbound% 
+	
+	
+	' BEGIN CODE
+	If (excludeNodes Is Nothing) Then 
+		Set bl = New BooleanList() 
+		Call logJSONValue(source, bl, prefix$, depth%, appendComma)
+		GoTo ExitPoint
+	End If 
+	
+	sourcetype$ = TypeName(source) 
+	extendedinfo(|SourceType|) = sourcetype$ 
+	If depth% > 0 Then indents$ = String$(depth%, INDENT) 
+	If appendComma Then comma$ = |,|
+
+	
+	
+	' TODO: Add additional case options (as appropriate) for standard Notes product objects (Document, ViewEntry, Item, etc). 
+	Select Case LCase(sourcetype$) 
+		Case |boolean|:
+			If (source) Then 
+				enhLogExtendedContent ||, ||, indents$ & prefix$ & |true| & comma$
+			Else 
+				enhLogExtendedContent ||, ||, indents$ & prefix$ & |false| & comma$
+			End If
+
+		Case |date|, |time|
+			enhLogExtendedContent ||, ||, indents$ & prefix$ & |"| & CStr(source) & |"| & comma$ 
+
+		Case |azlwlistcarrier|:
+			enhLogExtendedContent ||, ||, indents$ & prefix$ & |{|
+			logJSONvalue source.getContent(), excludeNodes, ||, depth% + 1, appendComma	
+			enhLogExtendedContent ||, ||, indents$ & |}| & comma$
+			
+		Case |booleanlist|, _ 
+		|currencylist|, _ 
+		|datelist|, _ 
+		|doublelist|, _ 
+		|integerlist|, _ 
+		|longlist|, _ 
+		|singlelist|, _ 
+		|stringlist|, _ 
+		|variantlist|: 
+			enhLogExtendedContent ||, ||, indents$ & prefix$ & |{|
+			logJSONvalue source.content, excludeNodes, ||, depth% + 1, appendComma		
+			enhLogExtendedContent ||, ||, indents$ & |}| & comma$
+			
+		Case Else: 
+			If IsArray(source) Then 
+				enhLogExtendedContent ||, ||, indents$ & prefix$ & |[|
+				
+				For idx% = LBound(source) To UBound(source)
+					If (idx% < UBound(source)) Then 
+						logJSONvalue source(idx%), excludeNodes, ||, depth% + 1, True
+					Else 
+						logJSONvalue source(idx%), excludeNodes, ||, depth% + 1, False
+					End If 
+				Next
+
+				enhLogExtendedContent ||, ||, indents$ & |]| & comma$
+				
+			ElseIf IsList(source) Then 
+				upperbound% = -1
+				ForAll element In source
+					upperbound% = upperbound% + 1
+				End ForAll
+				If (upperbound% > -1) Then 
+					idx% = 0
+					If Not IsBlankString(prefix$) Then enhLogExtendedContent ||, ||, indents$ & prefix$
+					ForAll element In source
+						nodename$ = ListTag(element)
+						
+						If excludeNodes.isTrue(nodename$) Then
+							If (idx% < upperbound%) Then 
+								enhLogExtendedContent ||, ||, indents$ & INDENT & |"| & ampersandEncode(nodename$) & |":"**********",|
+							Else 
+								enhLogExtendedContent ||, ||, indents$ & INDENT & |"| & ampersandEncode(nodename$) & |":"**********"|
+							End If 									 
+						Else 
+							If (idx% < upperbound%) Then 
+								logJSONvalue element, excludeNodes, |"| & ampersandEncode(nodename$) & |":|, depth% + 1, True
+							Else 
+								logJSONvalue element, excludeNodes, |"| & ampersandEncode(nodename$) & |":|, depth% + 1, False
+							End If 								
+						End If
+						
+						idx% = idx% + 1
+					End ForAll				
+				End If 
+
+
+			ElseIf IsObject(source) Then
+				' General Object conversion not yet completed  
+				enhLogWarning LIB_PREFIX, |Object Code not yet completed for | & sourcetype$ 
+				enhLogExtendedContent ||, ||, indents$ & prefix$ & |{}| & comma$
+				
+			Else 
+				' replace carriage returns and line feeds
+				result$ = replaceCRLF(CStr(source), |\n|)  
+				
+				If IsNumeric(source) Then 
+					result$ = LCase$(result$) ' Converts Boolean True to "true" and False to "false" 
+					If (source < 1) Then 
+						If ("" = result$) Or (0 = StrCompare(".", Left$(result$, 1), 5)) Then result$ = "0" & result$
+					End If 
+				Else 
+					lstr$ = LCase(result$) 
+					Select Case lstr$
+						Case |true|, |false|: 
+							result$ = lstr$  ' string representations of boolean value
+							
+						Case Else: 
+							elements = Split(result$, |;|) 
+							ForAll element In elements 
+								chunks = Split(CStr(element), |=|)
+								If (UBound(chunks) > 0) Then 
+									If excludeNodes.isTrue(FullTrim(CStr(chunks(0)))) Then 
+										chunks(UBound(chunks)) = |**********|
+										element = Join(chunks, |=|) 
+									End If
+								End If
+							End ForAll
+							result$ = Join(elements, |;|)							
+							result$ = |"| & ampersandEncode(result$) & |"|
+					End Select
+				End If
+				
+				enhLogExtendedContent ||, ||, indents$ & prefix$ & result$ & comma$
+			End If	
+	End Select
+	
+	
+ExitPoint:		
+	Exit Sub 
+ErrorTrap:
+	On Error GoTo 0
+	ForAll s In extendedinfo 
+		If isBlankString(msg$) Then 
+			msg$ = ListTag(s) & |: | & s
+		Else 
+			msg$ = msg$ & Chr(10) & ListTag(s) & |: | & s
+		End If
+	End ForAll
+	enhLogException LIB_PREFIX, msg$
+	result$ = |{}|
+	Resume ExitPoint 
+End Sub
+
+'++LotusScript Development Environment:2:1:getJSONelementTypeName:10:8
+%REM
+	Function getJSONelementTypeName
+	Gets the appropriate name for a given JSON Element Type
+	
+	@param source% Integer value for a JSON Element type
+	@return JSON Element Type Name 
+	
+	@throws ERR_PARAMETER_INVALID if source% is not an appropriate JSON Element Type
+%END REM
+Function getJSONelementTypeName(source%) As String  
+	On Error GoTo ErrorTrap
+	
+	' exception variables
+	Dim extendedinfo List As String 
+	Dim msg$
+	
+	Dim result$
+	Dim errcode%
+	Dim errmsg$ 
+	
+	' BEGIN CODE
+	
+	extendedinfo(|source|) = CStr(source%) 
+	
+	Select Case source%
+		Case Jsonelem_type_array: 
+			result$ = |Jsonelem_type_array|
+			
+		Case Jsonelem_type_boolean: 
+			result$ = |Jsonelem_type_boolean|
+			
+		Case Jsonelem_type_empty: 
+			result$ = |Jsonelem_type_empty|
+			
+		Case Jsonelem_type_number: 
+			result$ = |Jsonelem_type_number|
+			
+		Case Jsonelem_type_object: 
+			result$ = |Jsonelem_type_object|
+			
+		Case Jsonelem_type_string: 
+			result$ = |Jsonelem_type_string|
+			
+		Case Else 
+			Error ERR_PARAMETER_INVALID, MSG_PARAMETER_INVALID & |Source: | & CStr(source%) 
+	End Select
+	
+	
+ExitPoint: 
+	If (ERR_PARAMETER_INVALID = errcode%) Then Error errcode%, errmsg$ 
+	getJSONelementTypeName = result
+	Exit Function 
+ErrorTrap:
+	On Error GoTo 0
+	errcode% = Err() 
+	errmsg$ = Error$() 
+	ForAll s In extendedinfo
+		If isBlankString(msg$) Then 
+			msg$ = ListTag(s) & |: | & s
+		Else 
+			msg$ = msg$ & |, | & Chr(10) & ListTag(s) & |: | & s
+		End If
+	End ForAll
+	enhLogException LIB_PREFIX, msg$
+	Resume ExitPoint
+End Function
+
+'++LotusScript Development Environment:2:1:getExceptionCarrierStack:5:8
+%REM
+	Function getExceptionCarrierStack
+	Gets the global ExceptionCarrierStack 
+%END REM
+Public Function getExceptionCarrierStack() As ExceptionCarrierStack
+	On Error GoTo ErrorTrap 
+	Static result As ExceptionCarrierStack 
+		
+	If (result Is Nothing) Then Set result = New ExceptionCarrierStack() 
+	
+ExitPoint: 
+	Set getExceptionCarrierStack = result	
+	Exit Function 
+ErrorTrap:
+	On Error GoTo 0
+	enhLogException LIB_PREFIX, ||
+	Resume ExitPoint 
+End Function 
+
+'++LotusScript Development Environment:2:1:spawnExceptionCarrier:10:8
+
+%REM
+	Sub spawnExceptionCarrier
+	Spawns a new ExceptionCarrier
+	
+	@param classname$ The name of the calling object's class, if one exists.
+	
+	@return New ExceptionCarrier (if an Error exists), Nothing if no Error Exists.
+%END REM
+Function spawnExceptionCarrier(classname$) As ExceptionCarrier 
+	On Error GoTo ErrorTrap
+	
+	Dim procedure$
+	Dim module$
+	Dim errmsg$ 
+	Dim errcode%
+	Dim errorline%
+	Dim result As ExceptionCarrier
+
+	
+	errcode% = Err() 
+	If (0 = errcode%) Then GoTo ExitPoint
+	
+	errorline% = Erl() 
+	errmsg$ = Error() 
+	procedure$ = GetThreadInfo(LIB_LSI_THREAD_CALLPROC)
+	module$ = GetThreadInfo(LIB_LSI_THREAD_CALLMODULE)
+	
+	Set result = New ExceptionCarrier(errcode%, errmsg$, module$, classname$, procedure$, errorline%)
+	
+ExitPoint: 
+	Set spawnExceptionCarrier = result
+	Exit Function 
+ErrorTrap:
+	On Error GoTo 0
+	enhLogException LIB_PREFIX, ||
+	Resume ExitPoint 
+End Function
+
+'++LotusScript Development Environment:2:1:jsonElementToStringList:12:8
+%REM
+	Function jsonElementToStringList
+	Converts a NotesJSONElement to a StringList object. 
+	
+	Empty strings, null, zero, and false values are not included in the result. 
+	
+	Note: StringLists are single level lists.  Array elements in JSON string will be flattened such that the last named element entry appears in the result. 
+	
+	@param source NotesJSONElement from which to construct the StringList 
+	@return StringList object constructed from the JSON source 
+%END REM
+Public Function jsonElementToStringList(source As NotesJSONElement) As StringList 
+	On Error GoTo ErrorTrap
+	
+	' exception variables
+	Dim extendedinfo List As String 
+	Dim msg$
+	
+	
+	Dim result As New StringList()
+	Dim nav As NotesJSONNavigator 
+	Dim obj As NotesJSONObject 
+	Dim ary As NotesJSONArray 
+	
+	
+	
+	Dim elName$
+	Dim stringValue$
+	
+	Dim numbervalue As Variant 
+	
+	
+	Dim intVal% 
+	Dim lngVal& 
+	Dim sngVal! 
+	Dim dblVal#
+	Dim curVal@
+	
+	
+	
+	Dim booleanValue As Boolean 
+	Dim include As Boolean 
+	
+	
+	' BEGIN CODE
+	If source Is Nothing Then GoTo ExitPoint 
+
+	%REM JSON Element Types 		
+		Jsonelem_type_array
+		Jsonelem_type_boolean
+		Jsonelem_type_empty
+		Jsonelem_type_number
+		Jsonelem_type_object
+		Jsonelem_type_string
+	%END REM 		
+	
+	
+		include = False 
+		stringValue = ||
+		extendedinfo(|element name|) = source.name 
+		extendedinfo(|element type|) = CStr(source.type) 
+		
+		Select Case source.type
+			Case Jsonelem_type_number: 
+				numbervalue = source.value 
+
+				Select Case DataType(numbervalue) 
+					Case V_INTEGER:
+						intVal% = CInt(numbervalue) 
+						If (intVal% <> 0%) Then 
+							stringValue$ = CStr(intVal%)
+							include = True 
+						End If
+						
+					Case V_LONG:
+						lngVal& = CLng(numbervalue)
+						If (lngVal& <> 0&) Then 
+							stringValue$ = CStr(lngVal&)
+							include = True 
+						End If
+				
+					Case V_SINGLE:
+						sngVal! = CSng(numbervalue)
+						If (sngVal! <> 0!) Then 
+							stringValue$ = CStr(sngVal!)
+							include = True 
+						End If		
+						
+					Case V_DOUBLE:
+						dblVal# = CDbl(numbervalue)
+						If (dblVal# <> 0#) Then 
+							stringValue$ = CStr(dblVal#)
+							include = True 
+						End If
+						
+					Case V_CURRENCY:
+						curVal@ = CCur(numbervalue)
+						If (curVal@ <> 0@) Then 
+							stringValue$ = CStr(curVal@)
+							include = True 
+						End If
+						
+					Case Else 
+						' do nothing 
+				End Select
+				
+
+			Case Jsonelem_type_array: 
+				Set ary = source.Value 
+				result.addAll jsonArrayToStringList(ary) 
+				
+				
+			Case Jsonelem_type_boolean: 
+				booleanValue = CBool(source.value) 
+				If (booleanValue) Then 
+					stringValue$ = |true|
+					include = True 
+				End If  
+				
+						
+			Case Jsonelem_type_object: 
+				Set obj = source.Value 
+				result.addAll jsonObjectToStringList(obj) 
+				
+				
+			Case Jsonelem_type_string: 
+				stringValue$ = CStr(source.value) 
+				If Not isBlankString(stringValue$) Then
+					include = True 
+					stringValue$ = ampersandDecode(stringValue$) 					
+				End If 
+	 			
+		End Select
+		
+		If include Then result.content(source.Name) = stringValue$ 
+		
+	
+ExitPoint: 
+	Set jsonElementToStringList = result
+	Exit Function 
+ErrorTrap:
+	On Error GoTo 0
+	ForAll s In extendedinfo
+		If isBlankString(msg$) Then 
+			msg$ = ListTag(s) & |: | & s
+		Else 
+			msg$ = msg$ & |, | & Chr(10) & ListTag(s) & |: | & s
+		End If
+	End ForAll
+	enhLogException LIB_PREFIX, msg$
+	Resume ExitPoint
+End Function
+
+'++LotusScript Development Environment:2:1:ampersandDecode:10:8
+%REM
+	Function ampersandDecode
+	Replaces ampersand sequences in a string with special characters (quote, apostrophe, less than, greater than, ampersand, etc)
+	
+	@param source String to decode
+	 
+	@return Ampersand-Decoded representation of source   
+	
+%END REM
+Function ampersandDecode(source$) As String 
+	On Error GoTo ErrorTrap 
+
+	Dim extendedinfo List As String 
+	Dim msg$
+
+	Dim result$
+	
+	' BEGIN CODE
+	If isBlankString(source$) Then GoTo ExitPoint
+	extendedinfo(|source|) = source$
+	
+	result$ = source$
+	ForAll sequence In getAmpersandSequences().content 
+		extendedinfo(|sequence|) = sequence 
+		result$ = Join(Split(result$, sequence), ListTag(sequence))
+	End ForAll
+	
+	
+ExitPoint: 
+	ampersandDecode = result$
+	Exit Function 
+ErrorTrap:
+	On Error GoTo 0
+	ForAll s In extendedinfo
+		If isBlankString(msg$) Then 
+			msg$ = ListTag(s) & |: | & s
+		Else 
+			msg$ = msg$ & |, | & Chr(10) & ListTag(s) & |: | & s
+		End If
+	End ForAll
+	enhLogException LIB_PREFIX, msg$
+	Resume ExitPoint
+End Function
+
+'++LotusScript Development Environment:2:1:toJSONvalue:9:8
+%REM
+	Function toJSONvalue
+	Converts a value to a JSON string representation. 
+	
+	@param source value to convert
+	
+	@return JSON string representation of source value
+%END REM
+Private Function toJSONvalue(source As Variant) As String 
+	On Error GoTo ErrorTrap
+	
+
+	Dim pair(1) As String 
+	Dim valuesarray() As String 
+
+	Dim extendedinfo List As String 
+	Dim msg$
+
+	Dim sourcetype$
+	Dim lstr$
+	Dim result$
+	Dim json$ 
+	Dim tag$ 
+
+
+	Dim idx%
+	
+	
+	' BEGIN CODE
+	sourcetype$ = TypeName(source) 
+	extendedinfo(|SourceType|) = sourcetype$ 
+	
+	
+	' TODO: Add additional case options (as appropriate) for standard Notes product objects (Document, ViewEntry, Item, etc). 
+	Select Case LCase(sourcetype$) 
+		Case |boolean|:
+			If (source) Then 
+				result$ = |true|
+			Else 
+				result$ = |false|
+			End If
+
+		Case |date|, |time|
+			result$ = |"| & CStr(source) & |"| 
+
+		Case |azlwlistcarrier|:
+			result$ = toJSONvalue(source.getContent()) 	
+			
+		Case |booleanlist|, _ 
+		|currencylist|, _ 
+		|datelist|, _ 
+		|doublelist|, _ 
+		|integerlist|, _ 
+		|longlist|, _ 
+		|singlelist|, _ 
+		|stringlist|, _ 
+		|variantlist|: 
+			result$ = toJSONvalue(source.content) 			
+			
+		Case Else: 
+			If IsArray(source) Then 
+				ForAll element In source 
+					If isBlankString(result$) Then 
+						result$ = toJSONvalue(element) 
+					Else 
+						result$ = result$ & |,| & toJSONvalue(element) 
+					End If
+				End ForAll
+				
+				result$ = |[| & result$ & |]|
+				
+			ElseIf IsList(source) Then 
+				ReDim valuesarray(0) As String 
+				ForAll element In source
+					tag$ = ListTag(element)
+					json$ = toJSONvalue(element) 
+
+					pair(0) = |"| & ampersandEncode(tag$) & |"|
+					pair(1) = json$
+					
+					ReDim Preserve valuesarray(idx%) As String 
+					valuesarray(idx%) = Join(pair, |:|)
+					idx% = idx% + 1
+				End ForAll
+				
+				result$ = |{| & Join(valuesarray, |,|) & |}|
+
+			ElseIf IsObject(source) Then
+				' General Object conversion not yet completed  
+				enhLogWarning LIB_PREFIX, |Object Code not yet completed for | & sourcetype$ 
+				result = |{}|
+				
+			Else 
+				' replace carriage returns and line feeds
+				result$ = replaceCRLF(CStr(source), |\n|)  
+				
+				If IsNumeric(source) Then 
+					result$ = LCase$(result$) ' Converts Boolean True to "true" and False to "false" 
+					If (source < 1) Then 
+						If ("" = result$) Or (0 = StrCompare(".", Left$(result$, 1), 5)) Then result$ = "0" & result$
+					End If 
+				Else 
+					lstr$ = LCase(result$) 
+					Select Case lstr$
+						Case |true|, |false|: 
+							result$ = lstr$  ' string representations of boolean value
+							
+						Case Else: 
+							result$ = |"| & ampersandEncode(result$) & |"|
+					End Select
+				End If
+			End If	
+	End Select
+	
+ExitPoint:		
+	toJSONvalue = result$
+	Exit Function 
+ErrorTrap:
+	On Error GoTo 0
+	ForAll s In extendedinfo 
+		If isBlankString(msg$) Then 
+			msg$ = ListTag(s) & |: | & s
+		Else 
+			msg$ = msg$ & Chr(10) & ListTag(s) & |: | & s
+		End If
+	End ForAll
+	enhLogException LIB_PREFIX, msg$
+	result$ = |{}|
+	Resume ExitPoint 
+End Function
+
+'++LotusScript Development Environment:2:1:popExceptionCarrier:30:8
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+%REM
+	Function popExceptionCarrier
+	Gets the top (last added) ExceptionCarrier from the stack, then removes it from the stack.
+	
+	@return last added ExceptionCarrier from the stack, or nothing if stack is empty 
+%END REM
+Function popExceptionCarrier() As ExceptionCarrier 
+	Set popExceptionCarrier = getExceptionCarrierStack().pop()
+End Function
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

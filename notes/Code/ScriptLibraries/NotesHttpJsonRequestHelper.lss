@@ -1,0 +1,935 @@
+'++LotusScript Development Environment:2:5:(Options):0:74
+%REM
+	Copyright 2020 Paul Withers
+	Licensed under the Apache License, Version 2.0 (the "License"); 
+	you may not use this file except in compliance with the License. 
+	You may obtain a copy of the License at
+
+	http://www.apache.org/licenses/LICENSE-2.0
+
+	Unless required by applicable law or agreed to in writing, 
+	software distributed under the License is distributed on an "AS IS" BASIS, 
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
+	See the License for the specific language governing permissions and limitations under the License	
+%END REM
+Option Public
+Option Declare
+Use "NotesHttpRequestHelper"
+Use "FluentNotesJson"
+
+'++LotusScript Development Environment:2:5:(Forward):0:1
+Declare Class NotesAgent_JsonHTTPHelper As NotesAgent_GenericHTTPHelper
+Declare Function spawnJsonHttpHelper(context As NotesDocument, logErrorOnBadPointer As Boolean, autoPrefixBadPointers As Boolean) As NotesAgent_JsonHTTPHelper 
+Declare Function getJSONtypeName(jsontype%) As String 
+Declare Private Function getParsingErrorMessage(pointer$, foundType%, expectedType%) As String
+
+'++LotusScript Development Environment:2:5:(Declarations):0:10
+
+Private Const LIB_PREFIX = |Library:NotesHttpJsonRequestHelper.|
+
+
+
+
+
+
+
+
+
+%REM
+	Class NotesAgent_JsonHTTPHelper
+	Extension of the Generic HTTP Helper used for JSON processing 
+%END REM
+Class NotesAgent_JsonHTTPHelper As NotesAgent_GenericHTTPHelper
+	
+	Private m_RequestBodyJSON As NotesJSONNavigator
+	Private m_ResponseBodyJSON As NotesJSONNavigatorFluent
+
+	Private m_prevPointer As String 
+	Private m_prevPointerValid As Boolean 
+	Private m_logErrorOnBadPointer As Boolean
+	Private m_autoPrefixBadPointers As Boolean 
+
+	
+	Private Property Get CLASS_PREFIX As String
+		CLASS_PREFIX = LIB_PREFIX & |Class: NotesAgent_JsonHTTPHelper.| 
+	End Property
+
+	%REM
+		Property me.RequestBodyAsJson
+		Gets the NotesJSONNavigator for the object
+	%END REM
+	Property Get RequestBodyAsJson() As NotesJSONNavigator
+		On Error GoTo ErrorTrap
+
+		If (me.m_RequestBodyJSON Is Nothing) Then Set me.m_RequestBodyJSON = getCurrentSession().createJSONnavigator("")
+		
+	ExitPoint:   
+		Set me.RequestBodyAsJson = me.m_RequestBodyJSON
+		Exit Property 
+	ErrorTrap:
+		On Error GoTo 0 
+		enhLogException CLASS_PREFIX, || 
+		Resume ExitPoint 
+	End Property
+	
+	%REM
+		Property Get PreviousPointer
+		The Pointer user for the most recent call to get any value by pointer 
+	%END REM
+	Property Get PreviousPointer As String 
+		PreviousPointer = Me.m_prevPointer 
+	End Property
+	
+	
+	%REM
+		Property Get isPreviousPointerValid
+		Flag indicating if the The Pointer user for the most recent call to get any value by pointer is Valid  
+	%END REM
+	Property Get isPreviousPointerValid As String 
+		isPreviousPointerValid = Me.m_prevPointerValid
+	End Property
+	
+
+	%REM
+		Property Get LogErrorOnBadPointer
+		Flag indicating if bad pointer searches should be logged as errors. 
+	%END REM
+	Property Get LogErrorOnBadPointer As Boolean 
+		LogErrorOnBadPointer = Me.m_logErrorOnBadPointer 
+	End Property
+	
+	
+	%REM
+		Property Set LogErrorOnBadPointer
+		Flag indicating if bad pointer searches should be logged as errors. 
+	%END REM
+	Property Set LogErrorOnBadPointer As Boolean 
+		Me.m_logErrorOnBadPointer = LogErrorOnBadPointer 
+	End Property
+	
+	
+	%REM
+		Property Get AutoPrefixBadPointers
+		Flag indicating if bad pointers (that do not begin with "/" should have "/" automatically prefixed).
+	%END REM
+	Property Get AutoPrefixBadPointers As Boolean 
+		AutoPrefixBadPointers = Me.m_autoPrefixBadPointers 
+	End Property
+	
+	
+	%REM
+		Property Set AutoPrefixBadPointers
+		Flag indicating if bad pointers (that do not begin with "/" should have "/" automatically prefixed).
+	%END REM
+	Property Set AutoPrefixBadPointers As Boolean 
+		Me.m_autoPrefixBadPointers = AutoPrefixBadPointers 
+	End Property
+	
+	
+	%REM
+		Constructor
+	%END REM
+	Sub New(doc As NotesDocument), NotesAgent_GenericHTTPHelper(doc)
+		On Error GoTo ErrorTrap
+
+		If (doc Is Nothing) Then GoTo ExitPoint 
+		
+		If (m_ContentType = "application/json") Then
+			Set m_RequestBodyJSON = doc.ParentDatabase.Parent.createJsonNavigator(RequestBodyAsString)
+		Else
+			m_Valid = False
+		End If
+		
+		Set m_ResponseBodyJSON = New NotesJsonNavigatorFluent(doc.ParentDatabase.Parent, "")
+		
+	ExitPoint:
+		Exit Sub
+	ErrorTrap:
+		On Error GoTo 0
+		enhLogException CLASS_PREFIX, ||
+		m_Valid = False 
+		Resume ExitPoint 
+	End Sub
+	
+	%REM
+		Sub loadJson
+		Spawns the internal NotesJSONNavigator and populates it with the passed in JSON. 
+		Any existing JSON within the object will be replaced. 
+		
+		@param session NotesSession object used to spawn the NotesJSONNavigator 
+		@param json$ JSON content used when spawning the NotesJSONNavigator object. 
+		
+		@throws ERR_PARAMETER_INVALID if the json cannot be parsed. 
+	%END REM
+	Sub loadJson(session As NotesSession, json$)
+		On Error GoTo ErrorTrap
+		
+		Dim errcode%
+		
+		Set m_RequestBodyJSON = session.Createjsonnavigator(json)
+
+	ExitPoint:
+		If (0 <> errcode%) Then Error ERR_PARAMETER_INVALID, MSG_PARAMETER_INVALID & |Unable to parse JSON| 
+		Exit Sub
+	ErrorTrap:
+		On Error GoTo 0
+		errcode% = Err()
+		enhLogException CLASS_PREFIX, |json: | & LF & json
+		Set m_RequestBodyJSON = Nothing 
+		Resume ExitPoint 
+	End Sub
+	
+	%REM
+		Function isPointerValid
+		Checks the Pointer to determine if it is valid. 
+		
+		Sets the object's PreviousPointer and isPreviousPointerValid to the results of the pointer being tested.
+		
+		@param pointer A JSON Pointer string that identifies the desired element.
+			Note: Valid JSON Pointer strings begin with a forward slash ("/") 
+		
+		@return Flag indicating if the pointer is valid. 
+	%END REM
+	Private Function isPointerValid(pointer$) As Boolean
+		On Error GoTo ErrorTrap  
+		
+		Me.m_prevPointer = pointer$ 
+		Me.m_prevPointerValid = (pointer$ Like "/?*") And Not (pointer$ Like "//*")
+
+	ExitPoint:
+		isPointerValid = Me.m_prevPointerValid
+		Exit Function
+	ErrorTrap:
+		On Error GoTo 0
+		enhLogException CLASS_PREFIX, |Pointer: "| & pointer$ & |"|
+		Resume ExitPoint 
+	End Function
+	
+	
+	%REM
+		Function findJsonObjectByPointer
+		Attempts to retrieve the specified JSON object.
+		
+		@param pointer A JSON Pointer string that identifies the desired element.
+			Note: Valid JSON Pointer strings begin with a forward slash ("/") 
+		
+		@param target [OUTBOUND] If found, the NotesJSONObject associated with the pointer.
+		
+		@return Flag indicating if a valid target was found. 
+
+		@throws ERR_BAD_JSON_POINTER if the JSON pointer is not valid.
+	%END REM
+	Function findJsonObjectByPointer(pointer$, target As NotesJSONObject) As Boolean
+		On Error GoTo ErrorTrap
+		On Error ERR_BAD_JSON_POINTER GoTo Error_BAD_JSON_POINTER ' bubble up bad json pointer exceptions 
+		
+		Dim jsonElem As NotesJSONElement
+		Dim result As Boolean
+		
+		Dim errmsg$ 
+		Dim errcode% 
+
+
+		Set target = Nothing
+		Set jsonElem = Me.getJsonElemValue(pointer$)
+		If (jsonElem Is Nothing) Then GoTo ExitPoint  
+
+		If (jsonElem.Type <> TYPE_JSONOBJECT) Then Error ERR_BAD_JSON_TYPE, getParsingErrorMessage(pointer, jsonElem.type, TYPE_JSONOBJECT)
+
+		Set target = jsonElem.Value
+		findJsonObjectByPointer = True
+		
+	ExitPoint:
+		If (0 <> errcode%) Then Error errcode%, errmsg$ 
+		findJsonObjectByPointer = result 
+		Exit Function
+	Error_BAD_JSON_POINTER:
+		' bubble up bad json pointer exceptions 
+		On Error GoTo 0 
+		errcode% = Err()
+		errmsg$ = Error$()
+		If Not Me.LogErrorOnBadPointer Then Resume ExitPoint 
+	ErrorTrap:
+		On Error GoTo 0
+		enhLogException CLASS_PREFIX, |Pointer: | & pointer$ 
+		Resume ExitPoint 
+	End Function
+	
+	
+	%REM
+		Function findJsonArrayByPointer
+		Attempts to retrieve the specified JSON array.
+		
+		@param pointer A JSON Pointer string that identifies the desired element.
+			Note: Valid JSON Pointer strings begin with a forward slash ("/") 
+		
+		@param target [OUTBOUND] If found, the NotesJSONArray associated with the pointer.
+		
+		@return Flag indicating if a valid target was found. 
+
+		@throws ERR_BAD_JSON_POINTER if the JSON pointer is not valid.
+	%END REM
+	Function findJsonArrayByPointer(pointer$, target As NotesJSONArray) As Boolean
+		On Error GoTo ErrorTrap
+		On Error ERR_BAD_JSON_POINTER GoTo Error_BAD_JSON_POINTER ' bubble up bad json pointer exceptions 
+		
+		Dim jsonElem As NotesJSONElement
+		Dim result As Boolean 
+		
+		Dim errmsg$ 
+		Dim errcode% 
+	
+		Set target = Nothing
+		Set jsonElem = Me.getJsonElemValue(pointer$)
+		If (jsonElem Is Nothing) Then GoTo ExitPoint  
+		
+		If (jsonElem.Type <> TYPE_JSONARRAY) Then Error ERR_BAD_JSON_TYPE, getParsingErrorMessage(pointer, jsonElem.type, TYPE_JSONARRAY)
+
+		Set target = jsonElem.Value
+		result = True
+
+	ExitPoint:
+		If (0 <> errcode%) Then Error errcode%, errmsg$ 
+		findJsonArrayByPointer = result 
+		Exit Function
+	Error_BAD_JSON_POINTER:
+		' bubble up bad json pointer exceptions 
+		On Error GoTo 0 
+		errcode% = Err()
+		errmsg$ = Error$()
+		If Not Me.LogErrorOnBadPointer Then Resume ExitPoint 
+	ErrorTrap:
+		On Error GoTo 0
+		enhLogException CLASS_PREFIX, |Pointer: | & pointer$ 
+		Resume ExitPoint 
+	End Function
+	
+	
+	
+	
+	%REM
+		Function findStringByPointer
+		Attempts to retrieve the specified String.
+		
+		@param pointer A JSON Pointer string that identifies the desired element.
+			Note: Valid JSON Pointer strings begin with a forward slash ("/") 
+		
+		@param target [OUTBOUND] If found, the String associated with the pointer.
+		
+		@return Flag indicating if a valid target was found. 
+
+		@throws ERR_BAD_JSON_POINTER if the JSON pointer is not valid.
+	%END REM
+	Function findStringByPointer(pointer$, target As String) As Boolean
+		On Error GoTo ErrorTrap
+		On Error ERR_BAD_JSON_POINTER GoTo Error_BAD_JSON_POINTER ' bubble up bad json pointer exceptions 
+				
+		Dim jsonElem As NotesJSONElement
+		Dim result As Boolean 
+
+		Dim errmsg$ 
+		Dim errcode% 
+	
+	
+		target = ||
+		Set jsonElem = Me.getJsonElemValue(pointer$)
+		If (jsonElem Is Nothing) Then GoTo ExitPoint  
+		
+		If (jsonElem.Type <> TYPE_JSONSTRING) Then Error ERR_BAD_JSON_TYPE, getParsingErrorMessage(pointer, jsonElem.Type, TYPE_JSONSTRING)
+
+		target = CStr(jsonElem.Value)
+		result = True
+
+	ExitPoint:
+		If (0 <> errcode%) Then Error errcode%, errmsg$ 
+	findStringByPointer = result 
+		Exit Function
+	Error_BAD_JSON_POINTER:
+		' bubble up bad json pointer exceptions 
+		On Error GoTo 0 
+		errcode% = Err()
+		errmsg$ = Error$()
+		If Not Me.LogErrorOnBadPointer Then Resume ExitPoint 
+	ErrorTrap:
+		On Error GoTo 0
+		enhLogException CLASS_PREFIX, |Pointer: | & pointer$ 
+		Resume ExitPoint
+	End Function 
+	
+	
+	%REM
+		Function findDoubleByPointer
+		Attempts to retrieve the specified Double value.
+		
+		@param pointer A JSON Pointer string that identifies the desired element.
+			Note: Valid JSON Pointer strings begin with a forward slash ("/") 
+		
+		@param target [OUTBOUND] If found, the Double associated with the pointer.
+		
+		@return Flag indicating if a valid target was found. 
+
+		@throws ERR_BAD_JSON_POINTER if the JSON pointer is not valid.
+	%END REM
+	Function findDoubleByPointer(pointer$, target As Double) As Boolean
+		On Error GoTo ErrorTrap
+		On Error ERR_BAD_JSON_POINTER GoTo Error_BAD_JSON_POINTER ' bubble up bad json pointer exceptions 
+					
+		Dim jsonElem As NotesJSONElement
+		Dim tmpstr$ 
+		Dim result As Boolean 
+
+		Dim errmsg$ 
+		Dim errcode% 
+	
+
+		target = 0
+		Set jsonElem = Me.getJsonElemValue(pointer$)
+		If (jsonElem Is Nothing) Then GoTo ExitPoint  
+		
+		If (jsonElem.Type <> TYPE_JSONNUMBER) Then Error ERR_BAD_JSON_TYPE, getParsingErrorMessage(pointer, jsonElem.type, TYPE_JSONNUMBER)
+		tmpstr$ = CStr(jsonElem.Value) 
+		target = CDbl(jsonElem.Value)
+		result = True
+
+	ExitPoint:
+		If (0 <> errcode%) Then Error errcode%, errmsg$ 
+		findDoubleByPointer = result 
+		Exit Function
+	Error_BAD_JSON_POINTER:
+		' bubble up bad json pointer exceptions 
+		On Error GoTo 0 
+		errcode% = Err()
+		errmsg$ = Error$()
+		If Not Me.LogErrorOnBadPointer Then Resume ExitPoint 
+	ErrorTrap:
+		On Error GoTo 0
+		enhLogException CLASS_PREFIX, |Pointer: | & pointer$ & LF & |JSON Element Value: | & tmpstr$ 
+		Resume ExitPoint
+	End Function
+ 
+	
+	%REM
+		Function findLongByPointer
+		Attempts to retrieve the specified Long value.
+		
+		@param pointer A JSON Pointer string that identifies the desired element.
+			Note: Valid JSON Pointer strings begin with a forward slash ("/") 
+		
+		@param target [OUTBOUND] If found, the Long associated with the pointer.
+		
+		@return Flag indicating if a valid target was found. 
+
+		@throws ERR_BAD_JSON_POINTER if the JSON pointer is not valid.
+	%END REM
+	Function findLongByPointer(pointer$, target As Long) As Boolean
+		On Error GoTo ErrorTrap
+		On Error ERR_BAD_JSON_POINTER GoTo Error_BAD_JSON_POINTER ' bubble up bad json pointer exceptions 
+				
+		Dim jsonElem As NotesJSONElement
+		Dim tmpstr$ 
+		Dim result As Boolean 
+
+		Dim errmsg$ 
+		Dim errcode% 
+
+
+
+		target = 0
+		Set jsonElem = Me.getJsonElemValue(pointer$)
+		If (jsonElem Is Nothing) Then GoTo ExitPoint  		
+				
+		If (jsonElem.Type <> TYPE_JSONNUMBER) Then Error ERR_BAD_JSON_TYPE, getParsingErrorMessage(pointer, jsonElem.type, TYPE_JSONNUMBER)
+		tmpstr$ = CStr(jsonElem.Value) 
+		target = CLng(jsonElem.Value)
+		result = True
+
+	ExitPoint:
+		If (0 <> errcode%) Then Error errcode%, errmsg$ 
+		findLongByPointer = result 
+		Exit Function
+	Error_BAD_JSON_POINTER:
+		' bubble up bad json pointer exceptions 
+		On Error GoTo 0 
+		errcode% = Err()
+		errmsg$ = Error$()
+		If Not Me.LogErrorOnBadPointer Then Resume ExitPoint 
+	ErrorTrap:
+		On Error GoTo 0
+		enhLogException CLASS_PREFIX, |Pointer: | & pointer$ & LF & |JSON Element Value: | & tmpstr$ 
+		Resume ExitPoint 
+	End Function
+	
+	
+	%REM
+		Function findBooleanByPointer
+		Attempts to retrieve the specified Boolean value.
+		
+		@param pointer A JSON Pointer string that identifies the desired element.
+			Note: Valid JSON Pointer strings begin with a forward slash ("/") 
+		
+		@param target [OUTBOUND] If found, the Boolean associated with the pointer.
+		
+		@return Flag indicating if a valid target was found. 
+
+		@throws ERR_BAD_JSON_POINTER if the JSON pointer is not valid.
+	%END REM
+	Function findBooleanByPointer(pointer$, target As Boolean) As Boolean
+		On Error GoTo ErrorTrap
+		On Error ERR_BAD_JSON_POINTER GoTo Error_BAD_JSON_POINTER ' bubble up bad json pointer exceptions 
+				
+		Dim jsonElem As NotesJSONElement
+		Dim tmpstr$ 
+		Dim result As Boolean 
+
+		Dim errmsg$ 
+		Dim errcode% 
+
+		target = False
+		Set jsonElem = Me.getJsonElemValue(pointer$)
+		If (jsonElem Is Nothing) Then GoTo ExitPoint  
+		
+		If (jsonElem.Type <> TYPE_JSONBOOLEAN) Then Error ERR_BAD_JSON_TYPE, getParsingErrorMessage(pointer, jsonElem.type, TYPE_JSONBOOLEAN)
+		tmpstr$ = CStr(jsonElem.Value) 
+		target = CBool(jsonElem.Value)
+		result = True
+
+	ExitPoint:
+		If (0 <> errcode%) Then Error errcode%, errmsg$ 
+		findBooleanByPointer = result 
+		Exit Function
+	Error_BAD_JSON_POINTER:
+		' bubble up bad json pointer exceptions 
+		On Error GoTo 0 
+		errcode% = Err()
+		errmsg$ = Error$()
+		If Not Me.LogErrorOnBadPointer Then Resume ExitPoint 
+	ErrorTrap:
+		On Error GoTo 0
+		enhLogException CLASS_PREFIX, |Pointer: | & pointer$ & LF & |JSON Element Value: | & tmpstr$ 
+		Resume ExitPoint 
+	End Function
+	
+	%REM
+		Function getJsonElemValue
+		Attempts to retrieve the specified Object Instance value. 
+		
+		@param pointer A JSON Pointer string that identifies the desired element.
+			Note: Valid JSON Pointer strings begin with a forward slash ("/") 
+		
+		@return Object Instance Value associated with the pointer.  Nothing if not found.
+		
+		@throws ERR_BAD_JSON_POINTER if the JSON pointer is not valid.
+	%END REM
+	Private Function getJsonElemValue(pointer$) As Variant 
+		On Error GoTo ErrorTrap 
+		On Error ERR_BAD_JSON_POINTER GoTo ErrorTrap_BAD_JSON_POINTER 
+		On Error ERR_NOTES_JSON_GET_FAILED GoTo ErrorTrap_NOTES_JSON_GET_FAILED 
+		
+		Dim result As Variant 
+		Dim pointer2$ 
+		
+		Dim errmsg$ 
+		Dim errcode% 
+
+		If Me.isPointerValid(pointer$) Then
+			Set result = me.RequestBodyAsJson().GetElementByPointer(pointer$)
+		
+		ElseIf Not Me.AutoPrefixBadPointers Then 
+			Error ERR_BAD_JSON_POINTER, MSG_BAD_JSON_POINTER
+		
+		Else 
+			pointer2$ = |/| & pointer$ 
+			If Not Me.isPointerValid(pointer2$) Then Error ERR_BAD_JSON_POINTER, MSG_BAD_JSON_POINTER
+			
+			Set result = me.RequestBodyAsJson().GetElementByPointer(pointer2$)
+		End If 
+		
+	ExitPoint:
+		If (ERR_BAD_JSON_POINTER = errcode%) Then Error ERR_BAD_JSON_POINTER, MSG_BAD_JSON_POINTER & |Pointer: "| & pointer$ & |"|
+		Set getJsonElemValue = result 
+		Exit Function
+	ErrorTrap_NOTES_JSON_GET_FAILED: 
+		' The pointer does not exist in the json.  Follow the logging rules Logging and error on bad pointer.
+		Set result = Nothing
+	ErrorTrap_BAD_JSON_POINTER:
+		' The pointer is invalid.  Follow the logging rules Logging and error on bad pointer.
+		On Error GoTo 0 
+		errcode% = Err()
+		If Not Me.LogErrorOnBadPointer Then Resume ExitPoint 
+	ErrorTrap:
+		On Error GoTo 0
+		enhLogException CLASS_PREFIX, |Pointer: | & pointer$ 
+		Resume ExitPoint 
+	End Function
+	
+	
+	%REM
+		Function findScalarByPointer
+		Attempts to retrieve the specified Scalar (Boolean, Number, or String) value.
+		
+		@param pointer A JSON Pointer string that identifies the desired element.
+			Note: Valid JSON Pointer strings begin with a forward slash ("/") 
+		
+		@param target [OUTBOUND] If found, the Scalar valur associated with the pointer.
+		
+		@return Flag indicating if a valid target was found. 
+
+		@throws ERR_BAD_JSON_POINTER if the JSON pointer is not valid.
+	%END REM
+	Function findScalarByPointer(pointer$, target As Variant) As Boolean
+		On Error GoTo ErrorTrap
+		On Error ERR_BAD_JSON_POINTER GoTo Error_BAD_JSON_POINTER ' bubble up bad json pointer exceptions 
+		
+		Dim jsonElem As NotesJSONElement
+		Dim tmpstr$ 
+		Dim result As Boolean 
+
+		Dim errmsg$ 
+		Dim errcode% 
+
+		target = False
+		Set jsonElem = Me.getJsonElemValue(pointer$)
+		If (jsonElem Is Nothing) Then GoTo ExitPoint  
+		
+		Select Case jsonElem.Type 
+			Case TYPE_JSONSTRING, TYPE_JSONNUMBER, TYPE_JSONBOOLEAN: 
+				target = jsonElem.Value
+				result = True
+			Case Else 
+				' do nothing
+		End Select
+
+	ExitPoint:
+		If (0 <> errcode%) Then Error errcode%, errmsg$ 
+		findScalarByPointer = result 
+		Exit Function
+	Error_BAD_JSON_POINTER:
+		' bubble up bad json pointer exceptions 
+		On Error GoTo 0 
+		errcode% = Err()
+		errmsg$ = Error$()
+		If Not Me.LogErrorOnBadPointer Then Resume ExitPoint 
+	ErrorTrap:
+		On Error GoTo 0
+		enhLogException CLASS_PREFIX, |Pointer: | & pointer$ & LF & |JSON Element Value: | & tmpstr$ 
+		Resume ExitPoint 
+	End Function
+
+	
+	%REM
+		Function findElementByPointer
+		Attempts to retrieve the specified NotesJSONElement.
+		
+		@param pointer A JSON Pointer string that identifies the desired element.
+			Note: Valid JSON Pointer strings begin with a forward slash ("/") 
+		
+		@param target [OUTBOUND] If found, the NotesJSONElement associated with the pointer.
+		
+		@return Flag indicating if a valid target was found. 
+
+		@throws ERR_BAD_JSON_POINTER if the JSON pointer is not valid.
+	%END REM
+	Function findElementByPointer(pointer$, target As NotesJSONElement) As Boolean
+		On Error GoTo ErrorTrap
+		On Error ERR_BAD_JSON_POINTER GoTo Error_BAD_JSON_POINTER ' bubble up bad json pointer exceptions 
+		
+		Dim jsonElem As NotesJSONElement
+		Dim result As Boolean 
+
+		Dim errmsg$ 
+		Dim errcode% 
+
+		Set target = Me.getJsonElemValue(pointer$)
+		result = Not (target Is Nothing) 
+
+	ExitPoint:
+		If (0 <> errcode%) Then Error errcode%, errmsg$ 
+		findElementByPointer = result 
+		Exit Function
+	Error_BAD_JSON_POINTER:
+		' bubble up bad json pointer exceptions 
+		On Error GoTo 0 
+		errcode% = Err()
+		errmsg$ = Error$()
+		If Not Me.LogErrorOnBadPointer Then Resume ExitPoint 
+	ErrorTrap:
+		On Error GoTo 0
+		enhLogException CLASS_PREFIX, |Pointer: | & pointer$
+		Resume ExitPoint 
+	End Function
+	
+
+	
+	
+	%REM
+		Function getNotesJSONElementsFromArray
+		Gets an array of NotesJSONElements from the object JSON 
+		
+		@param session Session used to spawn interim NotesJSON objects 
+		@param arraypointer$ Pointer used to find the array within the NoteJSON 
+		@param objectPointer$ Pointer uesd to identify individual object elements within the array 
+		
+		@return Array of NotesJSONElements 
+
+		@throws ERR_BAD_JSON_POINTER if the JSON pointer is not valid.
+	%END REM
+	Function getNotesJSONElementsFromArray(session As NotesSession, arrayPointer$, objectPointer$) As Variant
+		On Error GoTo ErrorTrap
+		On Error ERR_BAD_JSON_POINTER GoTo Error_BAD_JSON_POINTER ' bubble up bad json pointer exceptions 
+				
+		Dim arr As NotesJSONArray
+		Dim elem As NotesJSONElement
+		Dim returnElem As NotesJSONElement
+		
+		Dim result() As Variant
+
+		' exception variables
+		Dim extendedinfo List As String 
+		Dim msg$
+		Dim errmsg$ 
+		Dim errcode% 
+
+
+		Dim pointer As String
+		Dim counter As Integer 
+
+
+		' BEGIN CODE
+		extendedinfo(|Array Pointer|) = arrayPointer$
+		extendedinfo(|Object Pointer|) = objectPointer$ 
+		
+		Call findJsonArrayByPointer(arrayPointer$, arr)
+
+		counter = 0
+		ReDim result(arr.Size - 1) As Variant
+		Set elem = arr.getFirstElement()
+		While Not elem Is Nothing
+			extendedinfo(|Counter|) = CStr(counter) 
+			pointer$ = arrayPointer$ & "/" & CStr(counter) & objectPointer$
+			extendedinfo(|Pointer|) = pointer$ 
+			
+			Set result(counter) = Me.getJsonElemValue(Pointer)
+			counter = counter + 1
+			Set elem = arr.getNextElement()
+		Wend
+		
+		
+	ExitPoint:
+		If (0 <> errcode%) Then Error errcode%, errmsg$ 
+		getNotesJSONElementsFromArray = result 
+		Exit Function
+	Error_BAD_JSON_POINTER:
+		' bubble up bad json pointer exceptions 
+		On Error GoTo 0 
+		errcode% = Err()
+		errmsg$ = Error$()
+		If Not Me.LogErrorOnBadPointer Then Resume ExitPoint 
+	ErrorTrap:
+		On Error GoTo 0 
+		ForAll s In extendedinfo
+			If isBlankString(msg$) Then 
+				msg$ = ListTag(s) & |: | & s
+			Else 
+				msg$ = msg$ & LF & ListTag(s) & |: | & s
+			End If
+		End ForAll
+		enhLogException CLASS_PREFIX, msg$
+		Exit Function
+	End Function
+
+	%REM
+		Sub closeRequestWithError
+		Closes the Request and adds an error 
+	%END REM
+	Sub closeRequestWithError(msg As String, httpStatus As Integer)
+		
+		If (IsNull(httpStatus)) Then
+			m_ResponseStatus = 500
+		Else
+			m_ResponseStatus = httpStatus
+		End If
+		Call m_ResponseBodyJSON.appendElement(msg, "error")
+		If (m_ResponseBody = "") Then
+			m_responseBody = m_ResponseBodyJSON.Stringify()
+		End If
+		Call addResponseHeader("Content-Type", "application/json")
+		Call closeRequest()
+		
+	End Sub
+	
+	%REM
+		Function getJSONResponseBody
+		Gets the NotesJSONavigatorFluent property for the object
+	%END REM
+	Function getJSONResponseBody() As NotesJSONNavigatorFluent
+		Set getJSONResponseBody = m_ResponseBodyJSON	
+	End Function
+	
+	%REM
+		Sub closeRequest
+		Closes the Request
+	%END REM
+	Sub closeRequest()
+		Call setResponseBody(getJSONResponseBody().Stringify())
+		NotesAgent_GenericHTTPHelper..closeRequest
+	End Sub
+End Class
+'++LotusScript Development Environment:2:1:spawnJsonHttpHelper:15:8
+%REM
+	Function spawnJsonHttpHelper
+	Utility method for spawning a NotesAgent_JsonHTTPHelper object 
+	
+	@param context DocumentContext for a web agent.  
+		USAGE: Pass in NotesSession.DocumentContext and check isValid() in your code to determine whether the agent was invoked
+		from an HTTP call to ?OpenAgent or some other method. You can also pass the boolean of isValid() to methods in Script 
+		Libraries for conditional processing
+		
+	@param logErrorOnBadPointer Flag indicating if bad pointer searches should be logged as errors. 	
+	@param autoPrefixBadPointers Flag indicating if bad pointers (that do not begin with "/" should have "/" automatically prefixed).
+	
+	@return Newly spawned NotesAgent_JsonHTTPHelper object	
+%END REM
+Function spawnJsonHttpHelper(context As NotesDocument, logErrorOnBadPointer As Boolean, autoPrefixBadPointers As Boolean) As NotesAgent_JsonHTTPHelper 
+	On Error GoTo ErrorTrap
+	
+	' exception variables
+	Dim extendedinfo List As String 
+	Dim msg$
+	
+	
+	Dim result As NotesAgent_JsonHTTPHelper
+	
+	
+	' BEGIN CODE
+	If (context Is Nothing) Then 
+		extendedinfo(|Document Context|) = |Nothing|
+	Else
+		extendedinfo(|Document Context|) = |Exists|
+	End If
+	extendedinfo(|Log Error On Bad Pointers|) = CStr(logErrorOnBadPointer)
+	extendedinfo(|Auto Prefix Bad Pointers|) = CStr(autoPrefixBadPointers)
+	
+	Set result = New NotesAgent_JsonHTTPHelper(context) 
+	result.LogErrorOnBadPointer = logErrorOnBadPointer 
+	result.AutoPrefixBadPointers = autoPrefixBadPointers 	
+	
+ExitPoint: 
+	Set spawnJsonHttpHelper = result
+	Exit Function 
+ErrorTrap:
+	On Error GoTo 0
+	ForAll s In extendedinfo
+		If isBlankString(msg$) Then 
+			msg$ = ListTag(s) & |: | & s
+		Else 
+			msg$ = msg$ & |, | & Chr(10) & ListTag(s) & |: | & s
+		End If
+	End ForAll
+	enhLogException LIB_PREFIX, msg$
+	Resume ExitPoint
+End Function
+
+'++LotusScript Development Environment:2:1:getJSONtypeName:14:8
+%REM
+	Function getJSONtypeName
+	Gets the JsonTypeName for the specified JSON Type code 
+	
+	@param jsontype%  JSON Type Code to check.  Must be a valid JSON Type Value.
+		Valid values (defined in NotesHttpConstants library) are: 
+			TYPE_JSONOBJECT, 
+			TYPE_JSONARRAY, 
+			TYPE_JSONSTRING, 
+			TYPE_JSONNUMBER, 
+			TYPE_JSONBOOLEAN, 
+			TYPE_JSONEMPTY
+%END REM
+Function getJSONtypeName(jsontype%) As String 
+	On Error GoTo ErrorTrap
+	
+	' exception variables
+	Dim extendedinfo List As String 
+	Dim msg$
+	
+	Dim result$
+
+	
+	' BEGIN CODE
+	extendedinfo(|Json Type|) = CStr(jsontype%) 
+	
+	Select Case jsontype% 
+		Case TYPE_JSONOBJECT:
+			result$ = TYPENAME_JSONOBJECT  
+			
+		Case TYPE_JSONARRAY:
+			result$ = TYPENAME_JSONARRAY  
+			
+		Case TYPE_JSONSTRING:
+			result$ = TYPENAME_JSONSTRING  
+			
+		Case TYPE_JSONNUMBER:
+			result$ = TYPENAME_JSONNUMBER  
+			
+		Case TYPE_JSONBOOLEAN:
+			result$ = TYPENAME_JSONBOOLEAN  
+			
+		Case TYPE_JSONEMPTY:
+			result$ = TYPENAME_JSONEMPTY  
+			
+		Case Else:
+			result$ = |INVALID| 
+			Error ERR_PARAMETER_INVALID, MSG_PARAMETER_INVALID   
+	End Select
+	
+ExitPoint: 
+	getJSONtypeName = result$
+	Exit Function 
+ErrorTrap:
+	On Error GoTo 0
+	ForAll s In extendedinfo
+		If isBlankString(msg$) Then 
+			msg$ = ListTag(s) & |: | & s
+		Else 
+			msg$ = msg$ & |, | & LF & ListTag(s) & |: | & s
+		End If
+	End ForAll
+	enhLogException LIB_PREFIX, msg$
+	Resume ExitPoint
+End Function
+
+'++LotusScript Development Environment:2:1:getParsingErrorMessage:11:8
+%REM
+	Function getJSONtypeParsingErrorMessage
+	Generates a JSON Type Parsing Error Message for the specified arguments 
+	
+	@param pointer$ Pointer used to retrieve the JSON element 
+	@param foundType% JSON Type of the retrieved JSON element 
+	@param expectedType% Expected JSON type 
+	
+	@return Generated Type Parsing Error Message
+%END REM
+Private Function getParsingErrorMessage(pointer$, foundType%, expectedType%) As String
+	getParsingErrorMessage = |JSON parsing for | & pointer$ & _ 
+	| worked, but returned "| & getJSONtypeName(foundType%) & |" (| & CStr(foundType%) & _ 
+	|) instead of "| & getJSONtypeName(expectedType%)  & |" (| & CStr(expectedType%) & |).|
+End Function
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

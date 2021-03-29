@@ -1,0 +1,54 @@
+<?xml version='1.0' encoding='utf-8'?>
+<note class='view' xmlns='http://www.lotus.com/dxl' version='11.0' maintenanceversion='1.0'
+ replicaid='8525867000756EB9'>
+<noteinfo noteid='1c02' unid='04DCF86A7A8080658525867E0048DE8A' sequence='50'>
+<created><datetime>20210216T081555,62-05</datetime></created>
+<modified><datetime dst='true'>20210329T102408,92+01</datetime></modified>
+<revised><datetime>20210319T125149,55-05</datetime></revised>
+<lastaccessed><datetime dst='true'>20210329T102408,91+01</datetime></lastaccessed>
+<addedtofile><datetime dst='true'>20210329T102408,91+01</datetime></addedtofile></noteinfo>
+<updatedby><name>CN=Paul Withers/OU=UK/O=PNPHCL</name><name>CN=Devin Olson/OU=USA/O=PNPHCL</name><name
+>CN=Rocky Oliver/OU=USA/O=PNPHCL</name><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></updatedby>
+<wassignedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></wassignedby>
+<item name='$FormulaClass' sign='true'><text>1</text></item>
+<item name='$CIAOOwner' sign='true'><text>CN=Rocky Oliver/OU=MedicareGPC/O=PalmettoGBA</text></item>
+<item name='$CIAOTime' sign='true'><datetime dst='true'>20130605T171029,64-04</datetime></item>
+<item name='$CIAOCheckOutTime' sign='true'><datetime dst='true'>20130718T092040,37-04</datetime></item>
+<item name='$CIAOCheckOutComment' sign='true'><text>updating design</text></item>
+<item name='$TITLE' sign='true'><text>(beFeatureSetDEProfiles)|beFeatureSetDEProfiles</text></item>
+<item name='$Index' sign='true'><text/></item>
+<item name='$Formula' summary='true' sign='true'><formula compiled='true'>
+pAAFAE4ASgAGAAsADAALAAsACQAEAGVsZW1lbnROYW1lZWxlbWVudEFsaWFzZWxlbWVudFR5cGVl
+bGVtZW50VU5JRCRDb25mbGljdCRSRUYEAAQAAAA6AAUABABGb3JtAQAKAGRlc0VsZW1lbnQKAgUA
+CwBmZWF0dXJlRmxhZwABAAMAWWVzAAoCHAIDAAcAFgAQAAlMMVMyUzNTNFM1UzZTN1M=
+</formula></item>
+<item name='$Collation' summary='true'>
+<rawitemdata type='2'>
+PAADAABEgGYAAAALABhmAAsACwAYZgAWAAsAZWxlbWVudE5hbWVlbGVtZW50VHlwZWVsZW1lbnRV
+TklE
+</rawitemdata></item>
+<item name='$ViewFormat' summary='true' sign='true'>
+<rawitemdata type='5'>
+AQAEAAYAiEwAAFZDAQALAAQAAAAAAMgAAQHfCQAAAAAAAAAAAAICAABAVkMAAAwACQAAAAAAoAAB
+AN8JAAAAAAAAAAAAAgIAAEBWQwAACwAEAAAAAACyAAEA3wkAAQAAAAAAAAACAgAAAFZDAAALAAQA
+AAAAAMYAAQDfCQABAAAAAAAAAAICAAAAZWxlbWVudE5hbWVOYW1lZWxlbWVudEFsaWFzQWxpYXMo
+ZXMpZWxlbWVudFR5cGVUeXBlZWxlbWVudFVOSURVTklEJgABAAAAAQEACQEAAAoBAQ4KAABPAK0r
+CQEBAAEAAAAAAAAAAABXQwIA3wkAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAD//wAAAAAAAAAAAAAA
+AAAAV0MCAN8JAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAA//8AAAAAAAAAAAAAAAAAAFdDAgDfCQAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAP//AAAAAAAAAAAAAAAAAABXQwIA3wkAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAD//wAAAAAAAAAAAAAAAAAAQgAQAAAAAQD///8AAQDm5uYAAQDz//MAAAAAAAAA
+AAABAP///wABAObm5gAAAAEAAAAAAAEAAAAAAAEAAAAAAAAACAAAAAAAAQA=
+</rawitemdata></item>
+<item name='$Fonts' sign='true'><textlist/></item>
+<item name='$Comment' sign='true'><text>Design Element Profiles (for users - can be modified)</text></item>
+<item name='$Flags'><text>Yd</text></item>
+<item name='$DesignerVersion'><text>8.5.3</text></item>
+<item name='$V5ACTIONS' sign='true'>
+<rawitemdata type='1'>
+i/8oAAEABSZUcmVidWNoZXQgTVMAAAAAAAAAAAAAAAAAAAAAAAAAAL0cPwAAAAEAAQAAAAEDAAAA
+AAAABQAACBgAAgB5/2wAAQDr6+sAAQAAAAAAAQAAAAAAAQD19fUAAAAhAAAAAAAAAAMAAwAAAAUA
+AAkAAAAAAAAAABZABQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAD8/zoAAAAAAAEAAAAAAAIAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAABAICAgAAAAAAA
+AAAAAAAA
+</rawitemdata></item></note>
+

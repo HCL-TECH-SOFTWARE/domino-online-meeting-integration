@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?><note xmlns="http://www.lotus.com/dxl" class="form" maintenanceversion="1.0" replicaid="8525867000756EB9" version="11.0">
+<noteinfo noteid="1bbe" sequence="1" unid="0245DD2D61B3EDE385258685006E0D90">
+<created><datetime>20210223T150204,32-05</datetime></created>
+<modified><datetime dst="true">20210329T102408,77+01</datetime></modified>
+<revised><datetime>20210223T150210,41-05</datetime></revised>
+<lastaccessed><datetime dst="true">20210329T102408,76+01</datetime></lastaccessed>
+<addedtofile><datetime dst="true">20210329T102408,76+01</datetime></addedtofile></noteinfo>
+<updatedby><name>CN=Domino Template Development/O=Domino</name><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name></updatedby>
+<wassignedby><name>CN=Domino Template Development/O=Domino</name></wassignedby>
+<item name="$Flags"><text>34CiQ</text></item>
+<item name="$FlagsExt" sign="true"><text>D</text></item>
+<item name="$ImagesWide" sign="true"><number>1</number></item>
+<item name="$ImagesHigh" sign="true"><number>1</number></item>
+<item name="$ImagesColorize" sign="true"><number>0</number></item>
+
+
+<item name="$MimeType" sign="true"><text>image/png</text></item>
+<item name="$FileModDT" sign="true"><datetime>20210114T081731,33-06</datetime></item>
+<item name="$ImageNames" sign="true"><text>edit person.png</text></item>
+<item name="$TITLE" sign="true"><textlist><text>(AcEdit)</text><text>(AcEdit)</text></textlist></item>
+<item name="$DesignerVersion" sign="true"><text>8.5.3</text></item></note>

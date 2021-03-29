@@ -1,0 +1,616 @@
+'++LotusScript Development Environment:2:5:(Options):0:74
+%REM
+	Library ls.dxl.be
+	Created Feb 2, 2021 by Rocky Oliver/USA/PNPHCL
+	Description: This library contains some generally useful functions for working with design elements, 
+	including obtaining and working with the DXL of a design element.
+	
+	**************** LICENSE ****************
+	Copyright 2021 HCL Labs and Rocky Oliver
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except 
+in compliance with the License. You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed under the License 
+is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express 
+or implied. See the License for the specific language governing permissions and limitations under 
+the License
+%END REM
+Option Public
+Option Declare
+
+Use "domiUtilsBE"
+
+'++LotusScript Development Environment:2:5:(Forward):0:1
+Declare Function getElementHandle(db As NotesDatabase, etype As String, ename As String) As NotesDocument
+Declare Function getElementType(eldoc As NotesDocument) As String
+Declare Function importDXL(tgtDb As NotesDatabase, dxlfile As String, _
+desFlg As Boolean, docFlg As Boolean, aclFlg As Boolean, signFlg As Boolean)As Boolean	
+Declare Function getElementNames(dnote As NotesDocument, elementName As String, aliases As Variant) As Boolean
+Declare Function getElementDXL(db As NotesDatabase, etype As String, formname As String, bkupkey As String, _
+oldnote As NotesDocument) As NotesDOMParser
+Declare Function importDXLStream(tgtDb As NotesDatabase, dxlStream As NotesStream, _
+desFlg As Boolean, docFlg As Boolean, aclFlg As Boolean, signFlg As Boolean)As Boolean	
+Declare Sub resyncDEProfiles(thisDb As NotesDatabase)
+Declare Function replaceDEUNID(deDoc As NotesDocument) As String
+
+'++LotusScript Development Environment:2:5:(Declarations):0:2
+
+'++LotusScript Development Environment:2:1:getElementHandle:10:8
+%REM
+	Function getElementHandle(db As NotesDatabase, etype As String, ename As String) As NotesDocument
+	db == database containing the desired design element
+	etype == the type of the desired design element - form or subform, etc.
+	ename == the name of the desired design element
+
+	-- used to easily get a handle to a design element. Returns the design element as a NotesDocument object
+%END REM
+
+Function getElementHandle(db As NotesDatabase, etype As String, ename As String) As NotesDocument
+	Dim curtitle As String
+	Dim ddoc As NotesDocument
+	Dim nc As NotesNoteCollection
+	Dim nid As String, i As Double, nextid As String
+	Dim titles As Variant, elementname As String, aliases As Variant
+	Dim rbool As Boolean, emptyvar As Variant
+	
+	On Error GoTo errHandler
+	
+ 	' Create note collection for current database
+	Set nc = db.CreateNoteCollection(False)
+	Select Case LCase(etype)
+	Case "form"
+		nc.SelectForms = True
+	Case "subform"
+		nc.SelectSubforms = True
+	Case "scriptlib"
+		nc.SelectScriptLibraries = True
+	Case "agent"
+		nc.Selectagents = True
+	Case "view"
+		nc.Selectviews = True
+	Case Else
+		' we don't know what they want, so we'll walk all elements
+		Call nc.SelectAllDesignElements(True)
+	End Select
+	Call nc.BuildCollection
+	
+ 	' Cycle through the notes and find the desired element
+	nid = nc.GetFirstNoteId
+	For i = 1 To nc.Count
+		Set ddoc = nothing
+		elementname = ""
+		aliases = emptyvar
+    	'get the next note ID before processing
+		nextid = nc.GetNextNoteId(nid)
+		Set ddoc = db.GetDocumentByID(nid)
+
+		rbool = getElementNames(ddoc, elementname, aliases)
+		If LCase(elementname) = LCase(ename) Then
+			Set getElementHandle = ddoc
+			Exit Function
+		Else
+			If IsArray(aliases) Then
+				ForAll a In aliases
+					If LCase(a) = LCase(ename) Then
+						Set getElementHandle = ddoc
+						Exit Function
+					End If
+				End ForAll
+			End If
+		End If
+
+		nid = nextid
+	Next
+	
+getOut:
+	Exit Function
+errhandler:
+	Set getElementHandle = Nothing
+	On Error GoTo 0
+	Select Case Err
+		Case 1000
+			Error Err, Error$ & "[ in " & GetThreadInfo(1) & "]"
+		Case Else
+			Error Err, Error$ & Chr(10) & "[line: " & Erl & " in " & GetThreadInfo(1) & "]"
+	End Select
+	Resume getOut
+End Function
+
+
+
+'++LotusScript Development Environment:2:1:getElementType:11:8
+%REM
+	Function getElementType(eldoc As NotesDocument) As String
+	This function returns the type of a design element by interpreting the $flags field of the element
+	
+	-- PARAMS --
+	eldoc == notesDocument object handle to the design note
+
+	-- RETURNS --
+	The type of element
+%END REM
+Function getElementType(eldoc As NotesDocument) As String
+	Dim flags As String
+	Dim etype As String
+	Dim errtxt As String
+	
+	On Error GoTo errHandler
+	
+	flags = eldoc.GetItemValue("$FLAGS")(0)
+	
+	If InStr(1, flags, "sj", 0) > 0 Then getElementType = "SCRIPT LIBRARY -  JAVA" : Exit Function
+	If InStr(1, flags, "s", 0) > 0 Then getElementType = "SCRIPT LIBRARY - LS" : Exit Function
+	If InStr(1, flags, "h", 0) > 0 Then getElementType = "SCRIPT LIBRARY - JS" : Exit Function
+	If InStr(1, flags, "t", 0) > 0 Then getElementType = "DATABASE SCRIPT" : Exit Function
+	If InStr(1, flags, "m", 0) > 0 Then getElementType = "OUTLINE" : Exit Function
+	If InStr(1, flags, "k", 0) > 0 Then getElementType = "DATA CONNECTION RESOURCE" : Exit Function
+	If InStr(1, flags, "U", 0) > 0 Then getElementType = "SUBFORM" : Exit Function
+	If InStr(1, flags, "#", 0) > 0 Then getElementType = "FRAMESET" : Exit Function
+	If InStr(1, flags, "i", 0) > 0 Then getElementType = "IMAGE RESOURCE" : Exit Function
+	If InStr(1, flags, "W", 0) > 0 Then getElementType = "PAGE" : Exit Function
+	If InStr(1, flags, "@", 0) > 0 Then getElementType = "APPLET" : Exit Function
+	If InStr(1, flags, "=", 0) > 0 Then getElementType = "SHARED STYLE SHEET" : Exit Function
+	If InStr(1, flags, "{", 0) > 0 Then getElementType = "WEB SERVICE" : Exit Function
+	If InStr(1, flags, "^", 0) > 0 Then getElementType = "SHARED COLUMN" : Exit Function
+	If InStr(1, flags, "g", 0) > 0 Then getElementType = "SHARED FILE" : Exit Function
+	If InStr(1, flags, "y", 0) > 0 Then getElementType = "SHARED ACTIONS" : Exit Function
+	If InStr(1, flags, "F", 0) > 0 Then getElementType = "FOLDER" : Exit Function
+	If InStr(1, flags, "G", 0) > 0 Then getElementType = "NAVIGATOR" : Exit Function
+	If InStr(1, flags, "Y", 0) > 0 Then etype = "VIEW"
+	If InStr(1, flags, "d", 0) > 0 Then etype = "VIEW"
+	If InStr(1, flags, "T", 0) > 0 Then etype = "VIEW"
+	If InStr(1, flags, "c", 0) > 0 Then etype = "VIEW - CALENDAR"
+	If InStr(1, flags, "o", 0) > 0 Then etype = "VIEW - SPOFU DESKTOP STORED"
+	If InStr(1, flags, "f", 0) > 0 Then
+		etype = "AGENT"
+		If InStr(1, flags, "J", 0) > 0 Then
+			etype = etype & " - JAVA"
+		ElseIf InStr(1, flags, "L", 0) > 0 Then
+			etype = etype & " - LS"
+		Else
+			etype = etype & " - FORMULA"
+		End If
+		If InStr(1, flags, "S", 0) > 0 Then etype = etype & " - SCHEDULED"
+		If InStr(1, flags, "u", 0) > 0 Then etype = etype & " - RUN AS USER"
+	End If
+	
+'	If Instr(1,flags, "w", 0) > 0 Then etype = "FORM"
+	If InStr(1, flags, "C", 0) > 0 Then etype = "FORM"
+	If InStr(1, flags, "D", 0) > 0 Then etype = "FORM"
+	If InStr(1, flags, "V", 0) > 0 Then etype = " - PRIVATE"
+	
+	If etype = "" Then
+		If eldoc.HasItem("$FIELDS") Then getElementType = "FORM" : Exit Function
+		If eldoc.HasItem("$$FORMSCRIPT") Then getElementType = "FORM" : Exit Function
+		If eldoc.HasItem("$VIEWFORMAT") Then getElementType = "VIEW" : Exit Function
+		
+		etype = "*UNKNOWN*"
+		etype = etype & " (flags: " & flags & ")"
+	End If
+	getElementType = etype
+	
+getOut:
+	Exit Function
+errHandler:
+	getElementType = ""
+	
+	errtxt = Error$ & " [E: " & Err & "; L: " & Erl & "; F: " & GetThreadInfo(1) & "]"
+
+	On Error GoTo 0
+	Error Err, errtxt
+	
+	Resume getOut	
+End Function
+
+
+'++LotusScript Development Environment:2:1:importDXL:19:8
+%REM
+	Function importDXL(dxlfile As String, tgtDb As NotesDatabase,_
+desFlg As Boolean, docFlg As Boolean, aclFlg As Boolean, signFlg As Boolean)As Boolean
+	This function is used to import an XML file containing DXL into a database. The XML file can
+	contain DXL for a design element, a document, or the database ACL
+	
+	-- PARAMS --
+	dxlfile == the filepath to the file XML file containing the DXL to be imported
+	tgtDb == the target database for the imported DXL
+	desFlg == used to set the replace flag for design elements
+	docFlg == used to set the replace flag for doc elements
+	aclFlg == used to set the replace flag for ACL elements
+	signFlg == if set to True, then the database is signed. WARNING: This can be an expensive setting!
+	
+	-- RETURNS --
+	True if successful, False if not
+%END REM
+Function importDXL(tgtDb As NotesDatabase, dxlfile As String, _
+desFlg As Boolean, docFlg As Boolean, aclFlg As Boolean, signFlg As Boolean)As Boolean	
+	Dim s As New NotesSession
+	Dim dxlStream As NotesStream
+	Dim dxlImporter As NotesDXLImporter
+	Dim retflg As Boolean
+	
+	On Error GoTo errHandler
+	importDXL = True
+	
+	If Not(tgtDb.isOpen) Then Error 1000, "Database is not open, aborting DXL import"
+	
+	Set dxlStream = s.CreateStream()
+	retflg = dxlStream.Open(dxlfile)
+	If Not retflg Then Error 1000, "Unable to open file stream, aborting DXL import"
+	
+	If dxlStream.Bytes = 0 Then Error 1000, "File stream is empty, aborting DXL import"
+	
+	Set dxlImporter = s.CreateDXLImporter(dxlStream, tgtDb)
+	dxlImporter.ReplaceDBProperties = False
+	dxlImporter.ReplicaRequiredForReplaceOrUpdate = False
+	
+	If (desFlg = True) Then
+		dxlImporter.DesignImportOption = DXLIMPORTOPTION_REPLACE_ELSE_CREATE ' replace existing, or create new
+	Else
+		dxlImporter.DesignImportOption = DXLIMPORTOPTION_IGNORE 
+	End If
+	
+	If (docFlg = True) Then
+		dxlImporter.DocumentImportOption = DXLIMPORTOPTION_REPLACE_ELSE_CREATE
+	Else
+		dxlImporter.DocumentImportOption = DXLIMPORTOPTION_IGNORE 
+	End If
+	
+	If (aclFlg = True) Then
+		dxlImporter.ACLImportOption = DXLIMPORTOPTION_REPLACE_ELSE_CREATE 
+	Else
+		dxlImporter.ACLImportOption = DXLIMPORTOPTION_IGNORE 
+	End If
+	
+	Call dxlImporter.Process()
+	Call dxlStream.Close()
+	
+	If signFlg Then Call tgtDb.Sign(DBSIGN_DOC_ALL) 'sign the db when done if desired
+	
+getOut:
+	Exit Function
+errhandler:
+	importDXL = False
+	On Error GoTo 0
+	Select Case Err
+	Case 1000
+		Error Err, Error$ & "[ in " & GetThreadInfo(1) & "]"
+	Case Else
+		Error Err, Error$ & Chr(10) & dxlImporter.log & Chr(10) & "[line: " & Erl & " in " & GetThreadInfo(1) & "]"
+	End Select
+	Resume getOut
+End Function
+
+
+
+
+'++LotusScript Development Environment:2:1:getElementNames:15:8
+%REM
+	Function getElementNames(dnote As NotesDocument, elementName As String, aliases As Variant) As Boolean
+	This function returns the name of the given design element in the name param, and the alias(es) of the element in the aliases array
+	NOTE: this function is used by getElementHandle() in this script lib
+	
+	-- PARAMS --
+	dnote == notesDocument object handle to the design note
+	elementName == main title/name of the element is retunred on this param
+	aliases == array of aliases (minus elementName) is returned on this param
+
+	-- RETURNS --
+	True if successful, False if not
+	The "payload" of the function is returned by ref on the elementName and aliases params
+%END REM
+Function getElementNames(dnote As NotesDocument, elementName As String, aliases As Variant) As Boolean
+	Dim titles As Variant, twork As Variant
+	Dim titlework As Variant, elementwork As Variant, allNames As Variant
+	Dim z As Long, emptyvar As Variant
+	
+	On Error GoTo errHandler
+	
+	If dnote Is Nothing Then Error 1000, "No design note provided"
+	If dnote.Hasitem("$Title") Then
+		titles = dnote.Getitemvalue("$Title")
+	Else
+		Error 1000, "Design note does not contain a $Title item"
+	End If
+
+	For z = 0 To UBound(titles)
+		elementwork = emptyvar
+		If InStr(titles(z), "|") Then
+			elementwork = Split(titles(z), "|")		
+		Else
+			ReDim elementwork(0) As string
+			elementwork(0) = titles(z)
+		End If
+		If IsArray(twork) Then
+			twork = ArrayAppend(twork, elementwork)
+		Else
+			twork = elementwork
+		End If
+	Next
+
+	If IsArray(twork) Then
+		elementName = twork(0)
+		If UBound(twork) > 0 Then
+			titlework = twork
+			titlework(0) = "" ' this removes the element's "name" from the array, so we're left with the main name being on elementName, and the aliases being in aliases array
+			titlework = FullTrim(titlework)
+			aliases = titlework
+		End If
+	Else
+		elementName = twork
+	End If
+	
+	getelementNames = true
+getOut:
+	Exit Function
+errhandler:
+	getElementNames = False
+	On Error GoTo 0
+	Select Case Err
+		Case 1000
+			Error Err, Error$ & "[ in " & GetThreadInfo(1) & "]"
+		Case Else
+			Error Err, Error$ & Chr(10) & "[line: " & Erl & " in " & GetThreadInfo(1) & "]"
+	End Select
+	Resume getOut
+End Function
+
+'++LotusScript Development Environment:2:1:getElementDXL:2:8
+Function getElementDXL(db As NotesDatabase, etype As String, formname As String, bkupkey As String, _
+oldnote As NotesDocument) As NotesDOMParser
+	Dim s As New NotesSession
+	Dim retflg As Boolean
+	Dim stream As NotesStream
+	Dim nc As NotesNoteCollection
+	Dim exporter As NotesDXLExporter
+	Dim domobj As NotesDOMParser
+	Dim titles As Variant, elementname As String, aliases As Variant
+	
+	Dim nid As String, nextid As String, i As Integer
+	Dim ddoc As NotesDocument, bkupdoc As NotesDocument
+	Dim curtitle As String
+	
+  REM Create note collection for current database
+	Set nc = db.CreateNoteCollection(False)
+	Select Case LCase(etype)
+	Case "form"
+		nc.SelectForms = True
+	Case "subform"
+		nc.SelectSubforms = True
+	Case Else
+		' we don't know what they want, so we'll walk all elements
+		Call nc.SelectAllDesignElements(True)
+	End Select
+	Call nc.BuildCollection
+	
+  REM Cycle through the notes and find the specified form
+	nid = nc.GetFirstNoteId
+	For i = 1 To nc.Count
+    	'get the next note ID before processing
+		nextid = nc.GetNextNoteId(nid)
+		Set ddoc = db.GetDocumentByID(nid)
+		ReDim titles(0) As String
+		Call getElementNames(ddoc, elementname, aliases)
+		titles(0) = elementname
+		If IsArray(aliases) Then
+			titles = ArrayAppend(titles, aliases)
+		End If
+		ForAll t In titles
+			curtitle = t
+			If LCase(curtitle) = LCase(formname) Then
+				If bkupkey <> "" Then
+					Set bkupdoc = ddoc.CopyToDatabase(db)
+					Call bkupdoc.ReplaceItemValue("$TITLE", "(BACKUP-" & bkupkey & "-" & curtitle & ")")
+					Call bkupdoc.ReplaceItemValue("OldTitle", ddoc.GetItemValue("$Title"))
+					Call bkupdoc.Save(True, False)
+					Set oldnote = bkupdoc
+				End If
+				' this is the node of the desired form
+				Set getElementDXL = s.CreateDOMParser()
+				getElementDXL.AddXMLDeclNode = False
+				Set exporter = s.CreateDXLExporter(ddoc, getElementDXL)
+				exporter.OutputDOCTYPE = False
+				Call exporter.Process
+				Exit Function
+			End If
+		End ForAll
+		
+		nid = nextid
+	Next
+End Function
+
+
+
+'++LotusScript Development Environment:2:1:importDXLStream:19:8
+%REM
+	Function importDXLStream(dxlStream as NotesStream, tgtDb As NotesDatabase,_
+desFlg As Boolean, docFlg As Boolean, aclFlg As Boolean, signFlg As Boolean)As Boolean
+	This function is used to import an XML file containing DXL into a database. The XML file can
+	contain DXL for a design element, a document, or the database ACL
+	
+	-- PARAMS --
+	dxlfile == the filepath to the file XML file containing the DXL to be imported
+	tgtDb == the target database for the imported DXL
+	desFlg == used to set the replace flag for design elements
+	docFlg == used to set the replace flag for doc elements
+	aclFlg == used to set the replace flag for ACL elements
+	signFlg == if set to True, then the database is signed. WARNING: This can be an expensive setting!
+	
+	-- RETURNS --
+	True if successful, False if not
+%END REM
+Function importDXLStream(tgtDb As NotesDatabase, dxlStream As NotesStream, _
+desFlg As Boolean, docFlg As Boolean, aclFlg As Boolean, signFlg As Boolean)As Boolean	
+	Dim s As New NotesSession
+
+	Dim dxlImporter As NotesDXLImporter
+	Dim retflg As Boolean
+	
+	On Error GoTo errHandler
+	importDXLStream = True
+	
+	If Not(tgtDb.isOpen) Then Error 1000, "Database is not open, aborting DXL import"
+
+	
+	If dxlStream.Bytes = 0 Then Error 1000, "File stream is empty, aborting DXL import"
+	
+	Set dxlImporter = s.CreateDXLImporter(dxlStream, tgtDb)
+	dxlImporter.ReplaceDBProperties = False
+	dxlImporter.ReplicaRequiredForReplaceOrUpdate = False
+	
+	If (desFlg = True) Then
+		dxlImporter.DesignImportOption = DXLIMPORTOPTION_REPLACE_ELSE_CREATE ' replace existing, or create new
+	Else
+		dxlImporter.DesignImportOption = DXLIMPORTOPTION_IGNORE 
+	End If
+	
+	If (docFlg = True) Then
+		dxlImporter.DocumentImportOption = DXLIMPORTOPTION_REPLACE_ELSE_CREATE
+	Else
+		dxlImporter.DocumentImportOption = DXLIMPORTOPTION_IGNORE 
+	End If
+	
+	If (aclFlg = True) Then
+		dxlImporter.ACLImportOption = DXLIMPORTOPTION_REPLACE_ELSE_CREATE 
+	Else
+		dxlImporter.ACLImportOption = DXLIMPORTOPTION_IGNORE 
+	End If
+	
+	Call dxlImporter.Process()
+	Call dxlStream.Close()
+	
+	If signFlg Then Call tgtDb.Sign(DBSIGN_DOC_ALL) 'sign the db when done if desired
+	
+getOut:
+	Exit Function
+errhandler:
+	importDXLStream = False
+	On Error GoTo 0
+	Select Case Err
+	Case 1000
+		Error Err, Error$ & "[ in " & GetThreadInfo(1) & "]"
+	Case Else
+		Error Err, Error$ & Chr(10) & dxlImporter.log & Chr(10) & "[line: " & Erl & " in " & GetThreadInfo(1) & "]"
+	End Select
+	Resume getOut
+End Function
+
+
+
+'++LotusScript Development Environment:2:2:resyncDEProfiles:8:8
+%REM
+	Sub resyncDEProfiles(thisDb As NotesDatabase)
+	Description: Resyncs the UNIDs of the feature design elements with their corresponding profiles
+	
+	---- PARAMS ----
+	thisDb (NotesDatabase) - the database (should be the current db) containing the design element profiles
+%END REM
+Sub resyncDEProfiles(thisDb As NotesDatabase)
+	Dim deView As NotesView, deDoc As NotesDocument
+	Dim dbPathInfo As Variant, deTypes List As String
+	Dim deType As String, deName As String, deUNID As String, curUNID As String
+	Dim curNote As NotesDocument
+	Dim rbool As Boolean
+	
+	Set deView = thisDb.getView("beFeatureSetDEProfiles")
+	If deView Is Nothing Then Error 1000, "Unable to find Design Element Profile view"
+	deView.Autoupdate = False
+	
+	deTypes("AGENT - LS") = "agent"
+	deTypes("FORM") = "form"
+	deTypes("SCRIPT LIBRARY - LS") = "scriptlib"
+	deTypes("SUBFORM") = "subform"
+	deTypes("VIEW") = "view"
+	
+	Set deDoc = deView.Getfirstdocument()
+	Do While Not(deDoc Is Nothing)
+		Set curNote = Nothing
+		deName = columnValStr(deDoc, 0)
+		deType = columnValStr(deDoc, 2)
+		deUNID = columnValStr(deDoc, 3)
+		
+		Set curNote = getElementHandle(thisDb, deTypes(UCase(deType)), deName)  ' in dxlUtilsBE
+		If Not(curNote Is Nothing) Then
+			curUNID = curNote.Universalid
+			If Not(curUNID = deUNID) Then
+				Call deDoc.replaceItemValue("elementUNID", curUNID)
+				Call deDoc.save(True, False, True)
+			End If
+		End If
+		
+		Set deDoc = deView.Getnextdocument(deDoc)
+	Loop
+End Sub
+
+
+
+'++LotusScript Development Environment:2:1:replaceDEUNID:13:8
+%REM
+	Function replaceDEUNID
+	Description: Updates the design element UNID for the selected design element profile
+	
+	Returns the NEW unid of the design element
+	
+	---- PARAMS ----
+	deDoc (NotesDocument) - the design element profile doc object
+	
+	---- RETURNS ----
+	the new UNID of the design element
+%END REM
+Function replaceDEUNID(deDoc As NotesDocument) As String
+	Dim thisDb As NotesDatabase
+	Dim oldDE As NotesDocument, newDE As NotesDocument
+	Dim oldUNID As String, newUNID As String
+	Dim rbool As Boolean, rvar As Variant
+	
+	On Error GoTo errHandler
+	replaceDEUNID = ""
+	
+	If LCase(deDoc.getItemValue("form")(0)) <> "deselement" Then Error 1000, "You must run this from a Design Element Profile document"
+	
+	Set thisDb = deDoc.Parentdatabase
+	
+	If deDoc.Hasitem("elementUNID") Then
+		oldUNID = deDoc.getItemValue("elementUNID")(0)
+		If oldUNID = "" Then Error 1000, "Design Element Profile does not contain an element UNID"
+	Else
+		Error 1000, "Design Element Profile does not contain an element UNID"
+	End If
+	
+	Set oldDE = thisDb.Getdocumentbyunid(oldUNID)
+	If oldDE Is Nothing Then Error 1000, "Unable to find Design Element by UNID (" & oldUNID & ")"
+	
+	rvar = Evaluate(|@ReplaceSubString(@Text(@Password(@Unique)); "(":")";"")|, oldDE)
+	If IsArray(rvar) Then
+		newUNID = CStr(rvar(0))
+	Else
+		Error 1000, "Unknown problem with creation of new UNID"
+	End If
+	If newUNID = "" Then Error 1000, "Unknown problem with creation of new UNID"
+	
+	oldDE.Universalid = newUNID
+	rbool = oldDE.save(True, False, True)
+	
+	Set newDE = thisDb.Getdocumentbyunid(newUNID)
+	If newDE Is Nothing Then Error 1000, "Error changing UNID of Design Element - new UNID not found (" & newUNID & ")"
+	
+	Call deDoc.Replaceitemvalue("elementUNID", newUNID)
+	Call deDoc.Save(True, False, True)
+
+	Set oldDE = Nothing
+	Set oldDE = thisDb.Getdocumentbyunid(oldUNID)
+	Call oldDE.Remove(True)
+	
+	replaceDEUNID = newUNID
+getOut:
+	Exit Function
+
+errHandler:
+	replaceDEUNID = ""
+
+	On Error GoTo 0
+	Error Err, Error$ & " [in " & GetThreadInfo(1) & "]"
+	Resume getOut
+End Function
+

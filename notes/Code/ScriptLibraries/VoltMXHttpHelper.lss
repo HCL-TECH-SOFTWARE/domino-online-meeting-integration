@@ -1,0 +1,244 @@
+'++LotusScript Development Environment:2:5:(Options):0:74
+%REM
+	Copyright 2020 Paul Withers
+	Licensed under the Apache License, Version 2.0 (the "License"); 
+	you may not use this file except in compliance with the License. 
+	You may obtain a copy of the License at
+
+	http://www.apache.org/licenses/LICENSE-2.0
+
+	Unless required by applicable law or agreed to in writing, 
+	software distributed under the License is distributed on an "AS IS" BASIS, 
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
+	See the License for the specific language governing permissions and limitations under the License
+	
+%END REM
+Option Public
+Option Declare
+Use "NotesHttpJsonRequestHelper"
+
+'++LotusScript Development Environment:2:5:(Forward):0:1
+Declare Class NotesAgent_VoltMXHttpHelper As NotesAgent_JsonHTTPHelper
+
+'++LotusScript Development Environment:2:5:(Declarations):0:10
+
+
+Private Const LIB_PREFIX = |Library: VoltMXHttpHelper.|
+
+
+%REM
+	Class VoltMXHttpHelper
+	Description: Expects a payload of format:
+	{
+		"unid": "3351888600E956CC802585FF004E32E1",
+		"dbPath": "extlib/xpagesext.nsf",
+		"payload": {
+			"Status": "Approved",
+			"ApprovalComments": "Thank you"
+		},
+		"returnItems": [
+			"FirstName",
+			"LastName",
+			"Email",
+			"City",
+			"State"
+		]
+	}
+%END REM
+Class NotesAgent_VoltMXHttpHelper As NotesAgent_JsonHTTPHelper
+	
+	Private db As NotesDatabase	'Needs to be here, parent database needs to be in memory
+	Private m_actionUnid As String
+	Private m_actionDoc As NotesDocument
+	Private m_boolean_true As Variant
+	Private m_boolean_false As Variant
+	Private m_returnFields As Variant
+	
+	
+	
+	Private Property Get CLASS_PREFIX As String
+		CLASS_PREFIX = LIB_PREFIX & |Class: NotesAgent_VoltMXHttpHelper.| 
+	End Property
+	
+	
+	
+	%REM
+		Constructor
+	%END REM
+	Sub New(doc As NotesDocument), NotesAgent_JsonHTTPHelper(doc)
+		On Error GoTo ErrorTrap 
+		On Error 4091 GoTo InvalidUNID  ' Error #4091 = Invalid universal id
+	
+		Dim s As New NotesSession()
+		Dim sourceDoc As NotesDocument
+		Dim returnFields As NotesJSONArray
+		Dim elem As NotesJSONElement
+
+		Dim unid As String
+		Dim dbPath As String
+
+		Dim counter As Integer  
+		
+	
+		
+		m_boolean_true = 1
+		m_boolean_false = 0
+		ReDim m_returnFields(0)
+	
+		If (doc Is Nothing) Then GoTo ExitPoint 
+	
+		If (findStringByPointer("/dbPath", dbPath)) Then
+			Set db = s.getDatabase("", dbPath, False)
+			If (db Is Nothing) Then
+				Call closeRequestWithError("Database not found at path " & dbPath, HTTP_STATUS_BAD_REQUEST)
+				GoTo ExitPoint
+			End If
+		Else
+			Set db = doc.parentDatabase
+		End If
+		
+		If (findStringByPointer("/unid", unid)) Then
+			m_actionUnid = unid
+			Set m_actionDoc = db.getdocumentbyUNID(unid)
+			m_Valid = True
+		End If
+		
+		If (findJsonArrayByPointer("/returnFields", returnFields)) Then
+			ReDim m_returnFields(returnFields.size - 1)
+			Set elem = returnFields.Getfirstelement()
+			counter = 0
+			While Not elem Is Nothing
+				m_returnFields(counter) = elem.value
+				Set elem = returnFields.Getnextelement()
+				counter = counter + 1
+			Wend
+		End If
+		
+
+	ExitPoint:
+		Exit Sub
+	InvalidUNID:
+		On Error GoTo ErrorTrap
+		enhLogWarning CLASS_PREFIX, |Invalid document UNID: | & unid
+		Call closeRequestWithError("Document not found due to invalid UNID: " & unid, HTTP_STATUS_BAD_REQUEST)
+	ErrorTrap:
+		On Error GoTo 0
+		enhLogException CLASS_PREFIX, ||
+		Resume ExitPoint 
+	End Sub
+	
+	%REM
+		Function getActionDocUnid
+		Description: Comments for Function
+	%END REM
+	Property Get ActionDocUnid() As String
+		ActionDocUnid = m_actionUnid
+	End Property
+	
+	%REM
+		Function getActionDoc
+		Description: Comments for Function
+	%END REM
+	Function getActionDoc() As NotesDocument
+		
+		Set getActionDoc = m_actionDoc
+		
+	End Function
+	
+	%REM
+		Sub updateActionDoc
+		Description: Updates the document with the payload, but doesn't save it
+	%END REM
+	Sub updateActionDoc()
+		On Error GoTo ErrorTrap		
+		
+		Dim payload As NotesJSONObject
+		Dim elem As NotesJSONElement
+		
+		If (findJsonObjectByPointer("/payload", payload)) Then
+			Set elem = payload.Getfirstelement()
+			While Not (elem Is Nothing)
+				Select Case elem.Type
+					Case Type_JsonNumber:
+						Call m_actionDoc.Replaceitemvalue(elem.Name, elem.Value)
+					Case Type_JsonString:
+						' We need to handle date/date-time/time strings!
+						Call m_actionDoc.Replaceitemvalue(elem.Name, elem.Value)
+					Case Type_JsonBoolean:
+						If (elem.Value) Then
+							Call m_actionDoc.Replaceitemvalue(elem.Name, m_boolean_true)
+						Else
+							Call m_actionDoc.Replaceitemvalue(elem.Name, m_boolean_true)
+						End If
+					Case Else
+						enhLogWarning CLASS_PREFIX, |Unexpected value found for /payload/| & elem.Name
+				End Select
+
+				Set elem = payload.Getnextelement()
+			Wend
+		Else
+			enhLogWarningWithLink CLASS_PREFIX, |No payload was passed for updating | & m_actionUnid, m_actionDoc, |Action Document|, ||
+		End If
+
+	ExitPoint:
+		Exit Sub
+	ErrorTrap:
+		On Error GoTo 0
+		enhLogException CLASS_PREFIX, ||
+		Resume ExitPoint 
+	End Sub
+	
+	%REM
+		Sub addReturnFieldsToResponseBody
+		Description: Comments for Sub
+	%END REM
+	Sub addReturnFieldsToResponseBody()
+		On Error GoTo ErrorTrap
+		
+		Call addResponseHeader("Content-Type", "application/json")
+		If (m_returnFields(0) = "") Then
+			ForAll itm In getActionDoc().Items
+				If (Not itm.name Like "$*") Then
+					Call getJSONResponseBody().appendElement(itm.Text, itm.name)
+				End If
+			End ForAll
+		Else
+			ForAll fieldName In m_returnFields
+				If (getActionDoc.Hasitem(CStr(fieldName))) Then
+					Call getJSONResponseBody().appendElement(getActionDoc().Getfirstitem(fieldName).Text, CStr(fieldName))
+				Else
+					Call getJSONResponseBody().appendElement("", CStr(fieldName))
+				End If
+			End ForAll
+		End If
+		
+		Call getJSONResponseBody().appendElement(ActionDocUnid, "@unid")
+		
+		
+	ExitPoint:
+		Exit Sub
+	ErrorTrap:
+		On Error GoTo 0
+		enhLogException CLASS_PREFIX, ||
+		Resume ExitPoint
+	End Sub
+	
+	%REM
+		Function getReturnFields
+		Description: Comments for Function
+	%END REM
+	Property Get ReturnFields() As Variant
+		ReturnFields = m_returnFields
+	End Property
+	
+	%REM
+		Sub setBooleanTranslationSettings
+		Description: Comments for Sub
+	%END REM
+	Sub setBooleanTranslationSettings(trueVal As Variant, falseVal As Variant)
+		m_boolean_true = trueVal
+		m_boolean_false = falseVal
+	Exit Sub
+	End Sub
+
+End Class

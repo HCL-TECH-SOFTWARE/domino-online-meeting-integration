@@ -1,0 +1,116 @@
+'++LotusScript Development Environment:2:5:(Options):0:74
+%REM
+	Copyright 2020 Paul Withers
+	Licensed under the Apache License, Version 2.0 (the "License"); 
+	you may not use this file except in compliance with the License. 
+	You may obtain a copy of the License at
+
+	http://www.apache.org/licenses/LICENSE-2.0
+
+	Unless required by applicable law or agreed to in writing, 
+	software distributed under the License is distributed on an "AS IS" BASIS, 
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
+	See the License for the specific language governing permissions and limitations under the License
+	
+	**NOT** complete, only developed as far as required for demos.
+%END REM
+Option Public
+Option Declare
+
+'++LotusScript Development Environment:2:5:(Forward):0:1
+Declare Class NotesJsonNavigatorFluent
+Declare Class NotesJsonArrayFluent
+
+'++LotusScript Development Environment:2:5:(Declarations):0:10
+
+Private Const LIB_PREFIX = |Library: FluentNotesJson.|
+%REM
+	Class NotesJsonNavigatorFluent
+	Description: Comments for Class
+%END REM
+Class NotesJsonNavigatorFluent
+	
+	Private m_NotesJsonNavigator As NotesJSONNavigator
+	
+	%REM
+		Sub new
+		Description: Comments for Sub
+	%END REM
+	Sub New(session As NotesSession, body As String)
+		Set m_NotesJsonNavigator = session.Createjsonnavigator(body)
+	End Sub
+	
+	%REM
+		Function Stringify
+		Description: Comments for Function
+	%END REM
+	Function Stringify() As String
+		Dim outStr As String
+		outStr = m_NotesJsonNavigator.Stringify()
+		If (outStr Like |"":[*|) Then
+			Stringify = StrRight(outStr, |"":|)
+		Else
+			Stringify = outStr
+		End If
+	End Function
+	
+	%REM
+		Function appendElement
+		Description: Comments for Function
+	%END REM
+	Function appendElement(passedValue As Variant, passedName As String) As NotesJSONElement
+		Set appendElement = m_NotesJsonNavigator.Appendelement(passedValue, passedName)
+	End Function
+	
+	%REM
+		Function appendElementFluent
+		Description: Comments for Function
+	%END REM
+	Function appendElementFluent(passedValue As Variant, passedName As String) As NotesJsonNavigatorFluent
+		Call m_NotesJsonNavigator.Appendelement(passedValue, passedName)
+		Set appendElementFluent = Me
+	End Function
+	
+	%REM
+		Function appendArray
+		Description: Comments for Function
+	%END REM
+	Function appendArray(passedName As String) As NotesJSONArrayFluent
+		Set appendArray = New NotesJsonArrayFluent(m_NotesJsonNavigator, passedName)
+	End Function
+	
+End Class
+%REM
+	Class NotesJsonArrayFluent
+	Description: Comments for Class
+%END REM
+Class NotesJsonArrayFluent
+	
+	Private m_NotesJsonArray As NotesJSONArray
+	
+	%REM
+		Sub new
+		Description: Comments for Sub
+	%END REM
+	Sub New(parent As NotesJSONNavigator, passedName As String)
+		Set m_NotesJsonArray = parent.Appendarray(passedName)
+	End Sub
+	
+	%REM
+		Function appendElement
+		Description: Comments for Function
+	%END REM
+	Function appendElement(passedValue As Variant)
+		Set appendElement = m_NotesJsonArray.Appendelement(passedValue)
+	End Function
+	
+	%REM
+		Function appendElementFluent
+		Description: Comments for Function
+	%END REM
+	Function appendElementFluent(passedValue As Variant) As NotesJsonArrayFluent
+		m_NotesJsonArray.Appendelement(passedValue)
+		Set appendElementFluent = Me
+	End Function
+
+End Class

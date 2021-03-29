@@ -1,0 +1,771 @@
+'++LotusScript Development Environment:2:5:(Options):0:74
+%REM
+	Library domiUtilsFE
+	Created Feb 2021 by Devin Olson/USA/PNPHCL
+
+	Domino Online Meeting Integration Front End UI Utilities 
+
+	Copyright 2021 HCL Software
+	Licensed under the Apache License, Version 2.0 (the "License"); 
+	you may not use this file except in compliance with the License. 
+	You may obtain a copy of the License at
+
+	http://www.apache.org/licenses/LICENSE-2.0
+
+	Unless required by applicable law or agreed to in writing, 
+	software distributed under the License is distributed on an "AS IS" BASIS, 
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
+	See the License for the specific language governing permissions and limitations under the License
+%END REM
+Option Public
+Option Declare
+Use "domiIntegrator" 
+
+'++LotusScript Development Environment:2:5:(Forward):0:1
+Declare Function domiGetMeeting(nodesToCopy As StringList, meetingservice$) As Boolean  
+Declare Private Sub domiNotifyResult(ws As NotesUIWorkspace, uidoc As NotesUIDocument, domi As DominoOnlineMeetingIntegrator, prefix$, success As Boolean) 
+Declare Function domiDeleteMeeting(meetingservice$) As Boolean  
+Declare Function domiValidateOAuthToken() As Boolean  
+Declare Function domiRevokeOAuthToken() As Boolean  
+Declare Function domiCreateMeeting(nodesToCopy As StringList, meetingservice$) As Boolean  
+Declare Function domiUpdateMeeting(nodesToCopy As StringList, meetingservice$) As Boolean  
+Declare Function getNewSTTokens(curDoc As NotesDocument) As Boolean 
+Declare Function getOAuthToken() As Boolean 
+Declare Function domiUIvalidateCalendarEntry(context As NotesDocument, ndtStart As NotesDateTime, ndtEnd As NotesDateTime) As Integer
+
+'++LotusScript Development Environment:2:5:(Declarations):0:10
+
+
+
+
+Private Const LIB_PREFIX = |Library: domiUtilsFE.|
+
+
+%REM ***************************************************************************
+ ************************************************************************************
+	MessageBox CONSTANTS  
+	Private MessageBox constants declared here to avoid conflicts with 
+	other libraries using lsconst.lss; which has its own 
+	%INCLUDE "lsprcval.lss" command.
+ ************************************************************************************
+%END REM *********************************************************************
+
+'-----------------------------------------------------------------------------
+' MsgBox parameters
+'-----------------------------------------------------------------------------
+Private Const MB_OK = 0                 ' OK button only
+Private Const MB_OKCANCEL = 1           ' OK and Cancel buttons
+Private Const MB_ABORTRETRYIGNORE = 2   ' Abort, Retry, and Ignore buttons
+Private Const MB_YESNOCANCEL = 3        ' Yes, No, and Cancel buttons
+Private Const MB_YESNO = 4              ' Yes and No buttons
+Private Const MB_RETRYCANCEL = 5        ' Retry and Cancel buttons
+
+Private Const MB_ICONSTOP = 16          ' Critical message
+Private Const MB_ICONQUESTION = 32      ' Warning query
+Private Const MB_ICONEXCLAMATION = 48   ' Warning message
+Private Const MB_ICONINFORMATION = 64   ' Information message
+
+Private Const MB_APPLMODAL = 0	       	' Application Modal Message Box
+Private Const MB_DEFBUTTON1 = 0	      ' First button is default
+Private Const MB_DEFBUTTON2 = 256       ' Second button is default
+Private Const MB_DEFBUTTON3 = 512       ' Third button is default
+Private Const MB_SYSTEMMODAL = 4096     ' System Modal
+
+'-----------------------------------------------------------------------------
+' MsgBox return values
+'-----------------------------------------------------------------------------
+
+Private Const IDOK = 1                  ' OK button pressed
+Private Const IDCANCEL = 2              ' Cancel button pressed
+Private Const IDABORT = 3               ' Abort button pressed
+Private Const IDRETRY = 4               ' Retry button pressed
+Private Const IDIGNORE = 5              ' Ignore button pressed
+Private Const IDYES = 6                 ' Yes button pressed
+Private Const IDNO = 7                  ' No button pressed
+
+
+
+
+
+'++LotusScript Development Environment:2:1:domiGetMeeting:22:8
+
+
+
+
+%REM
+	Function domiGetMeeting
+	
+	Gets an online meeting for the current Calendar Entry (Opened in the UI Workspace) and meeting service. 
+	
+	@param nodesToCopy		Tags and Node names used to parse the response JSON and add nodes when processing DOMI JSON 
+								k = Node name used to add the retrieved value to the resulting JSON content.
+								v = Properly formatted JSON tag this will be used to retrieve a value from the JSON content.
+
+	@param service$ 		Meeting Service used for the object. 
+	
+	@return Flag indicating if the Meeting was successfully getd.
+	
+	@throws ERR_PARAMETER_BLANK if the current NotesUIdocument is Nothing 
+	@throws ERR_PARAMETER_INVALID if the current NotesUIdocument is not a Calendar Entry (form = Appointment). 
+	@throws ERR_PARAMETER_INVALID if Meeting Service not currently supported. 
+%END REM
+Function domiGetMeeting(nodesToCopy As StringList, meetingservice$) As Boolean  
+	On Error GoTo ErrorTrap
+
+	Dim ws As New NotesUIWorkspace()
+	Dim curUIDoc As NotesUIDocument
+	Dim curDoc As NotesDocument
+	
+	Dim domi As DominoOnlineMeetingIntegrator
+
+	Dim bodyTxt As String 	
+
+	Dim result As Boolean
+	
+
+
+	' BEGIN CODE 
+
+	Set curUIDoc = ws.Currentdocument
+	If (curUIDoc Is Nothing) Then Error ERR_PARAMETER_BLANK, MSG_PARAMETER_BLANK & |UI Document is Nothing.  | 
+	
+	Set curDoc = curUIDoc.Document
+	If Not(curDoc.getItemValue(|Form|)(0) = |Appointment|) Then Error ERR_PARAMETER_INVALID, MSG_PARAMETER_INVALID & |UI Document is not a Calendar Entry.  |
+	
+	Set domi = New DominoOnlineMeetingIntegrator(getCurrentDb(), nodesToCopy, meetingservice$) 
+	result = domi.getMeeting(curDoc)
+	Call domiNotifyResult(ws, curUIDoc, domi, |Retrieved|, result)		
+
+ExitPoint: 
+	domiGetMeeting = result
+	Exit Function 
+ErrorTrap:
+	On Error GoTo 0
+	Call domiNotifyResult(ws, curUIDoc, domi, |Retrieved|, result)	
+	Resume ExitPoint 
+End Function
+
+'++LotusScript Development Environment:2:2:domiNotifyResult:11:8
+%REM
+	Sub domiNotifyResult
+	Refreshes the UI Doc and Notifies the user of the result of the operation 
+	
+	@param ws 		Current NotesUIWorkspace 
+	@param uidoc 	NotesUIDoc (Calendar Entry) in use for the operation
+	@param domi 	Domino Online Meeting Integrator used for the operation
+	@param prefix 	Prefix to use when notifying the user of success 
+	@param success 	Flag indicating if the requested operation was successful 
+%END REM
+Private Sub domiNotifyResult(ws As NotesUIWorkspace, uidoc As NotesUIDocument, domi As DominoOnlineMeetingIntegrator, prefix$, success As Boolean) 
+	On Error GoTo ErrorTrap
+
+	Dim title$
+	Dim message$
+	Dim flagname$ 
+	Dim boxtype%
+	Dim rvar As Variant
+
+
+	' BEGIN CODE 
+	If success Then
+		Call uidoc.Reload()
+		title$ = |Success| 
+		message$ = prefix$ & | | & domi.MeetingServiceLabel & | meeting.|
+		MessageBox message$, MB_OK + MB_ICONINFORMATION, title$
+	Else 
+
+		If Not (domi Is Nothing) Then 
+			enhLogExtendedContent LIB_PREFIX, ||, |DOMI Failure| 
+			enhLogExtendedContent ||, ||, |domi.ErrorCode: | & CStr(domi.ErrorCode) 
+			enhLogExtendedContent ||, ||, |domi.ErrorMessage: | & domi.ErrorMessage 
+			enhLogExtendedContent ||, ||, |domi.ResponseCode: | & domi.ResponseCode
+			enhLogExtendedContent ||, ||, |domi.HTTPstatusCodeType: | & domi.HTTPstatusCodeType
+			
+			enhLogExtendedContent ||, ||, || 
+		End If 
+
+		If domi.hasOAUTHfailed Then 
+			' user needs to re-authenticate and get a new token 
+			title$ = domi.MeetingServiceLabel & | Connection Failure|
+			message$ = |Do you wish to edit your | & domi.MeetingServiceLabel & | Credentials and request a new OAuth Token?|
+			If (IDYES = MessageBox(message$, MB_YESNO + MB_ICONEXCLAMATION, title$)) Then Call ws.EditDocument(True, domi.Document)
+		Else 
+			
+			If domi.hasServiceConnectionFailed Then 
+				title$ = domi.MeetingServiceLabel & | Connection Failure|
+				message$ = |Unable to establish network connection to remote server.  | _ 
+				& LF & LF & |Please check your network connections.  | _ 
+				& LF & LF & |If you are working offline, please try again when you are back online. |
+				boxtype% = MB_OK + MB_ICONEXCLAMATION
+			Else 
+				message$ = ||
+				rvar = domi.ContextValidationMessages
+				ForAll validationmessage In rvar
+					enhLogExtendedContent ||, ||, CStr(validationmessage)
+					If isBlankString(message$) Then 
+						message$ = CStr(validationmessage)
+					Else 
+						message$ = message$ & LF & CStr(validationmessage)
+					End If
+				End ForAll
+				If isBlankString(message$) Then 
+					' failed for some other reason
+					title$ = |Error | & CStr(domi.ErrorCode) 
+					message$ = domi.ErrorMessage & LF & |Please check the notes log for details.|
+					boxtype% = MB_OK + MB_ICONSTOP
+				Else
+					' failed due to validation 
+					title$ = |Field(s) contain incorrect values. |
+					message$ = |Please correct the following issues: | & LF & LF & message$ 
+					boxtype% = MB_OK + MB_ICONEXCLAMATION
+				End If				
+			End If
+			
+			MessageBox message$, boxtype%, title$
+			
+		End If
+	End If 
+		
+
+	
+ExitPoint: 
+	Exit Sub 
+ErrorTrap:
+	On Error GoTo 0
+	enhLogException LIB_PREFIX, ||
+	MessageBox Error() & LF & |Please check the notes log for details.|, MB_ICONSTOP, |Error | & CStr(Err()) 
+	Resume ExitPoint
+End Sub
+
+'++LotusScript Development Environment:2:1:domiDeleteMeeting:14:8
+%REM
+	Function domiDeleteMeeting
+	
+	Deletes an online meeting for the current Calendar Entry (Opened in the UI Workspace) and meeting service. 
+	
+	@param service$ 	Meeting Service used for the object. 
+	
+	@return Flag indicating if the Meeting was successfully deleted.
+	
+	@throws ERR_PARAMETER_BLANK if the current NotesUIdocument is Nothing 
+	@throws ERR_PARAMETER_INVALID if the current NotesUIdocument is not a Calendar Entry (form = Appointment). 
+	@throws ERR_PARAMETER_INVALID if Meeting Service not currently supported. 
+%END REM
+Function domiDeleteMeeting(meetingservice$) As Boolean  
+	On Error GoTo ErrorTrap
+	
+	Dim ws As New NotesUIWorkspace()
+	Dim curUIDoc As NotesUIDocument
+	Dim curDoc As NotesDocument
+	
+	Dim domi As DominoOnlineMeetingIntegrator
+
+	Dim bodyTxt As String 	
+
+	Dim result As Boolean
+	
+
+	' BEGIN CODE 
+
+	Set curUIDoc = ws.Currentdocument
+	If (curUIDoc Is Nothing) Then Error ERR_PARAMETER_BLANK, MSG_PARAMETER_BLANK & |UI Document is Nothing.  | 
+	
+	Set curDoc = curUIDoc.Document
+	If Not(curDoc.getItemValue(|Form|)(0) = |Appointment|) Then Error ERR_PARAMETER_INVALID, MSG_PARAMETER_INVALID & |UI Document is not a Calendar Entry.  |
+
+	Set domi = New DominoOnlineMeetingIntegrator(getCurrentDb(), Nothing, meetingservice$) 
+	result = domi.deleteMeeting(curDoc)
+	Call domiNotifyResult(ws, curUIDoc, domi, |Deleted|, result)
+	
+	
+ExitPoint: 
+	domiDeleteMeeting = result
+	Exit Function 
+ErrorTrap:
+	On Error GoTo 0
+	Call domiNotifyResult(ws, curUIDoc, domi, |Deleted|, result)
+	Resume ExitPoint 
+End Function
+
+'++LotusScript Development Environment:2:1:domiValidateOAuthToken:10:8
+%REM
+	Function domiValidateOAuthToken
+	Attempts to Validate the OAuth Token for the Domino Online Meeting Integration Credentials document open in the UI 
+	
+	@return Flag indicating if the OAuth token is valid.
+	
+	@throws ERR_PARAMETER_BLANK if the current NotesUIdocument is Nothing 
+	@throws ERR_PARAMETER_INVALID if the current NotesUIdocument is not a Calendar Entry (form = Appointment). 
+%END REM
+Function domiValidateOAuthToken() As Boolean  
+	On Error GoTo ErrorTrap
+	
+	Dim nuiwsp As New NotesUIWorkspace()
+	Dim nuidoc As NotesUIDocument
+	Dim ndoc As NotesDocument 
+	
+	Dim domi As DominoOnlineMeetingIntegrator
+	
+	Dim result As Boolean 
+	
+	' BEGIN CODE 
+	Set nuidoc = nuiwsp.Currentdocument
+	If (nuidoc Is Nothing) Then Error ERR_PARAMETER_BLANK, MSG_PARAMETER_BLANK & |UI Document is Nothing.  | 
+	
+	Set ndoc = nuidoc.Document
+	If Not(ndoc.getItemValue(|Form|)(0) = |domiCredentials|) Then Error ERR_PARAMETER_INVALID, MSG_PARAMETER_INVALID & |UI Document is not a DOMI Credentials document.  |
+
+	Set domi = New DominoOnlineMeetingIntegrator(ndoc.ParentDatabase, Nothing, ||) 
+	Set domi.Document = ndoc 
+	
+	If domi.refreshAuthToken(False) Then 
+		Call nuidoc.Reload()
+		MessageBox |Your OAUTH Token is Valid|, MB_ICONINFORMATION, |Success|
+		result = True 
+	Else 
+		MessageBox |Please use the Get OAUTH Token to get your Token and paste it into the Refresh Token field.|, MB_ICONEXCLAMATION, |Failed to Validate your OAUTH Token.|
+	End If
+	
+	
+ExitPoint:
+	domiValidateOAuthToken = result 
+	Exit Function  
+ErrorTrap:
+	On Error GoTo 0
+	enhLogException LIB_PREFIX, || 
+	MessageBox Error$(), MB_ICONSTOP, |Error | & CStr(Err()) 
+	Resume ExitPoint 
+End Function
+
+
+
+'++LotusScript Development Environment:2:1:domiRevokeOAuthToken:10:8
+%REM
+	Function domiRevokeOAuthToken
+	Attempts to Validate the OAuth Token for the Domino Online Meeting Integration Credentials document open in the UI 
+	
+	@return Flag indicating if the OAuth token is valid.
+	
+	@throws ERR_PARAMETER_BLANK if the current NotesUIdocument is Nothing 
+	@throws ERR_PARAMETER_INVALID if the current NotesUIdocument is not a Calendar Entry (form = Appointment). 
+%END REM
+Function domiRevokeOAuthToken() As Boolean  
+	On Error GoTo ErrorTrap
+	
+	Dim nuiwsp As New NotesUIWorkspace()
+	Dim nuidoc As NotesUIDocument
+	Dim ndoc As NotesDocument 
+	
+	Dim domi As DominoOnlineMeetingIntegrator
+	
+	Dim result As Boolean 
+	
+	' BEGIN CODE 
+	Set nuidoc = nuiwsp.Currentdocument
+	If (nuidoc Is Nothing) Then Error ERR_PARAMETER_BLANK, MSG_PARAMETER_BLANK & |UI Document is Nothing.  | 
+	
+	Set ndoc = nuidoc.Document
+	If Not(ndoc.getItemValue(|Form|)(0) = |domiCredentials|) Then Error ERR_PARAMETER_INVALID, MSG_PARAMETER_INVALID & |UI Document is not a DOMI Credentials document.  |
+
+	Set domi = New DominoOnlineMeetingIntegrator(ndoc.ParentDatabase, Nothing, ||) 
+	Set domi.Document = ndoc 
+	
+	If domi.refreshAuthToken(False) Then
+		If domi.revokeAuthToken(False) Then
+			Call nuidoc.Reload()
+			MessageBox |Your OAUTH Token has been revoked|, MB_ICONINFORMATION, |Success|
+			result = True
+		Else
+			MessageBox |The token could not be revoked.|, MB_ICONEXCLAMATION, |Failed to Revoke your OAUTH Token.|
+		End If
+	Else 
+		MessageBox |The refresh token has already expired.|, MB_ICONEXCLAMATION, |OAUTH Token Already Expired.|
+	End If
+	
+	
+ExitPoint:
+	domiRevokeOAuthToken = result 
+	Exit Function  
+ErrorTrap:
+	On Error GoTo 0
+	enhLogException LIB_PREFIX, || 
+	MessageBox Error$(), MB_ICONSTOP, |Error | & CStr(Err()) 
+	Resume ExitPoint 
+End Function
+
+'++LotusScript Development Environment:2:1:domiCreateMeeting:26:8
+
+
+
+
+
+
+
+
+%REM
+	Function domiCreateMeeting
+	
+	Creates an online meeting for the current Calendar Entry (Opened in the UI Workspace) and meeting service. 
+	
+	@param nodesToCopy		Tags and Node names used to parse the response JSON and add nodes when processing DOMI JSON 
+								k = Node name used to add the retrieved value to the resulting JSON content.
+								v = Properly formatted JSON tag this will be used to retrieve a value from the JSON content.
+
+	@param service$ 		Meeting Service used for the object. 
+	
+	@return Flag indicating if the Meeting was successfully created.
+	
+	@throws ERR_PARAMETER_BLANK if the current NotesUIdocument is Nothing 
+	@throws ERR_PARAMETER_INVALID if the current NotesUIdocument is not a Calendar Entry (form = Appointment). 
+	@throws ERR_PARAMETER_INVALID if Meeting Service not currently supported. 
+%END REM
+Function domiCreateMeeting(nodesToCopy As StringList, meetingservice$) As Boolean  
+	On Error GoTo ErrorTrap
+	
+	Dim ws As New NotesUIWorkspace()
+	Dim curUIDoc As NotesUIDocument
+	Dim curDoc As NotesDocument
+	
+	Dim domi As DominoOnlineMeetingIntegrator
+
+	Dim bodyTxt As String 	
+
+	Dim result As Boolean
+
+
+	' BEGIN CODE 
+	Set curUIDoc = ws.Currentdocument
+	If (curUIDoc Is Nothing) Then Error ERR_PARAMETER_BLANK, MSG_PARAMETER_BLANK & |UI Document is Nothing.  | 
+	
+	Set curDoc = curUIDoc.Document
+	If Not(curDoc.getItemValue(|Form|)(0) = |Appointment|) Then Error ERR_PARAMETER_INVALID, MSG_PARAMETER_INVALID & |UI Document is not a Calendar Entry.  |
+
+	bodyTxt = curUIDoc.Fieldgettext("Body")
+	
+	Set domi = New DominoOnlineMeetingIntegrator(getCurrentDb(), nodesToCopy, meetingservice$) 
+	result = domi.createMeeting(curDoc, bodyTxt)
+	Call domiNotifyResult(ws, curUIDoc, domi, |Created|, result)
+	
+
+ExitPoint: 
+	domiCreateMeeting = result
+	Exit Function 
+ErrorTrap:
+	On Error GoTo 0
+	Call domiNotifyResult(ws, curUIDoc, domi, |Created|, false)
+	Resume ExitPoint 
+End Function
+
+'++LotusScript Development Environment:2:1:domiUpdateMeeting:22:8
+
+
+
+
+%REM
+	Function domiUpdateMeeting
+	
+	Updates an online meeting for the current Calendar Entry (Opened in the UI Workspace) and meeting service. 
+	
+	@param nodesToCopy		Tags and Node names used to parse the response JSON and add nodes when processing DOMI JSON 
+								k = Node name used to add the retrieved value to the resulting JSON content.
+								v = Properly formatted JSON tag this will be used to retrieve a value from the JSON content.
+
+	@param service$ 		Meeting Service used for the object. 
+	
+	@return Flag indicating if the Meeting was successfully updated.
+	
+	@throws ERR_PARAMETER_BLANK if the current NotesUIdocument is Nothing 
+	@throws ERR_PARAMETER_INVALID if the current NotesUIdocument is not a Calendar Entry (form = Appointment). 
+	@throws ERR_PARAMETER_INVALID if Meeting Service not currently supported. 
+%END REM
+Function domiUpdateMeeting(nodesToCopy As StringList, meetingservice$) As Boolean  
+	On Error GoTo ErrorTrap
+
+	Dim ws As New NotesUIWorkspace()
+	Dim curUIDoc As NotesUIDocument
+	Dim curDoc As NotesDocument
+	
+	Dim domi As DominoOnlineMeetingIntegrator
+
+	Dim bodyTxt As String 	
+
+	Dim result As Boolean
+	
+
+
+	' BEGIN CODE 
+	Set curUIDoc = ws.Currentdocument
+	If (curUIDoc Is Nothing) Then Error ERR_PARAMETER_BLANK, MSG_PARAMETER_BLANK & |UI Document is Nothing.  | 
+	
+	Set curDoc = curUIDoc.Document
+	If Not(curDoc.getItemValue(|Form|)(0) = |Appointment|) Then Error ERR_PARAMETER_INVALID, MSG_PARAMETER_INVALID & |UI Document is not a Calendar Entry.  |
+
+	bodyTxt = curUIDoc.Fieldgettext("Body")
+	
+	Set domi = New DominoOnlineMeetingIntegrator(getCurrentDb(), nodesToCopy, meetingservice$) 
+	result = domi.updateMeeting(curDoc, bodyTxt)
+	Call domiNotifyResult(ws, curUIDoc, domi, |Updated|, result)		
+		
+
+ExitPoint: 
+	domiUpdateMeeting = result
+	Exit Function 
+ErrorTrap:
+	On Error GoTo 0
+	Call domiNotifyResult(ws, curUIDoc, domi, |Updated|, result)		
+	Resume ExitPoint 
+End Function
+
+'++LotusScript Development Environment:2:1:getNewSTTokens:5:8
+%REM
+	Function getNewSTTokens
+	Description: This function is used to update the refresh token on the provided Credentials doc
+%END REM
+Function getNewSTTokens(curDoc As NotesDocument) As Boolean 
+	Dim s As New NotesSession, ws As New NotesUIWorkspace
+	Dim thisDb As NotesDatabase, thisAgent As NotesAgent
+	Dim urlBase As String, urlRefresh As String, urlLogin As String
+	Dim httpRequest As NotesHTTPRequest, payload As NotesAgent_JsonHTTPHelper
+	Dim jsonNav As NotesJSONNavigator, jsonStr As String
+	Dim paramList List As Variant, hdrList List As String, retList List As Variant
+	Dim resp As String, token As String, meeting As String, pretag As String, tag As String
+	Dim tokenTag As String, tokenVal As String, cookieVal As String, cookieTag As String
+	Dim rstr As String, errtxt As String, rvar As Variant, emptyvar As Variant, rdoc As NotesDocument, rbool As Boolean
+	
+	On Error GoTo errHandler
+
+	Set thisDb = s.Currentdatabase
+	Set thisAgent = s.Currentagent
+	
+	If curDoc Is Nothing Then Error 1001, "You must provide a NotesDocument to use getNewSTTokens()"
+	If Not(LCase(curDoc.getItemValue("Form")(0)) = "domiCredentials") Then Error 1001, "You must provide a Credentials doc to use getNewSTTokens()"
+		
+	
+	urlBase = DOMI_ROOTURL_SAMETIMEMEETINGS
+	If urlBase = "" Then Error 1000, "The Sametime Meetings URL is not defined. Please contact your administrator."
+	If Not(Right(urlBase, 1) = "/") Then urlBase = urlBase & "/"
+	urlLogin = urlBase & "meeting-auth/api/v1/login"
+	urlRefresh = urlBase & "meeting-auth/api/v1/refresh"
+	' first we need to do a quick call to check to get an X-csrf token
+	rbool = getSTTempTokens(urlRefresh, cookieVal, tokenVal)  ' in domiUtilsBE
+	If rbool = False Then Error 1001, "Error retrieving needed initial tokens"
+	
+	' now that we have an initial x-csrf token from the check call, let's authenticate and get a real token
+	Set httpRequest = Nothing
+	Set httpRequest = s.Createhttprequest()
+	httpRequest.Preferstrings = True
+	
+	' parameters for the header
+	hdrList("accept") = "application/json"
+	hdrList("X-CSRF-Token") = tokenVal
+	hdrList("Content-Type") = "application/x-www-form-urlencoded"
+	hdrList("cookie") = "_csrf=" & cookieVal
+	ForAll h In hdrList
+		Call httpRequest.Setheaderfield(ListTag(h), h)
+	End ForAll
+	
+	rbool = ws.dialogBox("domiSTLoginDlg", True, True, False, False, False, False, "Sametime Login", curdoc, True, False, True)
+	If rbool = False Then Error 1000, ""
+
+	rvar = Evaluate(|@UrlEncode("Domino"; loginEmail)|, curdoc)
+	If IsArray(rvar) Then paramList("username") = rvar(0)
+	rvar = Evaluate(|@UrlEncode("Domino"; stPassword)|, curdoc)
+	If IsArray(rvar) Then paramList("password") = rvar(0)
+	If curdoc.hasItem("password") Then Call curdoc.removeItem("password")
+	
+	' set the payload stuff
+	rstr = ""
+	ForAll p In paramList
+		If rstr = "" Then
+			rstr = ListTag(p) & "=" & p
+		Else
+			rstr = rstr & "&" & ListTag(p) & "=" & p
+		End If
+	End ForAll
+
+	' retrieve the tokens
+
+	resp = httpRequest.Post(urlLogin, rstr)
+	If InStr(httpRequest.Responsecode, "200") = 0 Then
+		Set rdoc = thisDb.Createdocument()
+		Set payload = New NotesAgent_JsonHTTPHelper(rdoc)
+		Call payload.loadJson(s, resp)
+		rbool = payload.findStringByPointer("/error/message", rstr)
+		If rbool Then
+			Error 1002, "Unable to retrieve Sametime tokens (ERROR: " & rstr & ")"
+		Else
+			Error 1005, "Unable to retrieve Sametime tokens (ERROR: unknown)"
+		End If
+	End If
+	
+	rvar = emptyVar
+	rvar = httpRequest.Getresponseheaders()
+	If IsArray(rvar) Then
+		retList("sametimeJwt=") = ""
+		retList("LtpaToken=") = ""
+		retList("sametimeRefresh=") = ""
+		pretag = "Set-Cookie: "
+		ForAll z In rvar
+			ForAll c In retList
+				tag = pretag & ListTag(c)
+				If LCase(Left(z, Len(tag))) = LCase(tag) Then
+					rstr = StrRight(z, tag, 5)
+					c = rstr
+				End If
+			End ForAll
+		End ForAll
+	Else
+		Error 1002, "Error retrieving ST Token"
+	End If
+	
+	' now set them into the doc
+	Call curDoc.Replaceitemvalue("messagingJSON", rvar)
+	Call curDoc.Replaceitemvalue("stJWTTokenFull", retList("sametimeJwt="))
+	Call curDoc.Replaceitemvalue("stRefreshTokenFull", retList("sametimeRefresh="))
+	Call curDoc.Replaceitemvalue("stLTPATokenFull", retList("LtpaToken="))
+	Call curDoc.Replaceitemvalue("refreshToken", curDoc.getItemValue("stRefreshTokenFull")(0))
+	If curdoc.HasItem("stPassword") Then Call curDoc.RemoveItem("stPassword")
+	
+	getNewSTTokens = True
+getOut:
+	Exit Function
+
+errHandler:
+	getNewSTTokens = False
+
+	On Error GoTo 0
+	Error Err, Error$ & " [in " & GetThreadInfo(1) & "]"
+	Resume getOut
+End Function
+
+'++LotusScript Development Environment:2:1:getOAuthToken:10:8
+%REM
+	Function getOAuthToken
+	Attempts to launch a web browser to allow the user begin the "OAuth Dance" to authenticate and retrieve the OAuth Token for the Domino Online Meeting Integration Credentials document open in the UI 
+	
+	@return Flag indicating if the web browser was launched (the Dance has begun)
+	
+	@throws ERR_PARAMETER_BLANK if the current NotesUIdocument is Nothing 
+	@throws ERR_PARAMETER_INVALID if the current NotesUIdocument is not a Calendar Entry (form = Appointment). 
+%END REM
+Function getOAuthToken() As Boolean 
+	On Error GoTo ErrorTrap
+	
+	Dim nuiwsp As New NotesUIWorkspace() 
+	Dim nuidoc As NotesUIDocument 
+	Dim ndoc As NotesDocument 
+	
+	Dim meetingservice$
+	Dim url$ 
+	
+	Set nuidoc = nuiwsp.CurrentDocument
+	Set ndoc = nuidoc.Document 
+	
+	Dim result As Boolean 
+	
+	' BEGIN CODE 
+	Set nuidoc = nuiwsp.Currentdocument
+	If (nuidoc Is Nothing) Then Error ERR_PARAMETER_BLANK, MSG_PARAMETER_BLANK & |UI Document is Nothing.  | 
+	
+	Set ndoc = nuidoc.Document
+	If Not(ndoc.getItemValue(|Form|)(0) = |domiCredentials|) Then Error ERR_PARAMETER_INVALID, MSG_PARAMETER_INVALID & |UI Document is not a DOMI Credentials document.  |
+
+	meetingservice$ = ndoc.GetFirstItem(|service|).Text 
+	url$ = getDOMIrootURL(meetingservice$) & |/index.html|
+	
+	Call nuiwsp.URLOpen(url$) 
+	result = True
+	
+ExitPoint:
+	getOAuthToken = result
+	Exit Function 
+ErrorTrap:
+	On Error GoTo 0
+	enhLogException LIB_PREFIX, || 
+	MessageBox Error$(), MB_ICONSTOP, |Error | & CStr(Err()) 
+	Resume ExitPoint 	
+End Function
+
+'++LotusScript Development Environment:2:1:domiUIvalidateCalendarEntry:43:8
+%REM
+	Function domiValidateCalendarEntry
+	Validates a Calendar Entry document for Domino Online Meeting Integration
+	Notifies the user via messagebox if the validation fails.
+	
+	Verifies the following: 
+
+	Form is "Appointment"
+	Subject is not blank.
+
+	Start Date is populated
+	Start Time is populated
+	Start Time Zone is populated 
+	Start Date/Time is not before NOW 
+
+	End Date is populated
+	End Time is populated 
+	End Time Zone is populated 
+	End Date/Time is not before Start Date/Time  
+	
+	@param context 		[INBOUND / OUTBOUND] Document (Calendar Entry) carrying information about a meeting.
+	@param ndtStart 	[OUTBOUND] The Start date/time of the meeting. 
+	@param ndtEnd 		[OUTBOUND] The End date/time of the meeting.
+	
+	@return Flag where -1 (True) indicates success
+		Result flag indicates: 
+			-1 		Validation Passed
+			0		Validation Unknown 
+			
+			1 		Form not "Appointment"
+			2 		Subject is blank
+			4 		StartDate not populated or ot interpretable as a date time
+			8 		StartTime not populated or ot interpretable as a date time
+			16		StartTimeZone not populated or not interpretable as a time zone 
+			32		Start Date/Time is before NOW (Current Date/Time) 
+			64 		EndDate not populated or ot interpretable as a date time
+			128 	EndTime not populated or ot interpretable as a date time
+			256 	EndTimeZone not populated or not interpretable as a time zone 
+			512		End Date/Time is before Start Date/Time 
+			
+	@throws ERR_PARAMETER_BLANK if context document is nothing. 
+%END REM
+Function domiUIvalidateCalendarEntry(context As NotesDocument, ndtStart As NotesDateTime, ndtEnd As NotesDateTime) As Integer
+	If (context Is Nothing) Then Error ERR_PARAMETER_BLANK, MSG_PARAMETER_BLANK
+	On Error GoTo ErrorTrap
+	
+	' exception variables
+	Dim msg$
+
+	Dim validationFailureMessages As Variant
+	Dim failuremsg$  	
+	Dim result As Integer
+	
+	' BEGIN CODE
+	result = domiValidateCalendarEntry(context, ndtStart, ndtEnd) ' in domiUtilsBE
+	If (result < 1) Then GoTo ExitPoint 
+	
+	validationFailureMessages = getDOMIvalidationFailureMessages(result)
+
+	enhLogWarning LIB_PREFIX, |Context document failed validation|
+	ForAll v In validationFailureMessages 
+		failuremsg$ = CStr(v) 
+		enhLogExtendedContent ||, ||, failuremsg$
+		If isBlankString(msg$) Then 
+			msg$ = failuremsg$
+		Else 
+			msg$ = msg$ & LF & failuremsg$
+		End If
+	End ForAll
+	enhLogExtendedContent ||, ||, ||
+	
+	MessageBox msg$, 48, |Calendar Entry Validation Failure|
+
+
+ExitPoint: 
+	domiUIvalidateCalendarEntry = result
+	Exit Function 
+ErrorTrap:
+	On Error GoTo 0
+	enhLogException LIB_PREFIX, ||
+	Resume ExitPoint
+End Function

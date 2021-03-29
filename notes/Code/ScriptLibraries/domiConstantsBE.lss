@@ -1,0 +1,334 @@
+'++LotusScript Development Environment:2:5:(Options):0:74
+%REM
+	Library domiConstantsBE
+	Created Feb 26, 2021 by Devin Olson/USA/PNPHCL
+
+	Copyright 2021 HCL Software
+	Licensed under the Apache License, Version 2.0 (the "License"); 
+	you may not use this file except in compliance with the License. 
+	You may obtain a copy of the License at
+
+	http://www.apache.org/licenses/LICENSE-2.0
+
+	Unless required by applicable law or agreed to in writing, 
+	software distributed under the License is distributed on an "AS IS" BASIS, 
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
+	See the License for the specific language governing permissions and limitations under the License
+%END REM
+Option Public
+Option Explicit 
+
+'++LotusScript Development Environment:2:5:(Forward):0:1
+Declare Property Get DOMI_BUILD As String 
+Declare Property Get DOMI_ROOTURL_SAMETIMEMEETINGS As String 
+Declare Property Get DOMI_ROOTURL_TOKEN As String 
+Declare Property Get CR As String  
+Declare Property Get DOMI_VERSION As String 
+Declare Property Get CRLF As String  
+Declare Property Get DOMI_RELEASE_DATE As String 
+Declare Property Get LF As String 
+Declare Property Get HT As String 
+
+'++LotusScript Development Environment:2:5:(Declarations):0:10
+
+
+Private Const LIB_PREFIX 		= |Library: domiConstantsBE.|
+
+
+%REM ***************************************************************************
+ ************************************************************************************
+	Constants that are expected to change from version to version
+	These constants must be referenced using the PROPERTY GETs to avoid 
+	problems retrieving cached versions of the constants. 
+ ************************************************************************************
+%END REM *********************************************************************  
+Private Const g_DOMI_ROOTURL_TOKEN_HCL 			= |https://domi.hcllabs.live/| ' HCL's default site
+Private Const g_DOMI_VERSION 					= |0.9|
+Private Const g_DOMI_BUILD 						= |1.746|
+Private Const g_DOMI_RELEASE_DATE 				= |19 March 2021|
+
+
+%REM ***************************************************************************
+ ************************************************************************************
+	Constants that are expected to be customized by customer for their environment.
+	These constants must be referenced using the PROPERTY GETs to avoid 
+	problems retrieving cached versions of the constants. 
+ ************************************************************************************
+%END REM *********************************************************************  
+Private Const g_DOMI_ROOTURL_TOKEN 				= g_DOMI_ROOTURL_TOKEN_HCL ' URL used by customer 
+
+Private Const g_DOMI_ROOTURL_SAMETIMEMEETINGS 	= || ' This needs to be set to match the customer's environment. 
+
+
+%REM ***************************************************************************
+ ************************************************************************************
+	Global Constants
+ ************************************************************************************
+%END REM *********************************************************************  
+
+Const DOMI_FORMNAME_CREDS 		= |domiCredentials|
+
+Const DOMI_HTTP_METHOD_GET 		= 1
+Const DOMI_HTTP_METHOD_POST 	= 2
+Const DOMI_HTTP_METHOD_PUT 		= 4
+Const DOMI_HTTP_METHOD_PATCH 	= 8
+Const DOMI_HTTP_METHOD_DELETE 	= 16
+
+Const DOMI_OPERATION_READ 		= 1
+Const DOMI_OPERATION_CREATE 	= 2
+Const DOMI_OPERTATION_UPDATE 	= 4
+Const DOMI_OPERATION_DELETE 	= 16
+
+Const DOMI_SERVICE_GTM 			= |gtm|
+Const DOMI_SERVICE_TEAMS 		= |teams|
+Const DOMI_SERVICE_WEBEX 		= |webex|
+Const DOMI_SERVICE_ZOOM 		= |zoom|
+Const DOMI_SERVICE_SAMETIME 	= |sametime|
+
+Const DOMI_TAG_RESPONSECODE 	= |responsecode|
+Const DOMI_TAG_RESPONSEJSON		= |responsejson|
+Const DOMI_TAG_ERROR 			= |error|
+Const DOMI_TAG_AUTH_FAILURE		= |authenticationfailure| 
+
+Const DOMI_TOKEN_AUTH 			= |authToken|
+Const DOMI_TOKEN_REFRESH 		= |refreshToken|
+
+Const DOMI_VIEWNAME_CREDS 		= |DOMI_beMeetingCredentials|
+
+Const HTTP_STATUS_BAD_REQUEST 		= 400
+Const HTTP_STATUS_NOT_ALLOWED 		= 403
+Const HTTP_STATUS_CODE_ERROR 		= 500
+Const HTTP_STATUS_INVALID_METHOD 	= 405 
+
+Const HTTP_STATUS_CODE_TYPE_100 	= |1xx Informational: Request received, continuing process|
+Const HTTP_STATUS_CODE_TYPE_200 	= |2xx Success: The action was successfully received, understood, and accepted|
+Const HTTP_STATUS_CODE_TYPE_300 	= |3xx Redirection: Further action must be taken in order to complete the request|
+Const HTTP_STATUS_CODE_TYPE_400 	= |4xx Client Error: The request contains bad syntax or cannot be fulfilled|
+Const HTTP_STATUS_CODE_TYPE_500 	= |5xx Server Error: The server failed to fulfill an apparently valid request|
+
+Const TYPE_JSONOBJECT 		= 1
+Const TYPE_JSONARRAY 		= 2
+Const TYPE_JSONSTRING 		= 3
+Const TYPE_JSONNUMBER 		= 4
+Const TYPE_JSONBOOLEAN 		= 5
+Const TYPE_JSONEMPTY 		= 64
+
+Const TYPENAME_JSONOBJECT 		= |JSON Object|
+Const TYPENAME_JSONARRAY 		= |JSON Array|
+Const TYPENAME_JSONSTRING 		= |String|
+Const TYPENAME_JSONNUMBER 		= |Number|
+Const TYPENAME_JSONBOOLEAN 		= |Boolean|
+Const TYPENAME_JSONEMPTY 		= |empty|
+
+
+%REM ***************************************************************************
+ ************************************************************************************
+	ERROR CONSTANTS
+ ************************************************************************************
+%END REM *********************************************************************
+Const ERR_OPERATION_FAILED = 1000
+Const MSG_OPERATION_FAILED = |The requested operation could not be completed.  |
+
+Const ERR_OPERATION_PROHIBITED = 1003
+Const MSG_OPERATION_PROHIBITED = |The requested operation is prohibited. |
+
+Const ERR_USER_NOT_AUTHORIZED = 1004
+Const MSG_USER_NOT_AUTHORIZED = |User is not authorized to perform the requested operation.  |
+
+Const ERR_OPERATION_ONLY_CLIENT = 1005
+Const MSG_OPERATION_ONLY_CLIENT = |The requested operation is limited to local clients only. |
+
+Const ERR_OPERATION_ONLY_SERVER = |1007|
+Const MSG_OPERATION_ONLY_SERVER = |The requested operation is limited to servers only. |
+
+Const ERR_AGENT_NOT_FOUND = 1010
+Const MSG_AGENT_NOT_FOUND = |Could not find the specified agent.  |
+
+Const ERR_DOCUMENT_NOT_FOUND = 1020
+Const MSG_DOCUMENT_NOT_FOUND = |Could not find the specified document.  |
+
+Const ERR_VIEW_NOT_FOUND = 1039
+Const MSG_VIEW_NOT_FOUND = |Could not find the specified view.  |
+
+Const ERR_DATABASE_NOTOPEN =  1063 
+Const MSG_DATABASE_NOTOPEN = |Could not open the specified database.  |
+
+
+Const ERR_PARENT_METHOD_NOT_ALLOWED = 1100
+Const MSG_PARENT_METHOD_NOT_ALLOWED = |Method must be overriden in child class.  |
+
+Const ERR_PARAMETER_INVALID = 1195
+Const MSG_PARAMETER_INVALID = |A passed parameter is invalid.  |
+
+Const ERR_PARAMETER_BLANK = 1199
+Const MSG_PARAMETER_BLANK = |A required parameter is blank or missing.  |
+
+
+
+Const ERR_MISSING_DATABASE =  1201
+Const MSG_MISSING_DATABASE = |The specified database cannot be found.  |
+
+Const ERR_MISSING_ITEM =  1226
+Const MSG_MISSING_ITEM =  |The specified item is missing.  |
+
+Const ERR_OBJECT_CREATE_FAILED = 1208
+Const MSG_OBJECT_CREATE_FAILED = |Failed to create an Object.  |
+
+Const ERR_DOC_NOT_SAVED = 1257 
+Const MSG_DOC_NOT_SAVED = |The document could not be saved.  |
+
+
+
+Const ERR_FORMULA_INVALID = 1336
+Const MSG_FORMULA_INVALID = |The Formula syntax is invalid.  |
+
+
+
+Const ERR_NOTES_DXLIMPORTER_FAILED = 1452 
+Const MSG_NOTES_DXLIMPORTER_FAILED = |Import of DXL content has FAILED.  |
+
+
+Const ERR_HTTP_REQUEST_FAILURE = 1401
+Const MSG_HTTP_REQUEST_FAILURE = |The HTTP Request operation has failed.  |
+
+
+
+Const ERR_BAD_JSON_POINTER = 1501
+Const MSG_BAD_JSON_POINTER = |JSON Pointers are expected to start with "/".  |
+
+Const ERR_BAD_JSON_TYPE = 1502
+Const MSG_BAD_JSON_TYPE = |Invalid Json element type.  |
+
+Const ERR_BAD_ACTION_UNID = 1503
+Const MSG_BAD_ACTION_UNID = |Invalid Action UniversalID.  |
+
+
+
+
+Const ERR_INTERNAL_NORECOVER = 1900
+Const MSG_INTERNAL_NORECOVER = |Internal Error in EnhancedLog object.  ResumeOnLoggingFailure set to False.  No Recovery possible.  |
+
+Const ERR_INTERNAL_MAXRECOVER = 1910
+Const MSG_INTERNAL_MAXRECOVER = |Internal Error in EnhancedLog object.  Maximum allowed recovery attempts exceeded.  |
+
+
+
+%REM ***************************************************************************
+ ************************************************************************************
+	ERR_NOTES_xxxxx CONSTANTS for HTTP and JSON  
+	Constants declared here to avoid conflicts with 
+	other libraries using lsxbeer.lss
+ ************************************************************************************
+%END REM *********************************************************************  
+Const ERR_NOTES_URL_REQ =  						4838 
+Const MSG_NOTES_URL_REQ =  						|Requested URL failure.  | 
+
+Const ERR_NOTES_HTTP_REQUEST_FAILED =  			4839 
+Const MSG_NOTES_HTTP_REQUEST_FAILED =  			|HTTP fequest has failed.  | 
+
+Const ERR_NOTES_UNSUPPORTED_CONTENT_TYPE = 	 	4840 
+Const MSG_NOTES_UNSUPPORTED_CONTENT_TYPE =  	|Unsupported content type.  | 
+
+Const ERR_NOTES_HTTP_INITIALIZATION_FAILED = 	4841 
+Const MSG_NOTES_HTTP_INITIALIZATION_FAILED =  	|HTTP initialization failed.  | 
+
+Const ERR_NOTES_JSON_PARSE_FAILED =  			4842 
+Const MSG_NOTES_JSON_PARSE_FAILED =  			|Unable to parse the JSON.  | 
+
+Const ERR_NOTES_JSON_GET_FAILED =  				4843 
+Const MSG_NOTES_JSON_GET_FAILED =  				|Failed to retrieve the JSON.  | 
+
+Const ERR_NOTES_HTTP_COULDNT_CONNECT =  		4844 
+Const MSG_NOTES_HTTP_COULDNT_CONNECT =  		|Could not connect to the HTTP resource.  | 
+
+Const ERR_NOTES_HTTP_REMOTE_ACCESS_DENIED =  	4845 
+Const MSG_NOTES_HTTP_REMOTE_ACCESS_DENIED =  	|HTTP remote access denied.  | 
+
+Const ERR_NOTES_HTTP_OPERATION_TIMEDOUT =  		4846 
+Const MSG_NOTES_HTTP_OPERATION_TIMEDOUT =  		|HTTP operation has timed out.  | 
+
+Const ERR_NOTES_HTTP_TOO_MANY_REDIRECTS =  		4847 
+Const MSG_NOTES_HTTP_TOO_MANY_REDIRECTS =  		|Too many HTTP redirects.  | 
+
+Const ERR_NOTES_HTTP_SSL_PROBLEM =  			4848 
+Const MSG_NOTES_HTTP_SSL_PROBLEM =  			|There is an SSL problem.  | 
+
+Const ERR_NOTES_HTTP_URL_MALFORMAT =  			4849 
+Const MSG_NOTES_HTTP_URL_MALFORMAT =  			|Malformed HTTP URL.  | 
+
+'++LotusScript Development Environment:2:3:DOMI_BUILD Get:6:8
+
+
+
+
+
+Property Get DOMI_BUILD As String 
+	DOMI_BUILD = g_DOMI_BUILD
+End Property
+
+'++LotusScript Development Environment:2:3:DOMI_ROOTURL_SAMETIMEMEETINGS Get:1:8
+Property Get DOMI_ROOTURL_SAMETIMEMEETINGS As String 
+	DOMI_ROOTURL_SAMETIMEMEETINGS = g_DOMI_ROOTURL_SAMETIMEMEETINGS
+End Property
+
+'++LotusScript Development Environment:2:3:DOMI_ROOTURL_TOKEN Get:1:8
+Property Get DOMI_ROOTURL_TOKEN As String 
+	DOMI_ROOTURL_TOKEN = g_DOMI_ROOTURL_TOKEN
+End Property
+
+'++LotusScript Development Environment:2:3:CR Get:14:8
+
+
+
+
+
+
+
+
+
+%REM
+	Property Get CR
+	Gets the LotusScript character for a carriage return
+%END REM
+Property Get CR As String  
+	CR = Chr(13)
+End Property
+
+'++LotusScript Development Environment:2:3:DOMI_VERSION Get:1:8
+Property Get DOMI_VERSION As String 
+	DOMI_VERSION = g_DOMI_VERSION
+End Property
+
+'++LotusScript Development Environment:2:3:CRLF Get:7:8
+
+
+%REM
+	Property Get LF
+	Gets the LotusScript characters for a carriage return followed by a line feed
+%END REM
+Property Get CRLF As String  
+	CRLF = CR & LF 
+End Property
+
+'++LotusScript Development Environment:2:3:DOMI_RELEASE_DATE Get:1:8
+Property Get DOMI_RELEASE_DATE As String 
+	DOMI_RELEASE_DATE = g_DOMI_RELEASE_DATE
+End Property
+
+'++LotusScript Development Environment:2:3:LF Get:5:8
+%REM
+	Property Get LF
+	Gets the LotusScript character for a line feed
+%END REM
+Property Get LF As String 
+	LF = Chr(10)
+End Property
+
+'++LotusScript Development Environment:2:3:HT Get:5:8
+%REM
+	Property Get HT
+	Gets the LotusScript character for a horizontal tabulation
+%END REM
+Property Get HT As String 
+	HT = Chr(9)
+End Property

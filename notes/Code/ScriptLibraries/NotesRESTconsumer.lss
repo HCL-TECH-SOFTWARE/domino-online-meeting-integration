@@ -1,0 +1,811 @@
+'++LotusScript Development Environment:2:5:(Options):0:74
+%REM
+	Library NotesRESTconsumer
+
+	Created Jan 18, 2021 by Devin Olson/USA/PNPHCL
+	Tools for interacting with external REST APIs. 
+
+	Copyright 2021 HCL Software
+	Licensed under the Apache License, Version 2.0 (the "License"); 
+	you may not use this file except in compliance with the License. 
+	You may obtain a copy of the License at
+
+	http://www.apache.org/licenses/LICENSE-2.0
+
+	Unless required by applicable law or agreed to in writing, 
+	software distributed under the License is distributed on an "AS IS" BASIS, 
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
+	See the License for the specific language governing permissions and limitations under the License
+	
+%END REM
+
+Option Public
+Option Explicit 
+
+Use "NotesHttpStatusCodes" 
+Use "VoltMXHttpHelper" 
+
+'++LotusScript Development Environment:2:5:(Forward):0:1
+Declare Class NotesRESTconsumer 
+Declare Function nrcParseResponseCode(response$) As Integer 
+Declare Function getDOMIhttpMethodName(method%) As String 
+Declare Function nrcGetHTTPmethodName(method%) As String 
+
+'++LotusScript Development Environment:2:5:(Declarations):0:10
+
+
+Private Const LIB_PREFIX = |Library: NotesRESTconsumer.|
+
+
+
+
+
+
+
+
+
+
+
+%REM
+	Class NotesRESTconsumer
+	Helper class used to standardize REST API Calls using a NotesHTTPRequest object
+%END REM
+Class NotesRESTconsumer 
+	Private m_excludeNodes As BooleanList 
+	Private m_request As NotesHTTPRequest
+	Private m_responseHeaders As Variant
+	Private Property Get CLASS_PREFIX As String 
+		CLASS_PREFIX = LIB_PREFIX & |Class: NotesRESTconsumer.|
+	End Property 
+
+
+	%REM
+		Constructor
+		@param ExcludeNodesFromLog  Names of JSON Nodes to be excluded from logging 
+			k = node name
+			v = ignored 
+	%END REM 
+	Sub New(ExcludeNodesFromLog As BooleanList) 
+		Set me.m_excludeNodes = ExcludeNodesFromLog
+	End Sub 
+
+
+
+	%REM
+		Property Get Request
+		The HTTP Request for the object.  
+	%END REM
+	Property Get Request As NotesHTTPRequest 
+		On Error GoTo ErrorTrap
+		
+		' BEGIN CODE
+		If (me.m_request Is Nothing) Then 
+			Set me.m_request = getCurrentSession().createHTTPrequest() 
+			me.m_request.Preferstrings = True
+		End If
+		
+		
+	ExitPoint: 
+		Set Request = me.m_request
+		Exit Property 
+	ErrorTrap:
+		On Error GoTo 0
+		enhLogException CLASS_PREFIX, ||
+		Resume ExitPoint
+	End Property
+
+	%REM
+		Property Get ResponseHeaders
+		Response Headers for the object. 
+	%END REM
+	Property Get ResponseHeaders As Variant
+		Dim emptyVar As Variant
+		On Error GoTo ErrorTrap
+		
+		' BEGIN CODE
+		If (IsEmpty(me.m_responseHeaders)) Then 
+			me.m_responseHeaders = me.REQUEST.Getresponseheaders()		
+		End If	
+		
+	ExitPoint: 
+		ResponseHeaders = me.m_responseHeaders
+		Exit Property 
+	ErrorTrap:
+		On Error GoTo 0
+		me.m_responseHeaders = emptyVar
+		enhLogException CLASS_PREFIX, ||
+		Resume ExitPoint
+	End Property
+	
+	
+	%REM
+		Sub createHTTPRequestWithHeaders
+		Explicitly creates the HTTP Request and loads Headers content. 
+		
+		Re-using HTTP request objects may lead to unexpected results, even when fresh header information is added.
+		Explicitly setting the HTTP Request to nothing and recreating it avoids this issue.  
+		
+		@param headers StringList containing the Request Headers 
+			k = header name 
+			v = header value
+	%END REM
+	Sub createHTTPRequestWithHeaders(headers As StringList)
+		On Error GoTo ErrorTrap
+		
+		' exception variables
+		Dim extendedinfo List As String 
+		Dim msg$
+
+		Dim tag$ 
+
+	
+		' BEGIN CODE
+		Set me.m_request = Nothing 
+		Call me.Request.Resetheaders() ' Use the Request property to ensure instantiation
+		
+		' set default values
+		me.m_request.Timeoutsec = 30
+		me.m_request.Maxredirects = 0
+		me.m_request.Preferstrings = True  
+
+		If (headers Is Nothing) Then GoTo ExitPoint 
+		If Not headers.hasContent Then GoTo ExitPoint 
+		 
+'		enhLogAction CLASS_PREFIX, |Loading Headers|
+		ForAll s In headers.content 
+			tag$ = ListTag(s) 
+			extendedinfo(|Header.| & tag$) = s	
+'			enhLogComplexElement s, tag$
+			Call me.m_request.Setheaderfield(tag$, s)
+		End ForAll
+'		enhLogExtendedContent ||, ||, || 
+		
+	ExitPoint: 
+		Exit Sub 
+	ErrorTrap:
+		On Error GoTo 0
+		ForAll s In extendedinfo
+			If isBlankString(msg$) Then 
+				msg$ = ListTag(s) & |: | & s
+			Else 
+				msg$ = msg$ & |, | & LF & ListTag(s) & |: | & s
+			End If
+		End ForAll
+		enhLogException CLASS_PREFIX, msg$
+		
+		If Not (headers Is Nothing) Then 
+			Call headers.logJSONExtended(me.m_excludeNodes, ||, ||, |Headers JSON|)
+			enhLogExtendedContent ||, ||, ||
+		End If 
+		Resume ExitPoint
+	End Sub
+	
+	
+	%REM
+		Function getRequestResponse
+		
+		gets a respose for the request
+		
+		@param headers 			Header Field values to be included in the request.  (k = field name, v = field value)
+		@param bodyargs 		Body parameters to be included (as JSON) in the request.  (k = field name, v = field value)
+		@param url$ 			URL for the request 
+		@param method% 			DOMI_HTTP_METHOD_XXX Constant indicating the method to call (DOMI_HTTP_METHOD_GET, DOMI_HTTP_METHOD_POST, DOMI_HTTP_METHOD_DETETE, etc)
+		
+		@return JSON String response from the request
+	%END REM
+	Private Function getRequestResponse(headers As StringList, bodyargs As VariantList, url$, method%) As String 
+		On Error GoTo ErrorTrap
+		
+		' exception variables
+		Dim extendedinfo List As String 
+		Dim msg$
+		
+		
+		Dim methodname$
+		Dim body$
+		Dim result$
+		Dim tag$ 
+		
+
+		Dim errmsg$ 
+
+		Dim errcode%  
+		
+		
+		' BEGIN CODE
+		extendedinfo(|URL|) = url$
+		methodname$ = nrcGetHTTPmethodName(method%) 
+		extendedinfo(|Method|) = methodname$
+		
+		Select Case method%
+			Case DOMI_HTTP_METHOD_PATCH, DOMI_HTTP_METHOD_PUT, DOMI_HTTP_METHOD_POST:
+				If (headers Is Nothing) Then
+					Set headers = New StringList()
+				End If
+				headers.content(|Content-Type|) = |application/json|
+			Case Else
+				' No Content-Type needed for GET and DELETE
+		End Select
+		Call me.createHTTPRequestWithHeaders(headers) 
+		
+		If Not (bodyargs Is Nothing) Then 
+			body$ = bodyargs.json 
+			extendedinfo(|body|) = body$ 
+		End If
+		
+		Select Case method% 
+			Case DOMI_HTTP_METHOD_GET:
+				result$ = me.m_request.get(url$)
+				
+			Case DOMI_HTTP_METHOD_POST:
+				result$ = me.m_request.post(url$, body$)
+				
+			Case DOMI_HTTP_METHOD_PUT:
+				result$ = me.m_request.put(url$, body$) 
+				GoTo ExitPoint 
+				
+			Case DOMI_HTTP_METHOD_PATCH:
+				result$ = me.m_request.patch(url$, body$)
+				GoTo ExitPoint 
+				
+			Case DOMI_HTTP_METHOD_DELETE:
+				result$ = me.m_request.deleteResource(url$)
+				
+			Case Else 
+				Error ERR_PARAMETER_INVALID, MSG_PARAMETER_INVALID & |Unknown Method: | & CStr(method%) 
+		End Select 
+
+		
+	ExitPoint: 
+		If (0 <> errcode%) Then Error errcode%, errmsg$ ' bubble up errors 
+		getRequestResponse = result$
+	
+		Exit Function 
+	ErrorTrap:
+		On Error GoTo 0
+		errcode% = Err() 
+		errmsg$ = Error$() 
+		If isBlankString(methodname$) Then methodname$ = |URL|
+		enhLogException CLASS_PREFIX, methodname$ & |: |  & url$
+		
+		ForAll s In extendedinfo
+			enhLogExtendedContent ||, ||, ListTag(s) & |: | & s 
+		End ForAll
+		enhLogExtendedContent ||, ||, ||
+		
+		If Not (headers Is Nothing) Then 
+			Call headers.logJSONExtended(me.m_excludeNodes, ||, ||, |Headers JSON|)
+			enhLogExtendedContent ||, ||, ||
+		End If 
+		
+		If Not (bodyargs Is Nothing) Then 
+			Call bodyargs.logJSONExtended(me.m_excludeNodes, ||, ||, |Body JSON|)
+			enhLogExtendedContent ||, ||, ||
+		End If 
+		
+		Resume ExitPoint
+	End Function
+
+
+	
+	%REM
+		Function processRequest
+		Processes a NotesHTTPrequest and returns the NotesJSONNavigator and response code
+		
+		@param headers 			Header Field values to be included in the request.  (k = field name, v = field value)
+		@param bodyargs 		Body parameters to be included (as JSON) in the request.  (k = field name, v = field value)
+		@param target 			[OUTBOUND] NotesJSONNavigator containing the response content  
+		@param url$ 			URL for the request 
+		@param method% 			DOMI_HTTP_METHOD_XXX Constant indicating the method to call (DOMI_HTTP_METHOD_GET, DOMI_HTTP_METHOD_POST, DOMI_HTTP_METHOD_DETETE, etc) 
+				
+		@return JSON Response for the request.
+		
+	%END REM
+	Function processRequest(headers As StringList, bodyargs As VariantList, target As NotesJSONNavigator, url$, method%) As String 
+		On Error GoTo ErrorTrap
+		On Error 4844 GoTo Error4844 ' Error 4844 = Unable To establish connection to remote server
+		
+		
+		Const PREFIX_DOCTYPE = |<!DOCTYPE html>|
+		
+		Dim helper As NotesAgent_JsonHTTPHelper
+		Dim jsonarray As NotesJSONArray 
+		Dim jsonelement As NotesJSONElement
+		Dim jsonobject As NotesJSONObject 
+		
+		Dim jsonvalues As VariantList  
+		 
+		Dim value As Variant 
+		
+		' exception variables
+		Dim extendedinfo List As String 
+		Dim msg$
+		Dim errmsg$ 
+		Dim errcode% 
+
+
+		Dim methodname$
+		Dim responsejson$
+		Dim strippedResponse$ 
+
+		Dim firstchar$
+		Dim lastchar$ 
+		
+		Dim result$
+
+
+		' BEGIN CODE
+		' clear the target before doing anything else 
+		Set target = Nothing
+		methodname$ = nrcGetHTTPmethodName(method%) 
+		If isBlankString(methodname$) Then methodname$ = |URL|
+		extendedinfo(|URL|) = url$
+		extendedinfo(|Method|) = methodname$
+		
+		' get the JSON Response
+		responsejson$ = me.getRequestResponse(headers, bodyArgs, url$, method%)
+		
+		extendedinfo(|response|) = responsejson$
+		strippedResponse$ = stripCRLF(responsejson$)
+		extendedinfo(|strippedResponse|) = strippedResponse$
+		
+		' get the response code 
+		result$ = me.m_request.ResponseCode 
+		extendedinfo(|responseCode|) = result$
+		
+		enhLogExtendedContent CLASS_PREFIX, ||, |Response Code: | & result$
+'		enhLogExtendedContent ||, ||, strippedResponse$ 
+		
+		firstchar$ = Left$(strippedResponse$, 1) 
+		lastchar$ = Right$(strippedResponse$, 1)
+
+		If (|[| = firstchar$) And (|]| = lastchar$) Then
+			enhLogWarning CLASS_PREFIX, |Response appears to be an array, adding array wrapper.| 
+			strippedResponse$ = |{"strippedresponse":| & strippedResponse$ & |}|
+			extendedinfo(|strippedResponse|) = strippedResponse$
+			enhLogExtendedContent ||, ||, strippedResponse$
+
+			Set helper = spawnJsonHttpHelper(Nothing, False, True) 
+			Call helper.loadJson(getCurrentSession(), strippedResponse$)
+			If Not helper.findJsonArrayByPointer(|strippedresponse|, jsonarray) Then Error ERR_OPERATION_FAILED, MSG_OPERATION_FAILED
+				
+			Set jsonelement = jsonarray.getFirstElement()
+			Do While Not (jsonelement Is Nothing) 
+				Select Case jsonelement.Type 
+					Case TYPE_JSONOBJECT:
+						Set jsonobject = jsonelement.Value 
+						Set jsonelement = jsonobject.getFirstElement() 
+						Set jsonvalues = New VariantList() 
+						Do While Not (jsonelement Is Nothing) 
+							jsonvalues.content(jsonelement.Name) = jsonelement.Value 
+							Set jsonelement = jsonobject.getNextElement() 
+						Loop
+						
+						If jsonvalues.hasContent Then 
+							strippedResponse$ = jsonvalues.json 
+							enhLogExtendedContent CLASS_PREFIX, |JSON|, strippedResponse$
+							If Not isBlankString(strippedResponse$) Then Exit Do 
+							
+						End If
+						
+					Case TYPE_JSONSTRING: 
+						strippedResponse$ = stripCRLF(CStr(jsonelement.Value))
+						enhLogExtendedContent CLASS_PREFIX, |JSON|, strippedResponse$
+						If Not isBlankString(strippedResponse$) Then Exit Do 
+										
+					Case Else: 
+						enhLogWarning CLASS_PREFIX, |Unable to process | & getJSONtypeName(jsonelement.Type) 
+				End Select 
+				
+				Set jsonelement = jsonarray.getNextElement() 
+			Loop
+		End If
+
+		If (strippedResponse$ Like |<!DOCTYPE html>*|) Then Error ERR_PARAMETER_INVALID, MSG_PARAMETER_INVALID & |Service returned HTML instead of JSON.  | 
+		Set target = getCurrentSession().createJSONNavigator(strippedResponse$) 
+		
+	ExitPoint: 
+		If (0 <> errcode%) Then Error errcode%, errmsg$ 
+		processRequest = result$
+		enhLogMethodResult CLASS_PREFIX, getDOMIhttpMethodName(method%) & |:  | & result$ 
+		
+		If Not (headers Is Nothing) Then 
+			Call headers.logJSONExtended(me.m_excludeNodes, ||, ||, |Headers JSON|)
+			enhLogExtendedContent ||, ||, ||
+		End If 
+		
+		If Not (bodyargs Is Nothing) Then 
+			Call bodyargs.logJSONExtended(me.m_excludeNodes, ||, ||, |Body JSON|)
+			enhLogExtendedContent ||, ||, ||
+		End If 
+
+		Exit Function 
+	Error4844:
+		 ' Error 4844 = Unable To establish connection to remote server, bubble up to calling code. 
+		 On Error GoTo 0
+		 errcode% = Err() 
+		 errmsg$ = Error$()
+		 Resume ExitPoint 
+	ErrorTrap:
+		On Error GoTo 0
+		enhLogException CLASS_PREFIX, methodname$ & | | & url & LF & result$
+
+		ForAll s In extendedinfo
+			enhLogExtendedContent ||, ||, ListTag(s) & |: | & s 
+		End ForAll
+		enhLogExtendedContent ||, ||, ||
+		
+		If Not (headers Is Nothing) Then 
+			Call headers.logJSONExtended(me.m_excludeNodes, ||, ||, |Headers JSON|)
+			enhLogExtendedContent ||, ||, ||
+		End If 
+		
+		If Not (bodyargs Is Nothing) Then 
+			Call bodyargs.logJSONExtended(me.m_excludeNodes, ||, ||, |Body JSON|)
+			enhLogExtendedContent ||, ||, ||
+		End If 
+			
+	
+		Resume ExitPoint
+	End Function
+	
+	
+
+	
+	%REM
+		Function httpGET
+		Performs an HTTP GET Request and returns the NotesJSONNavigator and response code
+		
+		@param url$ 	URL for the request 
+		@param headers 	Header Field values to be included in the request. 
+		@param target 	[OUTBOUND] NotesJSONNavigator containing the response content.  
+								
+		@return ResponseCode for the request.
+
+		@throws NRC_ERR_HTTP_REQUEST_FAILURE on failure 
+	%END REM
+	Function httpGET(url$, headers As StringList, target As NotesJSONNavigator) As String 
+		httpGET = me.processRequest(headers, Nothing, target, url$, DOMI_HTTP_METHOD_GET) 
+	End Function	
+	
+	
+	%REM
+		Function httpPOST
+		Performs an HTTP POST Request and returns the NotesJSONNavigator and response code
+		
+		@param url$ URL for the request 
+		@param headers Header Field values to be included in the request.
+		@param bodyargs Body parameters to be included (as JSON) in the request. 
+		@param target 	[OUTBOUND] NotesJSONNavigator containing the response content.  
+																
+		@return ResponseCode for the request.
+
+		@throws NRC_ERR_HTTP_REQUEST_FAILURE on failure 
+	%END REM
+	Function httpPOST(url$, headers As StringList, bodyargs As VariantList, target As NotesJSONNavigator) As String 
+		httpPOST = me.processRequest(headers, bodyargs, target, url$, DOMI_HTTP_METHOD_POST) 
+	End Function	
+
+
+	%REM
+		Function httpPUT
+		Performs an HTTP PUT Request and returns the NotesJSONNavigator and response code
+		
+		@param url$ URL for the request 
+		@param headers Header Field values to be included in the request.
+		@param bodyargs Body parameters to be included (as JSON) in the request. 
+		@param target 	[OUTBOUND] NotesJSONNavigator containing the response content.  
+																
+		@return ResponseCode for the request.
+		
+		@throws NRC_ERR_HTTP_REQUEST_FAILURE on failure 
+	%END REM
+	Function httpPUT(url$, headers As StringList, bodyargs As VariantList, target As NotesJSONNavigator) As String 
+		httpPUT = me.processRequest(headers, bodyargs, target, url$, DOMI_HTTP_METHOD_PUT) 
+	End Function	
+
+
+
+	%REM
+		Function httpPATCH
+		Performs an HTTP PATCH Request and returns the NotesJSONNavigator and response code
+		
+		@param url$ URL for the request 
+		@param headers Header Field values to be included in the request.
+		@param bodyargs Body parameters to be included (as JSON) in the request. 
+		@param target 	[OUTBOUND] NotesJSONNavigator containing the response content.  
+																
+		@return ResponseCode for the request.
+
+		@throws NRC_ERR_HTTP_REQUEST_FAILURE on failure 
+	%END REM
+	Function httpPATCH(url$, headers As StringList, bodyargs As VariantList, target As NotesJSONNavigator) As String 
+		httpPATCH = me.processRequest(headers, bodyargs, target, url$, DOMI_HTTP_METHOD_PATCH) 
+	End Function	
+
+
+
+	%REM
+		Function httpDELETE
+		Performs an HTTP DELETE Request and returns the NotesJSONNavigator and response code
+		
+		@param url$ URL for the request 
+		@param headers Header Field values to be included in the request. 
+		
+		@param target 	[OUTBOUND] NotesJSONNavigator containing the response content.  
+								
+		@return ResponseCode for the request.
+
+		@throws NRC_ERR_HTTP_REQUEST_FAILURE on failure 
+	%END REM
+	Function httpDELETE(url$, headers As StringList, target As NotesJSONNavigator) As String 
+		httpDELETE = me.processRequest(headers, Nothing, target, url$, DOMI_HTTP_METHOD_DELETE) 
+	End Function
+
+
+
+
+End Class
+'++LotusScript Development Environment:2:1:nrcParseResponseCode:8:8
+%REM
+	Function nrcParseResponseCode
+	Parses a response from a NotesHTTPRequest to extract the numeric value of the code. 
+	
+	@param response$ NotesHTTPRequest Response to parse 
+	@return parsed integer value.  Zero on failure 
+%END REM
+Function nrcParseResponseCode(response$) As Integer 
+	On Error GoTo ErrorTrap
+	
+	' exception variables
+	Dim extendedinfo List As String 
+	Dim msg$
+	
+	Dim result%
+	Dim chunks As Variant
+	
+	
+	' BEGIN CODE
+	If Not isBlankString(response$) Then 
+		extendedinfo(|response|) = response$	
+	
+		chunks = Split(response$, | |)
+		ForAll chunk In chunks 
+			extendedinfo(|chunk|) = chunk 
+			If IsNumeric(chunk) Then 
+				result% = CInt(chunk)
+				GoTo ExitPoint 
+			End If			
+		End ForAll
+	End If
+	
+	
+	
+ExitPoint: 
+	nrcParseResponseCode = result%
+	Exit Function 
+ErrorTrap:
+	On Error GoTo 0
+	ForAll s In extendedinfo
+		If isBlankString(msg$) Then 
+			msg$ = ListTag(s) & |: | & s
+		Else 
+			msg$ = msg$ & |, | & LF & ListTag(s) & |: | & s
+		End If
+	End ForAll
+	enhLogException LIB_PREFIX, msg$
+	Resume ExitPoint
+End Function
+
+'++LotusScript Development Environment:2:1:getDOMIhttpMethodName:9:8
+%REM
+	Function getDOMIhttpMethodName
+	Gets the method name associated with a method number 
+	
+	@param method% DOMI_HTTP_METHOD_XXX Constant indicating the method to call (DOMI_HTTP_METHOD_GET, DOMI_HTTP_METHOD_POST, DOMI_HTTP_METHOD_DETETE, etc)
+	
+	@return Method name associated with the method
+%END REM
+Function getDOMIhttpMethodName(method%) As String 
+	On Error GoTo ErrorTrap
+	
+	' exception variables
+	Dim extendedinfo List As String 
+	Dim msg$
+	
+	
+	Dim result$
+	
+	' BEGIN CODE
+	extendedinfo(|Method|) = CStr(method%) 
+	
+	Select Case method% 
+		Case DOMI_HTTP_METHOD_GET: 
+			result$ = |Http GET|
+			
+		Case DOMI_HTTP_METHOD_POST: 
+			result$ = |Http POST|
+			
+		Case DOMI_HTTP_METHOD_PUT: 
+			result$ = |Http PUT|
+			
+		Case DOMI_HTTP_METHOD_PATCH: 
+			result$ = |Http PATCH|
+			
+		Case DOMI_HTTP_METHOD_DELETE: 
+			result$ = |Http DELETE|
+			
+		Case Else: 
+			Error ERR_PARAMETER_INVALID, MSG_PARAMETER_INVALID 
+	End Select
+	
+	
+ExitPoint: 
+	getDOMIhttpMethodName = result
+	Exit Function 
+ErrorTrap:
+	On Error GoTo 0
+	ForAll s In extendedinfo
+		If isBlankString(msg$) Then 
+			msg$ = ListTag(s) & |: | & s
+		Else 
+			msg$ = msg$ & |, | & Chr(10) & ListTag(s) & |: | & s
+		End If
+	End ForAll
+	enhLogException LIB_PREFIX, msg$
+	Resume ExitPoint
+End Function
+
+'++LotusScript Development Environment:2:1:nrcGetHTTPmethodName:22:8
+
+
+
+
+
+
+
+
+
+
+%REM
+	Function nrcGetHTTPmethodName
+	Returns the HTTP Method Name associated with the method constant 
+	
+	@param method% 	DOMI_HTTP_METHOD_XXX Constant indicating the method to call (DOMI_HTTP_METHOD_GET, DOMI_HTTP_METHOD_POST, DOMI_HTTP_METHOD_DETETE, etc)
+	
+	@return HTTP Method name for method%. 
+	
+	@throws ERR_PARAMETER_INVALID if method% is not one of the DOMI_HTTP_METHOD_XXX constant values    
+		
+%END REM
+Function nrcGetHTTPmethodName(method%) As String 
+	On Error GoTo ErrorTrap
+	
+	Dim result$
+	Dim errcode% 
+	
+	' BEGIN CODE
+	
+	Select Case (method%) 
+		Case DOMI_HTTP_METHOD_GET: 
+			result$ = |GET|
+			
+		Case DOMI_HTTP_METHOD_POST: 
+			result$ = |POST|
+			
+		Case DOMI_HTTP_METHOD_PUT: 
+			result$ = |PUT|
+			
+		Case DOMI_HTTP_METHOD_PATCH: 
+			result$ = |PATCH|
+			
+		Case DOMI_HTTP_METHOD_DELETE: 
+			result$ = |DELETE|
+			
+		Case Else 
+			Error ERR_PARAMETER_INVALID, MSG_PARAMETER_INVALID
+			
+	End Select
+
+ExitPoint: 
+	nrcGetHTTPmethodName = result$
+	If (ERR_PARAMETER_INVALID = errcode%) Then Error ERR_PARAMETER_INVALID, MSG_PARAMETER_INVALID
+	Exit Function 
+ErrorTrap:
+	On Error GoTo 0
+	errcode% = Err() 
+	enhLogException LIB_PREFIX, |Method Code: | & CStr(method%) 
+	Resume ExitPoint
+End Function
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
