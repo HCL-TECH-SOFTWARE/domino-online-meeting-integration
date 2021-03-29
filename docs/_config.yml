@@ -19,6 +19,7 @@ remote_theme: pmarsceill/just-the-docs
 title: Domino Online Meeting Integration
 description: Online meeting services integrations for HCL Domino
 version: 1.0.0
+copyright_info: "&copy; HCL Software 2021"
 logo: "/assets/images/svg/HCL_Domino_light.svg"
 baseurl: "/pages/hcl-labs/domino-online-meeting-integration" # the subpath of your site, e.g. /blog
 git_url: "https://github01.hclpnp.com/pages/hcl-labs/domino-online-meeting-integration" # the base hostname & protocol for your site, e.g. http://example.com
