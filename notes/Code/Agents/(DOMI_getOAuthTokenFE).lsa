@@ -1,136 +1,56 @@
 <?xml version='1.0' encoding='utf-8'?>
-<note class='filter' xmlns='http://www.lotus.com/dxl' version='11.0' maintenanceversion='1.0'
- replicaid='8525867000756EB9'>
+<agent name='(DOMI_getOAuthTokenFE)' alias='DOMI_getOAuthTokenFE' xmlns='http://www.lotus.com/dxl'
+ version='11.0' maintenanceversion='1.0' replicaid='8525867000756EB9' hide='v3'
+ publicaccess='false' designerversion='8.5.3'>
 <noteinfo noteid='1c3e' unid='7DA52F2136D05D7D02074C784DB6DD23' sequence='1'>
 <created><datetime/></created>
-<modified><datetime dst='true'>20210329T102409,04+01</datetime></modified>
+<modified><datetime dst='true'>20210329T124641,01+01</datetime></modified>
 <revised><datetime>20210326T081924,68-05</datetime></revised>
-<lastaccessed><datetime dst='true'>20210329T102409,03+01</datetime></lastaccessed>
-<addedtofile><datetime dst='true'>20210329T102409,03+01</datetime></addedtofile></noteinfo>
+<lastaccessed><datetime dst='true'>20210329T124641,00+01</datetime></lastaccessed>
+<addedtofile><datetime dst='true'>20210329T124641,00+01</datetime></addedtofile></noteinfo>
 <updatedby><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name><name>CN=Michael Alexander/OU=USA/O=PNPHCL</name><name
 >CN=Rocky Oliver/OU=USA/O=PNPHCL</name></updatedby>
 <wassignedby><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name></wassignedby>
-<item name='$TITLE' sign='true'><text>(DOMI_getOAuthTokenFE)|DOMI_getOAuthTokenFE</text></item>
-<item name='$AssistType' sign='true'><number>65413</number></item>
-<item name='$AssistLastRun' sign='true'>
-<rawitemdata type='400'>
-AAAAAAAAAAA=
-</rawitemdata></item>
-<item name='$AssistDocCount' sign='true'><number>0</number></item>
-<item name='$FlagsExt' sign='true'><text/></item>
-<item name='$AssistFlags' sign='true'><text>Es</text></item>
-<item name='$AssistTrigger' sign='true'><text>4</text></item>
-<item name='$AssistInfo' sign='true'>
-<rawitemdata type='11'>
-AQAEAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-</rawitemdata></item>
-<item name='$AssistQuery' sign='true'>
-<rawitemdata type='f'>
-gQYAAAAA
-</rawitemdata></item>
-<item name='$Restricted' sign='true'><number>1</number></item>
-<item name='$Flags'><text>fL3</text></item>
-<item name='$AssistRunInfo' summary='true'>
-<rawitemdata type='3'>
-BgAAAgAACAA6HAAAAAAAAAUAAAAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-AAAAAAAAAAAAAAAAAAAAuRBnAJKGJYUEoEgAkoYlhQAAAAAAAAAAAAAAAAAAAAAAAAAAqqqqqqqq
-qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq
-qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq
-qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq
-qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq
-qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq
-qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq
-qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq
-qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq
-qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq
-qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq
-qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq
-qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq
-qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq
-qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq
-qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq
-qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq
-qqqqqqqqqqqqqqqqqqqqqqqq
-</rawitemdata></item>
-<item name='$AssistAction' sign='true'>
-<rawitemdata type='10'>
-gQKF/1sFAAAAAE8FAAAnKytMb3R1c1NjcmlwdCBEZXZlbG9wbWVudCBFbnZpcm9ubWVudDoyOjU6
-KE9wdGlvbnMpOjA6NzQKJVJFTQoJQWdlbnQgKERPTUlfZ2V0T0F1dGhUb2tlbkZFKQoJQ3JlYXRl
-ZCBNYXJjaCAyMDIxIGJ5IERldmluIE9sc29uL1VTQS9QTlBIQ0wKCglEb21pbm8gT25saW5lIE1l
-ZXRpbmcgSW50ZWdyYXRpb24gT0F1dGggVG9rZW4gYXV0aGVudGljYXRpb24KCglDb3B5cmlnaHQg
-MjAyMSBIQ0wgU29mdHdhcmUKCUxpY2Vuc2VkIHVuZGVyIHRoZSBBcGFjaGUgTGljZW5zZSwgVmVy
-c2lvbiAyLjAgKHRoZSAiTGljZW5zZSIpOyAKCXlvdSBtYXkgbm90IHVzZSB0aGlzIGZpbGUgZXhj
-ZXB0IGluIGNvbXBsaWFuY2Ugd2l0aCB0aGUgTGljZW5zZS4gCglZb3UgbWF5IG9idGFpbiBhIGNv
-cHkgb2YgdGhlIExpY2Vuc2UgYXQKCglodHRwOi8vd3d3LmFwYWNoZS5vcmcvbGljZW5zZXMvTElD
-RU5TRS0yLjAKCglVbmxlc3MgcmVxdWlyZWQgYnkgYXBwbGljYWJsZSBsYXcgb3IgYWdyZWVkIHRv
-IGluIHdyaXRpbmcsIAoJc29mdHdhcmUgZGlzdHJpYnV0ZWQgdW5kZXIgdGhlIExpY2Vuc2UgaXMg
-ZGlzdHJpYnV0ZWQgb24gYW4gIkFTIElTIiBCQVNJUywgCglXSVRIT1VUIFdBUlJBTlRJRVMgT1Ig
-Q09ORElUSU9OUyBPRiBBTlkgS0lORCwgZWl0aGVyIGV4cHJlc3Mgb3IgaW1wbGllZC4gCglTZWUg
-dGhlIExpY2Vuc2UgZm9yIHRoZSBzcGVjaWZpYyBsYW5ndWFnZSBnb3Zlcm5pbmcgcGVybWlzc2lv
-bnMgYW5kIGxpbWl0YXRpb25zIHVuZGVyIHRoZSBMaWNlbnNlCiVFTkQgUkVNCk9wdGlvbiBQdWJs
-aWMKT3B0aW9uIEV4cGxpY2l0IAoKVXNlICJkb21pVXRpbHNGRSIKCicrK0xvdHVzU2NyaXB0IERl
-dmVsb3BtZW50IEVudmlyb25tZW50OjI6NTooRm9yd2FyZCk6MDoxCkRlY2xhcmUgU3ViIEluaXRp
-YWxpemUKCicrK0xvdHVzU2NyaXB0IERldmVsb3BtZW50IEVudmlyb25tZW50OjI6NTooRGVjbGFy
-YXRpb25zKTowOjIKCicrK0xvdHVzU2NyaXB0IERldmVsb3BtZW50IEVudmlyb25tZW50OjI6MjpJ
-bml0aWFsaXplOjE6MTAKU3ViIEluaXRpYWxpemUKCU9uIEVycm9yIEdvVG8gRXJyb3JUcmFwCgkK
-CUNhbGwgaW5zdGFudGlhdGVET01JbG9nKCkgJyBJbnN0YW50aWF0ZSBMb2dnaW5nIGFuZCBzZXQg
-b3B0aW9ucyBmb3IgRE9NSSBvcGVyYXRpb25zCgoJQ2FsbCBnZXRPQXV0aFRva2VuKCkKCQpFeGl0
-UG9pbnQ6CglFeGl0IFN1YiAKRXJyb3JUcmFwOgoJT24gRXJyb3IgR29UbyAwCgllbmhMb2dFeGNl
-cHRpb24gfEFjdGlvbiBWYWxpZGF0ZSBPQVVUSCBUb2tlbi58LCB8fCAKCU1lc3NhZ2VCb3ggRXJy
-b3IkKCksIDE2LCB8RXJyb3IgfCAmIENTdHIoRXJyKCkpIAoJUmVzdW1lIEV4aXRQb2ludCAKRW5k
-IFN1YgAi
-</rawitemdata></item>
-<item name='$AssistAction_Ex' sign='true'>
-<rawitemdata type='14'>
-gQKF/3AKAAAAAGQKAAABAAACTFNPQgMAFAhlbgAABAASAF8AAAAAACAFqAIYAAAApAQQAxwDAAAA
-ACwArAAgAEAAAADYAVwAAAAAAAAAAQAAABgAGAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-GAAYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwAAAOwAwAQAAAAA7ADsAAAAAAAAAAAAAAAAAAAAAAAA
-AAAAwATABFABUAEAAAAAAAAAAAAAAAAAAAAABAAAAMAB4AOAAhwDAAAAAMABwAEAAAAA4APgAwAA
-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAFAExvdHVzIFByb2R1Y3QAAABWMC4w
-AAAAAAAAAAAAAAAAAAAAAAAAAABfAAAAAAAAACAFAACoAgAAAAAAAAAAAAABAAAAAAAAAAAAAAAA
-AAAAAQAAAAAAAAAAAAAABAAAAFczMkklAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-AAAAAAAAAAAAAAAAAAAAAAADAKwCAAAAAGgBDQAkAEEAUwBTAEkAUwBUAEEAQwBUAEkATwBOAAAA
-dAADAE4ARQBXAAAAiAAGAEQARQBMAEUAVABFAAAAAADIAAoASQBOAEkAVABJAEEATABJAFoARQAA
-AAAAOAIJAFQARQBSAE0ASQBOAEEAVABFAAAAkAAGAE8AQgBKAEUAQwBUAAAAAAAsAQAAAAAAAKgB
-CwBkAG8AbQBpAFUAdABpAGwAcwBGAEUAAADgAAsARABPAE0ASQBVAFQASQBMAFMARgBFAAAADAEJ
-AEUAUgBSAE8AUgBUAFIAQQBQAAAAjAISAEkATgBTAFQAQQBOAFQASQBBAFQARQBEAE8ATQBJAEwA
-TwBHAAAAAABEAQ0ARwBFAFQATwBBAFUAVABIAFQATwBLAEUATgAAAP//CQBFAFgASQBUAFAATwBJ
-AE4AVAAAABQCDwBFAE4ASABMAE8ARwBFAFgAQwBFAFAAVABJAE8ATgAAAP//HABBAGMAdABpAG8A
-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
-</rawitemdata></item>
-<item name='$DesignerVersion' sign='true'><text>8.5.3</text></item>
-<item name='$AssistVersion'><datetime>20210323T073312,35-05</datetime></item></note>
+<designchange><datetime>20210323T073312,35-05</datetime></designchange>
+<trigger type='actionsmenu'/>
+<documentset type='runonce'/><code event='options'><lotusscript>%REM
+	Agent (DOMI_getOAuthTokenFE)
+	Created March 2021 by Devin Olson/USA/PNPHCL
+
+	Domino Online Meeting Integration OAuth Token authentication
+
+	Copyright 2021 HCL Software
+	Licensed under the Apache License, Version 2.0 (the "License"); 
+	you may not use this file except in compliance with the License. 
+	You may obtain a copy of the License at
+
+	http://www.apache.org/licenses/LICENSE-2.0
+
+	Unless required by applicable law or agreed to in writing, 
+	software distributed under the License is distributed on an "AS IS" BASIS, 
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
+	See the License for the specific language governing permissions and limitations under the License
+%END REM
+Option Public
+Option Explicit 
+
+Use "domiUtilsFE"
+
+</lotusscript></code><code event='initialize'><lotusscript>Sub Initialize
+	On Error GoTo ErrorTrap
+	
+	Call instantiateDOMIlog() ' Instantiate Logging and set options for DOMI operations
+
+	Call getOAuthToken()
+	
+ExitPoint:
+	Exit Sub 
+ErrorTrap:
+	On Error GoTo 0
+	enhLogException |Action Validate OAUTH Token.|, || 
+	MessageBox Error$(), 16, |Error | &amp; CStr(Err()) 
+	Resume ExitPoint 
+End Sub</lotusscript></code>
+<rundata processeddocs='0' exitcode='0'>
+<agentmodified><datetime>20210308T134544,89-05</datetime></agentmodified></rundata></agent>
 

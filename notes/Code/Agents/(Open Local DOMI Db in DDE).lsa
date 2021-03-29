@@ -1,109 +1,41 @@
 <?xml version='1.0' encoding='utf-8'?>
-<note class='filter' xmlns='http://www.lotus.com/dxl' version='11.0' maintenanceversion='1.0'
- replicaid='8525867000756EB9'>
+<agent name='(Open Local DOMI Db in DDE)' alias='openDOMIDDE' xmlns='http://www.lotus.com/dxl'
+ version='11.0' maintenanceversion='1.0' replicaid='8525867000756EB9' hide='v3'
+ publicaccess='false' designerversion='8.5.3'>
 <noteinfo noteid='1c2e' unid='73C87899C618228D8525869200620FC0' sequence='52'>
 <created><datetime>20210308T125105,60-05</datetime></created>
-<modified><datetime dst='true'>20210329T102409,02+01</datetime></modified>
+<modified><datetime dst='true'>20210329T124640,99+01</datetime></modified>
 <revised><datetime>20210322T095924,15-05</datetime></revised>
-<lastaccessed><datetime dst='true'>20210329T102409,01+01</datetime></lastaccessed>
-<addedtofile><datetime dst='true'>20210329T102409,01+01</datetime></addedtofile></noteinfo>
+<lastaccessed><datetime dst='true'>20210329T124640,98+01</datetime></lastaccessed>
+<addedtofile><datetime dst='true'>20210329T124640,98+01</datetime></addedtofile></noteinfo>
 <updatedby><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name></updatedby>
 <wassignedby><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name></wassignedby>
-<item name='$AssistType' sign='true'><number>65413</number></item>
-<item name='$AssistLastRun' sign='true'>
-<rawitemdata type='400'>
-AAAAAAAAAAA=
-</rawitemdata></item>
-<item name='$AssistDocCount' sign='true'><number>0</number></item>
-<item name='$FlagsExt' sign='true'><text/></item>
-<item name='$AssistFlags' sign='true'><text>Es</text></item>
-<item name='$AssistTrigger' sign='true'><text>4</text></item>
-<item name='$AssistInfo' sign='true'>
-<rawitemdata type='11'>
-AQAEAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-</rawitemdata></item>
-<item name='$AssistQuery' sign='true'>
-<rawitemdata type='f'>
-gQYAAAAA
-</rawitemdata></item>
-<item name='$Restricted' sign='true'><number>1</number></item>
-<item name='$Flags'><text>fL3</text></item>
-<item name='$AssistRunInfo' summary='true'>
-<rawitemdata type='3'>
-BgAAAgAACAAqHAAAAAAAAAUAAAAwAAAAAAAAAAAAAAAAAAAAzAAAAAAAAAAAAAAAAAAAABAAAAAA
-AAAAA/5RAKOGJYYAAAAA/edhAKCGJYYplHkAcIYlhgAAAAAAAAAAAAAAAAAAAAAAAAAAU3RhcnRl
-ZCBydW5uaW5nIGFnZW50ICcoT3BlbiBMb2NhbCBET01JIERiIGluIERERSl8b3BlbkRPTUlEREUn
-IG9uIDAzLzI1LzIwMjEgMDk6NTU6MjkgQU0NClJhbiBMb3R1c1NjcmlwdCBjb2RlDQpEb25lIHJ1
-bm5pbmcgYWdlbnQgJyhPcGVuIExvY2FsIERPTUkgRGIgaW4gRERFKXxvcGVuRE9NSURERScgb24g
-MDMvMjUvMjAyMSAwOTo1NTozNCBBTQ0KAA0K6XHW01YM4kiC/FEAo4Ylhqqqqqqqqqqqqqqqqqqq
-qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq
-qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq
-qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq
-qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq
-qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq
-qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq
-qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq
-qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq
-qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq
-qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq
-qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq
-qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq
-qqqqqqqqqqqqqqqqqqqqqqqq
-</rawitemdata></item>
-<item name='$AssistAction' sign='true'>
-<rawitemdata type='10'>
-gQKF/80CAAAAAMECAAAnKytMb3R1c1NjcmlwdCBEZXZlbG9wbWVudCBFbnZpcm9ubWVudDoyOjU6
-KE9wdGlvbnMpOjA6NzQKJVJFTQoJQWdlbnQgT3BlbiBEYiBpbiBEREUgVGVzdAoJQ3JlYXRlZCBN
-YXIgOCwgMjAyMSBieSBSb2NreSBPbGl2ZXIvVVNBL1BOUEhDTAoJRGVzY3JpcHRpb246IENvbW1l
-bnRzIGZvciBBZ2VudAolRU5EIFJFTQpPcHRpb24gUHVibGljCk9wdGlvbiBEZWNsYXJlCgoKJysr
-TG90dXNTY3JpcHQgRGV2ZWxvcG1lbnQgRW52aXJvbm1lbnQ6Mjo1OihGb3J3YXJkKTowOjEKRGVj
-bGFyZSBTdWIgSW5pdGlhbGl6ZQoKJysrTG90dXNTY3JpcHQgRGV2ZWxvcG1lbnQgRW52aXJvbm1l
-bnQ6Mjo1OihEZWNsYXJhdGlvbnMpOjA6MgoKJysrTG90dXNTY3JpcHQgRGV2ZWxvcG1lbnQgRW52
-aXJvbm1lbnQ6MjoyOkluaXRpYWxpemU6MToxMApTdWIgSW5pdGlhbGl6ZQoJRGltIHMgQXMgTmV3
-IE5vdGVzU2Vzc2lvbgoJRGltIHRoaXNEYiBBcyBOb3Rlc0RhdGFiYXNlCglEaW0gcmVzIEFzIElu
-dGVnZXIsIGZpbGVwYXRoIEFzIFN0cmluZywgc2VydmVyIEFzIFN0cmluZywgb3BlbnBhdGggQXMg
-c3RyaW5nCglTZXQgdGhpc2RiID0gcy5jdXJyZW50RGF0YWJhc2UKCWZpbGVwYXRoID0gdGhpc0Ri
-LkZpbGVwYXRoCglzZXJ2ZXIgPSB0aGlzRGIuc2VydmVyCgkKCXJlcyA9IFNoZWxsKHxkZXNpZ25l
-ci5leGUgInwgJiBmaWxlcGF0aCAmIHwifCkKRW5kIFN1YgAi
-</rawitemdata></item>
-<item name='$AssistAction_Ex' sign='true'>
-<rawitemdata type='14'>
-gQKF/zQHAAAAACgHAAABAAACTFNPQgMAFAhlbgAABAAPAFQAAAAAAPgCoAEEAAAAAACcAHgBAAAA
-ACwA//8gAEAAAACYAFwAAAAAAAAAAQAAAAQABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-BAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAKgAeAEAAAAAAAAAAAAAAAAAAAAAeAF4AQAA
-AAAAAAAAAAAAAAAAAAAAAAAAqACoAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAFAExvdHVzIFByb2R1Y3QAAABWMC4w
-AAAAAAAAAAAAAAAAAAAAAAAAAABUAAAAAAAAAPgCAACgAQAAAAAAAAAAAAABAAAAAAAAAAAAAAAA
-AAAAAQAAAAAAAAAAAAAABAAAAFczMkklAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-AAAAAAAAAAAAAAAAAAAAAAADAKQBAAAAAFABDQAkAEEAUwBTAEkAUwBUAEEAQwBUAEkATwBOAAAA
-dAADAE4ARQBXAAAAiAAGAEQARQBMAEUAVABFAAAAAAC4AAoASQBOAEkAVABJAEEATABJAFoARQAA
-AAAAkAAJAFQARQBSAE0ASQBOAEEAVABFAAAAAAEGAE8AQgBKAEUAQwBUAAAAAAAkAQAAAAAAAMwA
-AQBTAAAAOAEMAE4ATwBUAEUAUwBTAEUAUwBTAEkATwBOAAAAAAB0AQYAJQBMAFMAWABCAEUAAAAA
-AOAABgBUAEgASQBTAEQAQgAAAAAADAENAE4ATwBUAEUAUwBEAEEAVABBAEIAQQBTAEUAAAD//wMA
-UgBFAFMAAACYAQgARgBJAEwARQBQAEEAVABIAAAAAAD//wYAUwBFAFIAVgBFAFIAAAAAAP//CABP
-AFAARQBOAFAAQQBUAEgAAAAAAP//DwBDAFUAUgBSAEUATgBUAEQAQQBUAEEAQgBBAFMARQAAAP//
-DgBkAGUAcwBpAGcAbgBlAHIALgBlAHgAZQAgACIAAAAAAP//AQAiAAAABQD8AgAAAAAZu7IuCAAA
-AAAAAABEAAAAAAAAAAYAAABoAXwCAAAAAAAAAAB8AnwCAAAAAAAAAABoAVwCbAJsAgAAAAAAAAAA
-AAAAAAAAAAA8AkwCAAAAAAAAAAAKAAAAAwAAABgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAaAAAAvAD//wAAAAAQAAAAeAEAAJwA
-AAAAAAAAAQAAAIwCjAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-AIwCjAIAAAAAARQTKe0uaRC/XQDdARGGtwAAAAAAAAAAAAAAAAAAAABkAAAAAAAAAAAAAAAAAAAA
-AgCcADgBAAAAAAAAAgABAP//AAASABQAAAAAAP//CQIAAAAAsgQAAAAAqACcAP//AAAAAAQAAQAA
-AAkCqAAJAqgAGQADAAIAPAJcApQACQIAAKgAEAAAAAAAAADkAAAAAAAAAAIAAACwAtQCAAAAAAAA
-AAAAAAAAAAAAAAAAAACwArAC1ALUAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIUEyntLmkQv10A
-3QERhrcAAAAAAAAAAAAAAAAAAAAAZAAAAAAAAAAAAAAAAAAAAAIAnAAIAgAAqAAAAAIAAQD//wAA
-EgAUAAAAAAD//wkCAAAAABIEAAAAAHgBnAD//wAAAAAGAAMAAAAJAngBCQJ4AQYIBggZAAMAAgBM
-AkwC0AAJAgQAeAEDAAIAXAIAAAQBAQAIAAAAAwACAGwCAAAQAQYADAAAAAMAAgB8AgAAKAEGABAA
-AAADAAIAAAAAADwBBgAUAAAAEQAQBQAAAABUAQkCqAQAAAAAAAAAAAAAAAAAAAAAAAAAAHgBEQAQ
-BdQCAAAQAQYA7gMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEQAQBQAAAAAoAQYA3QUAAAAAAAAAAAAA
-AAAAAAAAAAAAAAAABABYAAAAAAAdAAAaEgBeaAErqAAkphoVAF48AktoAS2MAiOmGhYAXlwCSzwC
-LbACI6UaFwBebAJLPAIt1AIjpRoZAGICCAB9eAFKXAK/fZwBv5uABjGnAhoaAB0CAAAAEQAUAAAA
-AAD//wEAAwALAAAADgBEABAACgAAAA==
-</rawitemdata></item>
-<item name='$TITLE' sign='true'><text>(Open Local DOMI Db in DDE)|openDOMIDDE</text></item>
-<item name='$DesignerVersion' sign='true'><text>8.5.3</text></item>
-<item name='$AssistVersion'><datetime>20210322T095924,15-05</datetime></item></note>
+<designchange><datetime>20210322T095924,15-05</datetime></designchange>
+<trigger type='actionsmenu'/>
+<documentset type='runonce'/><code event='options'><lotusscript>%REM
+	Agent Open Db in DDE Test
+	Created Mar 8, 2021 by Rocky Oliver/USA/PNPHCL
+	Description: Comments for Agent
+%END REM
+Option Public
+Option Declare
+
+
+</lotusscript></code><code event='initialize'><lotusscript>Sub Initialize
+	Dim s As New NotesSession
+	Dim thisDb As NotesDatabase
+	Dim res As Integer, filepath As String, server As String, openpath As string
+	Set thisdb = s.currentDatabase
+	filepath = thisDb.Filepath
+	server = thisDb.server
+	
+	res = Shell(|designer.exe "| &amp; filepath &amp; |"|)
+End Sub</lotusscript></code>
+<rundata processeddocs='0' exitcode='0' agentdata='48E20C56D3D671E9862586A30051FC82'>
+<agentmodified><datetime>20210322T114923,81-06</datetime></agentmodified>
+<agentrun><datetime>20210325T085534,43-06</datetime></agentrun>
+<runlog>Started running agent '(Open Local DOMI Db in DDE)|openDOMIDDE' on 03/25/2021 09:55:29 AM
+Ran LotusScript code
+Done running agent '(Open Local DOMI Db in DDE)|openDOMIDDE' on 03/25/2021 09:55:34 AM
+</runlog></rundata></agent>
 

@@ -1,74 +1,58 @@
 <?xml version='1.0' encoding='utf-8'?>
-<note class='form' xmlns='http://www.lotus.com/dxl' version='11.0' maintenanceversion='1.0'
- replicaid='8525867000756EB9'>
+<form name='(domiSTLoginDlg)' alias='domiSTLoginDlg' xmlns='http://www.lotus.com/dxl'
+ version='11.0' maintenanceversion='1.0' replicaid='8525867000756EB9' publicaccess='false'
+ designerversion='8.5.3' comment='dialog for initial login into ST Meeting server'
+ inherit='true' renderpassthrough='true'>
 <noteinfo noteid='1c1e' unid='63B8F0957714380B8525868D0048A2B0' sequence='57'>
 <created><datetime>20210303T081322,40-05</datetime></created>
-<modified><datetime dst='true'>20210329T102408,99+01</datetime></modified>
+<modified><datetime dst='true'>20210329T124640,96+01</datetime></modified>
 <revised><datetime>20210321T112008,85-05</datetime></revised>
-<lastaccessed><datetime dst='true'>20210329T102408,98+01</datetime></lastaccessed>
-<addedtofile><datetime dst='true'>20210329T102408,98+01</datetime></addedtofile></noteinfo>
+<lastaccessed><datetime dst='true'>20210329T124640,95+01</datetime></lastaccessed>
+<addedtofile><datetime dst='true'>20210329T124640,95+01</datetime></addedtofile></noteinfo>
 <updatedby><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name></updatedby>
 <wassignedby><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name></wassignedby>
-<item name='stPassword_f' placeholder='true'>
-<rawitemdata type='0'>
-</rawitemdata></item>
-<item name='$HTMLCode' sign='true'>
-<rawitemdata type='1'>
-X/8QAAIADwAHAAAAAAAAAA==
-</rawitemdata></item>
-<item name='$TITLE'><textlist><text>(domiSTLoginDlg)</text><text>domiSTLoginDlg</text></textlist></item>
-<item name='$Comment' sign='true'><text>dialog for initial login into ST Meeting server</text></item>
-<item name='$Info' sign='true'>
-<rawitemdata type='1'>
-hhgBAIEAAAAAgAAAAQABAP///wAQAAAA
-</rawitemdata></item>
-<item name='$Flags'><text/></item>
-<item name='$DesignerVersion'><text>8.5.3</text></item>
-<item name='$$ScriptName' summary='false' sign='true'><text>domiSTLoginDlg</text></item>
-<item name='loginEmail' placeholder='true'>
-<rawitemdata type='0'>
-</rawitemdata></item>
-<item name='stPassword' placeholder='true'>
-<rawitemdata type='0'>
-</rawitemdata></item>
-<item name='$Fields'><textlist><text>stPassword</text><text>loginEmail</text></textlist></item>
-<item name='$Body' sign='true'>
-<rawitemdata type='1'>
-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
-</rawitemdata></item></note>
+<body><richtext>
+<pardef id='1' hide='read edit print notes web'><parstyle name='Hidden Text'
+ incyclekey='true' alldocuments='true' username='Rocky Oliver-'><font size='8pt'
+ color='green' name='sans-serif'/></parstyle></pardef>
+<par def='1'><run><font size='8pt' style='bold' color='green'/>Hidden Text - Start</run></par>
+<pardef id='2'/>
+<par def='2'/>
+<par def='1'><run><font size='8pt' color='green'/></run></par>
+<par def='1'><run><font size='8pt' style='bold' color='green'/>Hidden Text - End</run></par>
+<pardef id='3' firstlineleftmargin='1in' hide='read edit print notes web'><parstyle
+ name='Hidden Text' incyclekey='true' alldocuments='true' username='Rocky Oliver-'><font
+ size='8pt' color='green' name='sans-serif'/></parstyle></pardef>
+<table cellbordercolor='silver' widthtype='fixedleft' rowspacing='0.0500in'
+ columnspacing='0.0500in' refwidth='4.8375in'><tablecolumn width='1.7625in'/><tablecolumn
+ width='2.8750in'/>
+<tablerow>
+<tablecell columnspan='2' borderwidth='0px 0px 1px'>
+<pardef id='5' keepwithnext='true' keeptogether='true'/>
+<par def='5'><run><font size='11pt' style='bold'/>Sametime Credentials</run></par>
+<par def='5'><run><font size='9pt'/>Please enter your login email and password for your Sametime Meetings server.</run></par>
+<par def='5'><run><font size='9pt' style='bold' color='red'/>NOTE:</run><run
+><font size='9pt' color='red'/> </run><run><font size='9pt'/>Your password will </run><run
+><font size='9pt' style='bold' color='red'/>NOT</run><run><font size='9pt'/> be saved</run></par></tablecell></tablerow>
+<tablerow>
+<tablecell borderwidth='1px 0px 0px' bgcolor='#f5f5f5'>
+<pardef id='4' keepwithnext='true' keeptogether='true'/>
+<par def='4'><run><font size='9pt'/>Login Email</run></par></tablecell>
+<tablecell borderwidth='1px 0px 0px'>
+<pardef id='6' keepwithnext='true' keeptogether='true'/>
+<par def='6'><run><font size='9pt'/></run><run><font size='9pt'/><field usenotesstyle='false'
+ height='0.2500in' width='2.7000in' multiline='true' borderstyle='single'
+ type='text' kind='editable' name='loginEmail'><code event='defaultvalue'><formula
+>loginEmail</formula></code></field></run><run><font size='9pt'/></run></par></tablecell></tablerow>
+<tablerow>
+<tablecell borderwidth='0px' bgcolor='#f5f5f5'>
+<par def='4'><run><font size='9pt'/>Login Password (not saved)</run></par></tablecell>
+<tablecell borderwidth='0px'>
+<par def='6'><run><font size='9pt'/></run><run><font size='9pt'/><field usenotesstyle='false'
+ height='0.2500in' width='2.7000in' multiline='true' borderstyle='single'
+ type='text' kind='editable' name='stPassword'><code event='defaultvalue'><formula
+>""</formula></code></field></run><run><font size='9pt'/></run></par></tablecell></tablerow></table>
+<pardef id='7' hide='read edit print notes web'/>
+<par def='7'><run><font size='8pt'/></run></par></richtext></body>
+<item name='$$ScriptName' summary='false' sign='true'><text>domiSTLoginDlg</text></item></form>
 

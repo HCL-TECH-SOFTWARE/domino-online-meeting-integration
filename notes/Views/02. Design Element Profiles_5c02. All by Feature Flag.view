@@ -1,58 +1,53 @@
 <?xml version='1.0' encoding='utf-8'?>
-<note class='view' xmlns='http://www.lotus.com/dxl' version='11.0' maintenanceversion='1.0'
- replicaid='8525867000756EB9'>
-<noteinfo noteid='1c12' unid='08662EC6E15643068525867E0046374F' sequence='55'>
+<view name='02. Design Element Profiles\02. All by Feature Flag' alias='uiDesignElementsByFeatureFlag'
+ xmlns='http://www.lotus.com/dxl' version='11.0' maintenanceversion='1.0'
+ replicaid='8525867000756EB9' showinmenu='false' defaultdesign='true' publicaccess='false'
+ designerversion='8.5.3' comment='Design Element Profiles (for users - can be modified)'
+ unreadmarks='none' onopengoto='lastopened' onrefresh='displayindicator' headers='simple'
+ opencollapsed='false' showresponsehierarchy='true' showmargin='true' shrinkrows='true'
+ extendlastcolumn='true' showhierarchies='false' unreadcolor='black' rowlinecount='9'
+ headerlinecount='1' rowspacing='1.25' bgcolor='white' altrowcolor='#e6e6e6'
+ totalscolor='black' headerbgcolor='#e6e6e6' boldunreadrows='false' evaluateactions='false'
+ allownewdocuments='false' allowcustomizations='false' hidemarginborder='false'
+ marginwidth='0px' marginbgcolor='white' uniquekeys='false'>
+<noteinfo noteid='1c12' unid='08662EC6E15643068525867E0046374F' sequence='56'>
 <created><datetime>20210216T074656,79-05</datetime></created>
-<modified><datetime dst='true'>20210329T102408,96+01</datetime></modified>
-<revised><datetime>20210319T125149,72-05</datetime></revised>
-<lastaccessed><datetime dst='true'>20210329T102408,95+01</datetime></lastaccessed>
-<addedtofile><datetime dst='true'>20210329T102408,95+01</datetime></addedtofile></noteinfo>
-<updatedby><name>CN=Paul Withers/OU=UK/O=PNPHCL</name><name>CN=Devin Olson/OU=USA/O=PNPHCL</name><name
->CN=Rocky Oliver/OU=USA/O=PNPHCL</name><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></updatedby>
-<wassignedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></wassignedby>
-<item name='$FormulaClass' sign='true'><text>1</text></item>
+<modified><datetime dst='true'>20210329T124640,93+01</datetime></modified>
+<revised><datetime dst='true'>20210329T074301,33-04</datetime></revised>
+<lastaccessed><datetime dst='true'>20210329T124640,92+01</datetime></lastaccessed>
+<addedtofile><datetime dst='true'>20210329T124640,92+01</datetime></addedtofile></noteinfo>
+<updatedby><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name></updatedby>
+<wassignedby><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name></wassignedby><code
+ event='selection'><formula>SELECT Form = "desElement"</formula></code>
+<actionbar bgcolor='#04633d' bordercolor='black'><actionbarstyle height='32px'
+ repeat='tile'><font size='9pt' name='Trebuchet MS' pitch='variable' truetype='true'
+ familyid='20'/><imageref name='action bar flat.png'/></actionbarstyle>
+<actionbuttonstyle bgcolor='#04633d' displayborder='notesstyle' widthtype='background'
+ internalmargin='3px'><imageref name='ActionButton.gif'/></actionbuttonstyle><font
+ size='9pt' style='bold' name='multilingual' color='white'/><border color='gray'/>
+<action title='Mark Selected as Feature?\Yes'><code event='click'><formula
+>@Command([RunAgent]; "FeatureFlagYes")</formula></code></action>
+<action title='Mark Selected as Feature?\No'><code event='click'><formula
+>@Command([RunAgent]; "FeatureFlagNo")</formula></code></action></actionbar>
+<column sort='ascending' hidedetailrows='false' listseparator='newline' itemname='featureFlag'
+ width='6.2500' resizable='true' separatemultiplevalues='true' sortnoaccent='false'
+ sortnocase='true' showaslinks='false' categorized='true' twisties='true'><font
+ size='9pt' color='#2f2f2f' style='bold' name='multilingual'/><columnheader
+ title='Feature?'><font size='9pt' color='#2f2f2f'/></columnheader></column>
+<column sort='ascending' hidedetailrows='false' itemname='elementType' width='5.2500'
+ resizable='true' separatemultiplevalues='true' sortnoaccent='true' sortnocase='true'
+ showaslinks='false' categorized='true' twisties='true'><font size='9pt' color='#2f2f2f'
+ name='multilingual'/><columnheader title='Type'><font size='9pt' color='#2f2f2f'/></columnheader></column>
+<column sort='ascending' hidedetailrows='false' listseparator='newline' itemname='elementName'
+ width='25' resizable='true' separatemultiplevalues='false' sortnoaccent='false'
+ sortnocase='true' showaslinks='false'><font size='9pt' color='#2f2f2f' name='multilingual'/><columnheader
+ title='Name'><font size='9pt' color='#2f2f2f'/></columnheader></column>
+<column hidedetailrows='false' listseparator='newline' itemname='elementAlias'
+ width='20' resizable='true' separatemultiplevalues='false' sortnoaccent='false'
+ sortnocase='true' showaslinks='false'><font size='9pt' color='#2f2f2f' name='multilingual'/><columnheader
+ title='Alias(es)'><font size='9pt' color='#2f2f2f'/></columnheader></column>
 <item name='$CIAOOwner' sign='true'><text>CN=Rocky Oliver/OU=MedicareGPC/O=PalmettoGBA</text></item>
 <item name='$CIAOTime' sign='true'><datetime dst='true'>20130605T171029,64-04</datetime></item>
 <item name='$CIAOCheckOutTime' sign='true'><datetime dst='true'>20130718T092040,37-04</datetime></item>
-<item name='$CIAOCheckOutComment' sign='true'><text>updating design</text></item>
-<item name='$TITLE' sign='true'><text>02. Design Element Profiles\02. All by Feature Flag|uiDesignElementsByFeatureFlag</text></item>
-<item name='$Index' sign='true'><text/></item>
-<item name='$Formula' summary='true' sign='true'><formula compiled='true'>
-gAAFAE4ASgAGAAsACwALAAwACQAEAGZlYXR1cmVGbGFnZWxlbWVudFR5cGVlbGVtZW50TmFtZWVs
-ZW1lbnRBbGlhcyRDb25mbGljdCRSRUYEAAQAAAAeAAUABABGb3JtAQAKAGRlc0VsZW1lbnQKAgMA
-BwAOAAgACUwxUzJTM1M=
-</formula></item>
-<item name='$Collation' summary='true'>
-<rawitemdata type='2'>
-PAADAABEiGYHAAALAAhmBwsACwCAZgAWAAsAZmVhdHVyZUZsYWdlbGVtZW50VHlwZWVsZW1lbnRO
-YW1l
-</rawitemdata></item>
-<item name='$ViewFormat' summary='true' sign='true'>
-<rawitemdata type='5'>
-AQAEAAYAiEwAAFZDAwQLAAgAAAAAADIAAgHfCQABAAAAAAAAAAICAABAVkMDBAsABAAAAAAAKgAC
-AN8JAAEAAAAAAAAAAgIAAABWQwEACwAEAAAAAADIAAIA3wkAAAAAAAAAAAACAgAAQFZDAAAMAAkA
-AAAAAKAAAgDfCQAAAAAAAAAAAAICAABAZmVhdHVyZUZsYWdGZWF0dXJlP2VsZW1lbnRUeXBlVHlw
-ZWVsZW1lbnROYW1lTmFtZWVsZW1lbnRBbGlhc0FsaWFzKGVzKSYAAQAAAAEBAAkBAAAKAQEOCgAA
-TwCtKwkBAQABAAAAAAAAAAAAV0MBAN8JAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAA//8AAAAAAAAA
-AAAAAAAAAFdDAQDfCQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP//AAAAAAAAAAAAAAAAAABXQwEA
-3wkAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAD//wAAAAAAAAAAAAAAAAAAV0MBAN8JAAAAAAAAAAAA
-AAAAAAAAAAAABAAAAAAA//8AAAAAAAAAAAAAAAAAAEIAEAAAAAEA////AAEA5ubmAAEAwMDAAAAA
-AAAAAAAAAQD///8AAQDm5uYAAAABAAAAAAABAAAAAAABAAAAAAAAAAgAAAAAAAEA
-</rawitemdata></item>
-<item name='$Comment' sign='true'><text>Design Element Profiles (for users - can be modified)</text></item>
-<item name='$Flags'><text>Yd</text></item>
-<item name='$DesignerVersion'><text>8.5.3</text></item>
-<item name='$V5ACTIONS' sign='true'>
-<rawitemdata type='1'>
-i/8oAAEABSZUcmVidWNoZXQgTVMAAAAAAAAAAAAAAAAAAAAAAAAAAL0cpQAAAAEAAQAAADEYAAAA
-AAAAAgEACRgAAgB5/2wAAQAEYz0AAQAAAAAAAQAAAAAAAQAEYz0AAwAgAAQAAQAAAAMAAwAAAAUA
-AAkAAAAAAAAAAEBAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-AAAAAAD2/zIAAAAAAAMAEwAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAQWN0aW9uQnV0dG9uLmdpZnH/
-NQAAAAAAAwATABMAAAAAAAAAAAAAAAAAAAAAAAAAAABhY3Rpb24gYmFyIGZsYXQucG5nP/z/OgAA
-AAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAEAgICAAAAAAAAAAAAAAAC+/2QA
-AAABAAAAnwEAAB0AAAAAAAAATWFyayBTZWxlY3RlZCBhcyBGZWF0dXJlP1xZZXMAMAAAACQAAgAT
-JwAAAAAAAAEADgBGZWF0dXJlRmxhZ1llc+0CAwAHAAoAAwAJNFMAvv9iAAAAAQAAAJ8BAAAcAAAA
-AAAAAE1hcmsgU2VsZWN0ZWQgYXMgRmVhdHVyZT9cTm8wAAAAJAACABMnAAAAAAAAAQANAEZlYXR1
-cmVGbGFnTm8A7QIDAAcACgADAAk0UwA=
-</rawitemdata></item></note>
+<item name='$CIAOCheckOutComment' sign='true'><text>updating design</text></item></view>
 

@@ -1,23 +1,15 @@
 <?xml version='1.0' encoding='utf-8'?>
-<note class='form' xmlns='http://www.lotus.com/dxl' version='11.0' maintenanceversion='1.0'
- replicaid='8525867000756EB9'>
+<frameset name='Landing' xmlns='http://www.lotus.com/dxl' version='11.0' maintenanceversion='1.0'
+ replicaid='8525867000756EB9' publicaccess='false' designerversion='8.5.3'
+ spacing='0px' borderwidth='0px' bordercolor='none'>
 <noteinfo noteid='1bd6' unid='6B0032734D312C088625869200634D63' sequence='4'>
 <created><datetime>20210308T120438,75-06</datetime></created>
-<modified><datetime dst='true'>20210329T102408,83+01</datetime></modified>
+<modified><datetime dst='true'>20210329T124640,80+01</datetime></modified>
 <revised><datetime>20210308T120547,09-06</datetime></revised>
-<lastaccessed><datetime dst='true'>20210329T102408,82+01</datetime></lastaccessed>
-<addedtofile><datetime dst='true'>20210329T102408,82+01</datetime></addedtofile></noteinfo>
+<lastaccessed><datetime dst='true'>20210329T124640,79+01</datetime></lastaccessed>
+<addedtofile><datetime dst='true'>20210329T124640,79+01</datetime></addedtofile></noteinfo>
 <updatedby><name>CN=Paul Withers/OU=UK/O=PNPHCL</name></updatedby>
 <wassignedby><name>CN=Paul Withers/OU=UK/O=PNPHCL</name></wassignedby>
-<item name='$TITLE' sign='true'><text>Landing</text></item>
-<item name='$Comment' sign='true'><text/></item>
-<item name='$FrameSet' sign='true'>
-<rawitemdata type='1'>
-7/8YAAIAAgAAAAAAAAAAAAAAAAAAAAAA8P86AAUAAAAAAAAAAAAAAAAAAAAAAAUAAAAAAAUAAAAA
-AAEAAQAAAAAABQAAAAAAAAADAAEAAwABAPH/OAABAQAAAEAAAQMAAQABAAAAAAAEAAAAAAABAAAA
-AAAAAE1haW4BAP///8QBAAAKAQAAAADE9v9LAAAAAAADAAcABwAMABYAAAAAAAAAAABkaWxsL2hj
-bGxhYnNwcm9qZWN0c1xkaWxsXERPTUkubnNmAAAAAAAAAABMYW5kaW5nPw==
-</rawitemdata></item>
-<item name='$Flags'><text>#34CQ</text></item>
-<item name='$DesignerVersion'><text>8.5.3</text></item></note>
+<frame name='Main' border3d='false' noresize='true' initialfocus='true'><namedelementlink
+ type='page' name='Landing'/></frame></frameset>
 

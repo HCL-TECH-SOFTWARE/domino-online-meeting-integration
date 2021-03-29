@@ -1,235 +1,185 @@
 <?xml version='1.0' encoding='utf-8'?>
-<note class='form' xmlns='http://www.lotus.com/dxl' version='11.0' maintenanceversion='1.0'
- replicaid='8525867000756EB9'>
+<subform name='DOMI_onlineMeetingActions' alias='onlineMeetingActions' xmlns='http://www.lotus.com/dxl'
+ version='11.0' maintenanceversion='1.0' replicaid='8525867000756EB9' publicaccess='true'
+ designerversion='8.5.3' renderpassthrough='true'>
 <noteinfo noteid='1cca' unid='7879459AF296C17663442FBA59495A57' sequence='44'>
 <created><datetime>75220911T123314,79+0330</datetime></created>
-<modified><datetime dst='true'>20210329T102409,23+01</datetime></modified>
+<modified><datetime dst='true'>20210329T124641,20+01</datetime></modified>
 <revised><datetime>20210323T032434,35-06</datetime></revised>
-<lastaccessed><datetime dst='true'>20210329T102409,22+01</datetime></lastaccessed>
-<addedtofile><datetime dst='true'>20210329T102409,22+01</datetime></addedtofile></noteinfo>
+<lastaccessed><datetime dst='true'>20210329T124641,19+01</datetime></lastaccessed>
+<addedtofile><datetime dst='true'>20210329T124641,19+01</datetime></addedtofile></noteinfo>
 <updatedby><name>CN=Paul Withers/OU=UK/O=PNPHCL</name></updatedby>
-<wassignedby><name>CN=Paul Withers/OU=UK/O=PNPHCL</name></wassignedby>
-<item name='$Comment' sign='true'><text/></item>
-<item name='$HTMLCode' sign='true'>
-<rawitemdata type='1'>
-X/8QAAEAywAAAAAAAAAAAF//EAACAA8ABwAAAAAAAAA=
-</rawitemdata></item>
-<item name='$TITLE'><textlist><text>DOMI_onlineMeetingActions</text><text
->onlineMeetingActions</text></textlist></item>
-<item name='$Info' sign='true'>
-<rawitemdata type='1'>
-hhgBAIAAAAAAgAAAAQABAP///wAQAAAA
-</rawitemdata></item>
-<item name='$Flags'><text>CUAx3</text></item>
-<item name='$DesignerVersion'><text>8.5.3</text></item>
-<item name='$$ScriptName' summary='false' sign='true'><text>onlineMeetingActions</text></item>
-<item name='$$FormAction1' sign='true'><formula>@Command([RefreshHideFormulas])</formula></item>
-<item name='confList' placeholder='true'>
-<rawitemdata type='0'>
-</rawitemdata></item>
-<item name='meetingService' placeholder='true'>
-<rawitemdata type='0'>
-</rawitemdata></item>
-<item name='meetingServiceLabel' placeholder='true'>
-<rawitemdata type='0'>
-</rawitemdata></item>
-<item name='meetingId' placeholder='true'>
-<rawitemdata type='0'>
-</rawitemdata></item>
-<item name='meetingType' placeholder='true'>
-<rawitemdata type='0'>
-</rawitemdata></item>
-<item name='meetingPassword' placeholder='true'>
-<rawitemdata type='0'>
-</rawitemdata></item>
-<item name='meetingTitle' placeholder='true'>
-<rawitemdata type='0'>
-</rawitemdata></item>
-<item name='meetingAgenda' placeholder='true'>
-<rawitemdata type='0'>
-</rawitemdata></item>
-<item name='meetingStartStr' placeholder='true'>
-<rawitemdata type='0'>
-</rawitemdata></item>
-<item name='meetingEndStr' placeholder='true'>
-<rawitemdata type='0'>
-</rawitemdata></item>
-<item name='meetingDuration' placeholder='true'>
-<rawitemdata type='0'>
-</rawitemdata></item>
-<item name='meetingChairURL' placeholder='true'>
-<rawitemdata type='0'>
-</rawitemdata></item>
-<item name='meetingURL' placeholder='true'>
-<rawitemdata type='0'>
-</rawitemdata></item>
-<item name='meetingInfoInsert' placeholder='true'>
-<rawitemdata type='0'>
-</rawitemdata></item>
-<item name='meetingJSON' placeholder='true'>
-<rawitemdata type='0'>
-</rawitemdata></item>
-<item name='$Fields'><textlist><text>meetingJSON</text><text>meetingInfoInsert</text><text
->meetingURL</text><text>meetingChairURL</text><text>meetingDuration</text><text
->meetingEndStr</text><text>meetingStartStr</text><text>meetingAgenda</text><text
->meetingTitle</text><text>meetingPassword</text><text>meetingType</text><text
->meetingId</text><text>meetingServiceLabel</text><text>meetingService</text><text
->confList</text></textlist></item>
-<item name='$Body' sign='true'>
-<rawitemdata type='1'>
-gQKC/1oAAQAAAAAAAAAAAKAFAACgBQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-AAAAAAAAAHDhAAAAAJWAoAUGAKAFBgBlfGQAAQAAAAQAAACmMAMAAAABAEhpZGRlbiBUZXh0AAAA
-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEACQiDBAEA3QYAAIX/hf9GAAEBCQgtLS0tLS0gU1RBUlQ6
-IEhJRERFTiBTVUJGT1JNOiBET01JX29ubGluZU1lZXRpbmdBY3Rpb25zIC0tLS0tLdIIAQAAgAAA
-3gYAAIX/gQKC/1oAAgAAAAAAAAAAAKAFAACgBQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-AAAAAAAAAAAAAAAAAHCBAAAAAJWHoAUEAKAFBABHmmQAAQAAAAQAAACDBAIA3QYAAIX/hf8VAAEB
-CQhIaWRkZW4gRmllbGRzANIIAQAAgAAA3gYAAIX/gQKDBAIA3QYAAIX/hf8IAAEACQjSCAEAAIAA
-AN4GAACF/90GAACK//7/UAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHgAeAAA
-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAiv/MAIgBAQUOQAIAAAAAAAACAQAA
-CKAAAAAAAAAACAAAAAAAoAABAEwABABsaXN0AQAAAAEABwBOb0NhY2hlAB8CAQAAAAEAGQBET01J
-X2JlTWVldGluZ0NyZWRlbnRpYWxzAAAAAAAAAAAA8D+qBAMABwAYABEACTFTMlM1UzZTOFMxMFMx
-MlMAAAAsAAUABABsaXN0WgGvABoACgABAAAArgAQAAUABABsaXN0rgAEALUDAwAHAA4ABwAJMFI3
-UzlTAGNvbmZMaXN0Yg4BAIQAAAAAAAAAAADeBgAAiv/dBgAAhf+F/0QAAQAJCCAoQykgLSBsaXN0
-IG9mIGNvbmZlcmVuY2UgcGxhdGZvcm1zIHdpdGggTWVldGluZyBDcmVkZW50aWFsc9IIAQAAgAAA
-3gYAAIX/gQKDBAIAhf8IAAEAAArdBgAAiv/+/1AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-AAAAAAAAAAB4AHgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIr/TACAAAAF
-ADACAAAAAAAAAgEAAAgaAAAAAAAAAA4AAAAAABoAAAAYAAUADgBtZWV0aW5nU2VydmljZQMAbWVl
-dGluZ1NlcnZpY2ViDgEAhAAAAAAAAAAAAN4GAACK/90GAACF/4X/VAABAAkIIChDV0MpIC0gc2Vy
-dmljZSBvZiBjdXJyZW50bHkgc2NoZWR1bGVkIG9ubGluZSBtZWV0aW5nIHJlbGF0ZWQgdG8gdGhp
-cyBlbnRyedIIAQAAgAAA3gYAAIX/gQKDBAIAhf8IAAEAAArdBgAAiv/+/1AAAAAAAAAAAAAAAAAA
-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB4AHgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-AAAAAAAAAIr/WACIAQAFADACAAAAAAAAAgEAAAggAAAAAAAAABMAAAAAACAAAAAeAAUAEwBtZWV0
-aW5nU2VydmljZUxhYmVsAAMAbWVldGluZ1NlcnZpY2VMYWJlbABiDgEAhAAAAAAAAAAAAN4GAACK
-/90GAACF/4X/YQABAAkIIChDV0MpIC1MYWJlbCBmb3IgdGhlIHNlcnZpY2Ugb2YgY3VycmVudGx5
-IHNjaGVkdWxlZCBvbmxpbmUgbWVldGluZyByZWxhdGVkIHRvIHRoaXMgZW50cnkA0ggBAACAAADe
-BgAAhf+BAoMEAgDdBgAAhf+F/wgAAQAJCNIIAQAAgAAA3gYAAIX/3QYAAIr//v9QAAAAAAAAAAAA
-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAeAB4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-AAAAAAAAAAAAAACK/0QAgAAABQAwAgAAAAAAAAIBAAAIFgAAAAAAAAAJAAAAAAAWAAAAFAAFAAkA
-bWVldGluZ0lkAAMAbWVldGluZ0lkAGIOAQCEAAAAAAAAAAAA3gYAAIr/3QYAAIX/hf9PAAEACQgg
-KENXQykgLSBpZCBvZiBjdXJyZW50bHkgc2NoZWR1bGVkIG9ubGluZSBtZWV0aW5nIHJlbGF0ZWQg
-dG8gdGhpcyBlbnRyeQDSCAEAAIAAAN4GAACF/4ECgwQCAN0GAACF/4X/CAABAAkI0ggBAACAAADe
-BgAAhf/dBgAAiv/+/1AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB4AHgAAAAA
-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
-AAAAAAAAEQAAAAAAHgAAABwABQARAG1lZXRpbmdJbmZvSW5zZXJ0AAMAbWVldGluZ0luZm9JbnNl
-cnQAYg4BAIQAAAAAAAAAAADeBgAAiv/dBgAAhf+F/2UAAQAJCCAoQ1dDKSAtIHRleHQgYmxvY2sg
-aW5zZXJ0ZWQgaW50byB0aGUgZW5kIG9mIHRoZSBDYWxlbmRhciBFbnRyeSwgY3VycmVudGx5IHRo
-ZSBMb2NhdGlvbiBmaWVsZADSCAEAAIAAAN4GAACF/4ECgwQCAN0GAACF/4X/CAABAAkI0ggBAACA
-AADeBgAAhf/dBgAAiv/+/1AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB4AHgA
-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIr/SACAAAAFADACAAAAAAAAAgEA
-AAgYAAAAAAAAAAsAAAAAABgAAAAWAAUACwBtZWV0aW5nSlNPTgADAG1lZXRpbmdKU09OAGIOAQCE
-AAAAAAAAAAAA3gYAAIr/3QYAAIX/hf9WAAEACQggKENXQykgLSB0aGUgSlNPTiBwYXlsb2FkIHJl
-dHVybmVkIGZyb20gdGhlIGN1cnJlbnRseSBzY2hlZHVsZWQgb25saW5lIG1lZXRpbmfSCAEAAIAA
-AN4GAACF/4ECgwQCAN0GAACF/4X/CAABAAkI0ggBAACAAADeBgAAhf+BAoL/WgADAAAAAAAAAAAA
-oAUAAKAFAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAcIEAAAAAlYcA
-AAAAAAAAAAAAAAABAAAABgAAAIMEAwDdBgAAhf+F/4EAAQEJCk5PVEU6IHRoaXMgc3ViZm9ybSBj
-b250YWlucyBhY3Rpb25zIHRoYXQgc3VwcG9ydCBDb25mZXJlbmNlIE1lZXRpbmcgU2NoZWR1bGlu
-Zy4gVGhlIGVudGlyZSBib2R5IG9mIHRoaXMgc3ViZm9ybSBpcyBoaWRkZW4A0ggBAACAAADeBgAA
-hf+BAoL/WgAEAAAAAAAAAAAAoAUAAKAFAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-AAAAAAAAAAAAAAEAAAAAlIcAAAAAAAAAAAAAAAABAAAABAAAAIMEBADdBgAAhf+F/wgAAQEJCtII
-AQAAgAAA3gYAAIX/gQKDBAEA3QYAAIX/hf9EAAEBCQgtLS0tLS0gRU5EOiBISURERU4gU1VCRk9S
-TTogRE9NSV9vbmxpbmVNZWV0aW5nQWN0aW9ucyAtLS0tLS3SCAEAAIAAAN4GAACF/w==
-</rawitemdata></item>
-<item name='$V5ACTIONS' sign='true'>
-<rawitemdata type='1'>
-vRw/AAAAAQABAAAAAQAAAAAAAAAAAAAACAACAHn/bAABAPDw8AABAAAAAAAJAAAAAAABAPDw8AAA
-AB8AAAAAAAAAAAADAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAPz/OgAAAAAAAQAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAA
-AAAAAAAAAAEAAAAAAAAAAAAAAAAAAAC+/9wCAAABAAAAGwAAAA4ASAAAAAAAVXBkYXRlIE1lZXRp
-bmdwAggA7AEFAA4AbWVldGluZ1NlcnZpY2UBAAMAZ3RtAAoCrwDIASwAAgATJwAAAAAAAAEAFQBE
-T01JX3VwZGF0ZUd0bU1lZXRpbmcA7QKuAJwBBQAOAG1lZXRpbmdTZXJ2aWNlAQAEAHpvb20KAq8A
-fAEsAAIAEycAAAAAAAABABYARE9NSV91cGRhdGVab29tTWVldGluZ+0CrgBQAQUADgBtZWV0aW5n
-U2VydmljZQEABQB0ZWFtcwAKAq8ALgEuAAIAEycAAAAAAAABABcARE9NSV91cGRhdGVUZWFtc01l
-ZXRpbmcA7QKuAAABBQAOAG1lZXRpbmdTZXJ2aWNlAQAFAHdlYmV4AAoCrwDeAC4AAgATJwAAAAAA
-AAEAFwBET01JX3VwZGF0ZVdlYmV4TWVldGluZwDtAq4AsAAFAA4AbWVldGluZ1NlcnZpY2UBAAgA
-c2FtZXRpbWUKAq8AjAAqAAIAEycAAAAAAAABABQARE9NSV91cGRhdGVTVE1lZXRpbmftAq4AYgAC
-AA0AAAAAAAAAAQAOAE5vdCBDb25maWd1cmVkAQAkAE5vIHVwZGF0ZSBzZXJ2aWNlIGlzIGNvbmZp
-Z3VyZWQgZm9yIAUADgBtZWV0aW5nU2VydmljZSICsAOuAAQAtQsDAAcAZgBfAAkyUlQzUzRTNlMx
-MFMxM1JUMTRTMTVTMTdTMjFTMjRSVDI1UzI2UzI4UzMyUzM1UlQzNlMzN1MzOVM0M1M0NlJUNDdT
-NDhTNTBTNTRTNTdSVFJUNjNTNjRTNjVTNjdSAAAAEgACAF4bAAAAAAAA7QEDAAcACgAEAAkwUlJI
-AAAAMgAFAAoAdG1wT3duZXJIVwEAAQAxAAoCBQAJAG1lZXRpbmdJZAABAAAACgIdAgMABwAUAA0A
-CTFTMlMzUzRTNVM2UwBe/2oAAAAAAAAAAABOAAAAAAAAAAAAAAAAAAAATgAAADwAAQAHAFVwZGF0
-ZSAABQATAG1lZXRpbmdTZXJ2aWNlTGFiZWwAIgIBAAgAIE1lZXRpbmciAl4BAwAHABAACQAJM1M0
-UzVTNlMAvv/aAgAAAQAAABsAAAAOAEgAAAAAAERlbGV0ZSBNZWV0aW5nbgIIAOwBBQAOAG1lZXRp
-bmdTZXJ2aWNlAQADAGd0bQAKAq8AyAEsAAIAEycAAAAAAAABABUARE9NSV9kZWxldGVHdG1NZWV0
-aW5nAO0CrgCcAQUADgBtZWV0aW5nU2VydmljZQEABAB6b29tCgKvAHwBLAACABMnAAAAAAAAAQAW
-AERPTUlfZGVsZXRlWm9vbU1lZXRpbmftAq4AUAEFAA4AbWVldGluZ1NlcnZpY2UBAAUAdGVhbXMA
-CgKvAC4BLgACABMnAAAAAAAAAQAXAERPTUlfZGVsZXRlVGVhbXNNZWV0aW5nAO0CrgAAAQUADgBt
-ZWV0aW5nU2VydmljZQEABQB3ZWJleAAKAq8A3gAuAAIAEycAAAAAAAABABcARE9NSV9kZWxldGVX
-ZWJleE1lZXRpbmcA7QKuALAABQAOAG1lZXRpbmdTZXJ2aWNlAQAIAHNhbWV0aW1lCgKvAIwAKgAC
-ABMnAAAAAAAAAQAUAERPTUlfZGVsZXRlU1RNZWV0aW5n7QKuAGIAAgANAAAAAAAAAAEADgBOb3Qg
-Q29uZmlndXJlZAEAJABObyBkZWxldGUgc2VydmljZSBpcyBjb25maWd1cmVkIGZvciAFAA4AbWVl
-dGluZ1NlcnZpY2UiArADrgAEALULAwAHAGQAXgAJMlJUM1M0UzZTMTBTMTNSVDE0UzE1UzE3UzIx
-UzI0UlQyNVMyNlMyOFMzMlMzNVJUMzZTMzdTMzlTNDNTNDZSVDQ3UzQ4UzUwUzU0UzU3UlJUNjNT
-NjRTNjVTNjdSAAASAAIAXhsAAAAAAADtAQMABwAKAAQACTBSUkgAAAAyAAUACgB0bXBPd25lckhX
-AQABADEACgIFAAkAbWVldGluZ0lkAAEAAAAKAh0CAwAHABQADQAJMVMyUzNTNFM1UzZTAF7/agAA
-AAAAAAAAAE4AAAAAAAAAAAAAAAAAAABOAAAAPAABAAcARGVsZXRlIAAFABMAbWVldGluZ1NlcnZp
-Y2VMYWJlbAAiAgEACAAgTWVldGluZyICXgEDAAcAEAAJAAkzUzRTNVM2UwC+/9gAAAABAAAAGwAA
-ACMASgAAAAAAU2NoZWR1bGUgT25saW5lIE1lZXRpbmcuLi5cU2FtZXRpbWVkVAAIACwAAgATJwAA
-AAAAAAEAFgBET01JX3NjaGVkdWxlU1RNZWV0aW5n7QIDAAcACgADAAk0UwAAABIAAgBeGwAAAAAA
-AO0BAwAHAAoAAwAJMFIASgAAADYAAQAIAHNhbWV0aW1lBQAIAGNvbmZMaXN0dQIFAAkAbWVldGlu
-Z0lkAAEAAAALAh0CAwAHABIACwAJNFM2UzdTOFM5UwC+/9IAAAABAAAAGwAAAB8ARgAAAAAAU2No
-ZWR1bGUgT25saW5lIE1lZXRpbmcuLi5cWm9vbQBWAAgALgACABMnAAAAAAAAAQAYAERPTUlfc2No
-ZWR1bGVab29tTWVldGluZ+0CAwAHAAoAAwAJNFMAAAASAAIAXhsAAAAAAADtAQMABwAKAAMACTBS
-AEYAAAAyAAEABAB6b29tBQAIAGNvbmZMaXN0dQIFAAkAbWVldGluZ0lkAAEAAAALAh0CAwAHABIA
-CwAJNFM2UzdTOFM5UwC+/9gAAAABAAAAGwAAACYARgAAAAAAU2NoZWR1bGUgT25saW5lIE1lZXRp
-bmcuLi5cR29Ub01lZXRpbmdWAAgALgACABMnAAAAAAAAAQAXAERPTUlfc2NoZWR1bGVHdG1NZWV0
-aW5nAO0CAwAHAAoAAwAJNFMAAAASAAIAXhsAAAAAAADtAQMABwAKAAMACTBSAEYAAAAyAAEAAwBn
-dG0ABQAIAGNvbmZMaXN0dQIFAAkAbWVldGluZ0lkAAEAAAALAh0CAwAHABIACwAJNFM2UzdTOFM5
-UwC+/9YAAAABAAAAGwAAACAASAAAAAAAU2NoZWR1bGUgT25saW5lIE1lZXRpbmcuLi5cV2ViRXhY
-AAgAMAACABMnAAAAAAAAAQAZAERPTUlfc2NoZWR1bGVXZWJFeE1lZXRpbmcA7QIDAAcACgADAAk0
-UwAAABIAAgBeGwAAAAAAAO0BAwAHAAoAAwAJMFIASAAAADQAAQAFAHdlYmV4AAUACABjb25mTGlz
-dHUCBQAJAG1lZXRpbmdJZAABAAAACwIdAgMABwASAAsACTRTNlM3UzhTOVMAvv/WAAAAAQAAABsA
-AAAgAEgAAAAAAFNjaGVkdWxlIE9ubGluZSBNZWV0aW5nLi4uXFRlYW1zWAAIADAAAgATJwAAAAAA
-AAEAGQBET01JX3NjaGVkdWxlVGVhbXNNZWV0aW5nAO0CAwAHAAoAAwAJNFMAAAASAAIAXhsAAAAA
-AADtAQMABwAKAAMACTBSAEgAAAA0AAEABQB0ZWFtcwAFAAgAY29uZkxpc3R1AgUACQBtZWV0aW5n
-SWQAAQAAAAsCHQIDAAcAEgALAAk0UzZTN1M4UzlTAA==
-</rawitemdata></item>
-<item name='$PublicAccess'><text>1</text></item></note>
+<wassignedby><name>CN=Paul Withers/OU=UK/O=PNPHCL</name></wassignedby><code
+ event='postopen'><formula>@Command([RefreshHideFormulas])</formula></code>
+<actionbar bgcolor='#f0f0f0' bordercolor='black'>
+<actionbuttonstyle bgcolor='#f0f0f0'/><font color='system'/><border style='solid'
+ width='0px 0px 1px'/>
+<action title='Update Meeting' hide='preview previewedit'><code event='click'><formula
+>@If(
+	meetingService = "gtm"; @Command([RunAgent]; "DOMI_updateGtmMeeting");
+	meetingService = "zoom"; @Command([RunAgent]; "DOMI_updateZoomMeeting");
+	meetingService = "teams"; @Command([RunAgent]; "DOMI_updateTeamsMeeting");
+	meetingService = "webex"; @Command([RunAgent]; "DOMI_updateWebexMeeting");
+	meetingService = "sametime"; @Command([RunAgent]; "DOMI_updateSTMeeting");
+	
+	@Prompt([Ok];"Not Configured"; "No update service is configured for " + meetingService)
+);
+
+@Command([RefreshHideFormulas])</formula></code><code event='hidewhen'><formula
+>tmpOwnerHW = "1" | meetingId = ""</formula></code><code event='label'><formula
+>@Trim("Update " + meetingServiceLabel + " Meeting")</formula></code></action>
+<action title='Delete Meeting' hide='preview previewedit'><code event='click'><formula
+>@If(
+	meetingService = "gtm"; @Command([RunAgent]; "DOMI_deleteGtmMeeting");
+	meetingService = "zoom"; @Command([RunAgent]; "DOMI_deleteZoomMeeting");
+	meetingService = "teams"; @Command([RunAgent]; "DOMI_deleteTeamsMeeting");
+	meetingService = "webex"; @Command([RunAgent]; "DOMI_deleteWebexMeeting");
+	meetingService = "sametime"; @Command([RunAgent]; "DOMI_deleteSTMeeting");
+
+	@Prompt([Ok];"Not Configured"; "No delete service is configured for " + meetingService)
+);
+
+@Command([RefreshHideFormulas])</formula></code><code event='hidewhen'><formula
+>tmpOwnerHW = "1" | meetingId = ""</formula></code><code event='label'><formula
+>@Trim("Delete " + meetingServiceLabel + " Meeting")</formula></code></action>
+<action title='Schedule Online Meeting...\Sametime' hide='preview previewedit'><code
+ event='click'><formula>@Command([RunAgent]; "DOMI_scheduleSTMeeting");
+@Command([RefreshHideFormulas])</formula></code><code event='hidewhen'><formula
+>@IsNotMember("sametime"; confList) | meetingId != ""</formula></code></action>
+<action title='Schedule Online Meeting...\Zoom' hide='preview previewedit'><code
+ event='click'><formula>@Command([RunAgent]; "DOMI_scheduleZoomMeeting");
+@Command([RefreshHideFormulas])</formula></code><code event='hidewhen'><formula
+>@IsNotMember("zoom"; confList) | meetingId != ""</formula></code></action>
+<action title='Schedule Online Meeting...\GoToMeeting' hide='preview previewedit'><code
+ event='click'><formula>@Command([RunAgent]; "DOMI_scheduleGtmMeeting");
+@Command([RefreshHideFormulas])</formula></code><code event='hidewhen'><formula
+>@IsNotMember("gtm"; confList) | meetingId != ""</formula></code></action>
+<action title='Schedule Online Meeting...\WebEx' hide='preview previewedit'><code
+ event='click'><formula>@Command([RunAgent]; "DOMI_scheduleWebExMeeting");
+@Command([RefreshHideFormulas])</formula></code><code event='hidewhen'><formula
+>@IsNotMember("webex"; confList) | meetingId != ""</formula></code></action>
+<action title='Schedule Online Meeting...\Teams' hide='preview previewedit'><code
+ event='click'><formula>@Command([RunAgent]; "DOMI_scheduleTeamsMeeting");
+@Command([RefreshHideFormulas])</formula></code><code event='hidewhen'><formula
+>@IsNotMember("teams"; confList) | meetingId != ""</formula></code></action></actionbar>
+<body><richtext>
+<pardef id='1' leftmargin='1in' rightmargin='100%' hide='read edit print preview previewedit notes web'><parstyle
+ name='Hidden Text' incyclekey='true'><font size='8pt' color='green' name='sans-serif'/></parstyle></pardef>
+<par def='1'><run><font size='8pt' style='bold' color='green'/>------ START: HIDDEN SUBFORM: DOMI_onlineMeetingActions ------</run></par>
+<pardef id='2' hide='read edit print notes web'/>
+<par def='2'><run><font size='8pt' style='bold' color='green'/>Hidden Fields</run></par>
+<par def='2'><run><font size='8pt' color='green'/></run><run><font size='8pt'/><field
+ type='text' allowmultivalues='true' kind='computed' name='confList' listinputseparators='comma semicolon newline'
+ listdisplayseparator='newline'><code event='defaultvalue'><formula>list := @DbColumn("" : "NoCache"; ""; "DOMI_beMeetingCredentials"; 1);
+@If(@IsError(list); ""; list)</formula></code></field></run><compositedata
+ type='98' prevtype='65418' nexttype='222' afterparcount='9' containertype='65418'
+ aftercontainercount='1' afterbegincount='3'>
+Yg4BAIQAAAAAAAAAAAA=
+</compositedata><run><font size='8pt'
+ color='green'/> (C) - list of conference platforms with Meeting Credentials</run></par>
+<par def='2'><run><font size='8pt'/><field type='text' kind='computedwhencomposed'
+ name='meetingService'><code event='defaultvalue'><formula>meetingService</formula></code></field></run><compositedata
+ type='98' prevtype='65418' nexttype='222' afterparcount='6' containertype='65418'
+ aftercontainercount='1' afterbegincount='3'>
+Yg4BAIQAAAAAAAAAAAA=
+</compositedata><run><font size='8pt'
+ color='green'/> (CWC) - service of currently scheduled online meeting related to this entry</run></par>
+<par def='2'><run><font size='8pt'/><field type='text' kind='computed' name='meetingServiceLabel'><code
+ event='defaultvalue'><formula>meetingServiceLabel</formula></code></field></run><compositedata
+ type='98' prevtype='65418' nexttype='222' afterparcount='6' containertype='65418'
+ aftercontainercount='1' afterbegincount='3'>
+Yg4BAIQAAAAAAAAAAAA=
+</compositedata><run><font size='8pt'
+ color='green'/> (CWC) -Label for the service of currently scheduled online meeting related to this entry</run></par>
+<par def='2'><run><font size='8pt' color='green'/></run><run><font size='8pt'/><field
+ type='text' kind='computedwhencomposed' name='meetingId'><code event='defaultvalue'><formula
+>meetingId</formula></code></field></run><compositedata type='98' prevtype='65418'
+ nexttype='222' afterparcount='9' containertype='65418' aftercontainercount='1'
+ afterbegincount='3'>
+Yg4BAIQAAAAAAAAAAAA=
+</compositedata><run><font size='8pt' color='green'/> (CWC) - id of currently scheduled online meeting related to this entry</run></par>
+<par def='2'><run><font size='8pt' color='green'/></run><run><font size='8pt'/><field
+ type='text' kind='computedwhencomposed' name='meetingType'><code event='defaultvalue'><formula
+>meetingType</formula></code></field></run><compositedata type='98' prevtype='65418'
+ nexttype='222' afterparcount='9' containertype='65418' aftercontainercount='1'
+ afterbegincount='3'>
+Yg4BAIQAAAAAAAAAAAA=
+</compositedata><run><font size='8pt' color='green'/> (CWC) - the type of meeting of the currently scheduled online meeting</run></par>
+<par def='2'><run><font size='8pt' color='green'/></run><run><font size='8pt'/><field
+ type='text' kind='computedwhencomposed' name='meetingPassword'><code event='defaultvalue'><formula
+>meetingPassword</formula></code></field></run><compositedata type='98' prevtype='65418'
+ nexttype='222' afterparcount='9' containertype='65418' aftercontainercount='1'
+ afterbegincount='3'>
+Yg4BAIQAAAAAAAAAAAA=
+</compositedata><run><font size='8pt' color='green'/> (CWC) - password of the currently scheduled online meeting</run></par>
+<par def='2'><run><font size='8pt' color='green'/></run><run><font size='8pt'/><field
+ type='text' kind='computedwhencomposed' name='meetingTitle'><code event='defaultvalue'><formula
+>meetingTitle</formula></code></field></run><compositedata type='98' prevtype='65418'
+ nexttype='222' afterparcount='9' containertype='65418' aftercontainercount='1'
+ afterbegincount='3'>
+Yg4BAIQAAAAAAAAAAAA=
+</compositedata><run><font size='8pt' color='green'/> (CWC) - subject/topic of currently schediuled online meeting</run></par>
+<par def='2'><run><font size='8pt' color='green'/></run><run><font size='8pt'/><field
+ type='text' kind='computedwhencomposed' name='meetingAgenda'><code event='defaultvalue'><formula
+>meetingAgenda</formula></code></field></run><compositedata type='98' prevtype='65418'
+ nexttype='222' afterparcount='9' containertype='65418' aftercontainercount='1'
+ afterbegincount='3'>
+Yg4BAIQAAAAAAAAAAAA=
+</compositedata><run><font size='8pt' color='green'/> (CWC) - details of currently scheduled online meeting</run></par>
+<par def='2'><run><font size='8pt' color='green'/></run><run><font size='8pt'/><field
+ type='text' kind='computedwhencomposed' name='meetingStartStr'><code event='defaultvalue'><formula
+>meetingStartStr</formula></code></field></run><compositedata type='98' prevtype='65418'
+ nexttype='222' afterparcount='9' containertype='65418' aftercontainercount='1'
+ afterbegincount='3'>
+Yg4BAIQAAAAAAAAAAAA=
+</compositedata><run><font size='8pt' color='green'/> (CWC) - start date/time of currently scheduled online meeting, as an ITC string</run></par>
+<par def='2'><run><font size='8pt'/><field type='text' kind='computedwhencomposed'
+ name='meetingEndStr'><code event='defaultvalue'><formula>meetingEndStr</formula></code></field></run><compositedata
+ type='98' prevtype='65418' nexttype='222' afterparcount='6' containertype='65418'
+ aftercontainercount='1' afterbegincount='3'>
+Yg4BAIQAAAAAAAAAAAA=
+</compositedata><run><font size='8pt'
+ color='green'/> (CWC) - end date/time of currently scheduled online meeting, as an ITC string</run></par>
+<par def='2'><run><font size='8pt' color='green'/></run><run><font size='8pt'/><field
+ type='text' kind='computedwhencomposed' name='meetingDuration'><code event='defaultvalue'><formula
+>meetingDuration</formula></code></field></run><compositedata type='98' prevtype='65418'
+ nexttype='222' afterparcount='9' containertype='65418' aftercontainercount='1'
+ afterbegincount='3'>
+Yg4BAIQAAAAAAAAAAAA=
+</compositedata><run><font size='8pt' color='green'/> (CWC) - duration of currently scheduled online meeting</run></par>
+<par def='2'><run><font size='8pt' color='green'/></run><run><font size='8pt'/><field
+ type='text' kind='computedwhencomposed' name='meetingChairURL'><code event='defaultvalue'><formula
+>meetingChairURL</formula></code></field></run><compositedata type='98' prevtype='65418'
+ nexttype='222' afterparcount='9' containertype='65418' aftercontainercount='1'
+ afterbegincount='3'>
+Yg4BAIQAAAAAAAAAAAA=
+</compositedata><run><font size='8pt' color='green'/> (CWC) - leader link</run></par>
+<par def='2'><run><font size='8pt' color='green'/></run><run><font size='8pt'/><field
+ type='text' kind='computedwhencomposed' name='meetingURL'><code event='defaultvalue'><formula
+>meetingURL</formula></code></field></run><compositedata type='98' prevtype='65418'
+ nexttype='222' afterparcount='9' containertype='65418' aftercontainercount='1'
+ afterbegincount='3'>
+Yg4BAIQAAAAAAAAAAAA=
+</compositedata><run><font size='8pt' color='green'/> (CWC) - attendee link</run></par>
+<par def='2'><run><font size='8pt' color='green'/></run><run><font size='8pt'/><field
+ type='text' kind='computedwhencomposed' name='meetingInfoInsert'><code event='defaultvalue'><formula
+>meetingInfoInsert</formula></code></field></run><compositedata type='98'
+ prevtype='65418' nexttype='222' afterparcount='9' containertype='65418' aftercontainercount='1'
+ afterbegincount='3'>
+Yg4BAIQAAAAAAAAAAAA=
+</compositedata><run><font size='8pt' color='green'/> (CWC) - text block inserted into the end of the Calendar Entry, currently the Location field</run></par>
+<par def='2'><run><font size='8pt' color='green'/></run><run><font size='8pt'/><field
+ type='text' kind='computedwhencomposed' name='meetingJSON'><code event='defaultvalue'><formula
+>meetingJSON</formula></code></field></run><compositedata type='98' prevtype='65418'
+ nexttype='222' afterparcount='9' containertype='65418' aftercontainercount='1'
+ afterbegincount='3'>
+Yg4BAIQAAAAAAAAAAAA=
+</compositedata><run><font size='8pt' color='green'/> (CWC) - the JSON payload returned from the currently scheduled online meeting</run></par>
+<par def='2'><run><font size='8pt' color='green'/></run></par>
+<pardef id='3' hide='read edit print notes web mobile'/>
+<par def='3'><run><font style='bold' color='green'/>NOTE: this subform contains actions that support Conference Meeting Scheduling. The entire body of this subform is hidden</run></par>
+<pardef id='4'/>
+<par def='4'><run><font style='bold' color='green'/></run></par>
+<par def='1'><run><font size='8pt' style='bold' color='green'/>------ END: HIDDEN SUBFORM: DOMI_onlineMeetingActions ------</run></par></richtext></body>
+<item name='$$ScriptName' summary='false' sign='true'><text>onlineMeetingActions</text></item></subform>
 
