@@ -10,7 +10,7 @@ last_modified_date: 2021.03.02
 
 ### HCL Domino Online Meeting Integration
 {: .fs-9 }
-{{ site.version }}
+Version {{ site.version }}
 {: .fs-3 }
 
 ## Goals

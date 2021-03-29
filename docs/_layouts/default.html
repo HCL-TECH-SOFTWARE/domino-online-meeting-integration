@@ -41,13 +41,13 @@ layout: table_wrappers
   </svg>
 
   <div class="side-bar">
-    <div class="site-header">
+    <div class="nav-header">
       <a href="{{ '/' | absolute_url }}" class="site-title lh-tight">{% include title.html %}</a>
       <a href="#" id="menu-button" class="site-button">
         <svg viewBox="0 0 24 24" class="icon"><use xlink:href="#svg-menu"></use></svg>
       </a>
     </div>
-    <nav role="navigation" aria-label="Main" id="site-nav" class="site-nav">
+    <nav role="navigation" aria-label="Main" id="site-nav" class="site-nav navigation-pane">
       {% if site.just_the_docs.collections %}
         {% assign collections_size = site.just_the_docs.collections | size %}
         {% for collection_entry in site.just_the_docs.collections %}
@@ -65,8 +65,16 @@ layout: table_wrappers
         {% include nav.html pages=site.html_pages %}
       {% endif %}
     </nav>
-    <footer class="site-footer">
-      This site uses <a href="https://github.com/pmarsceill/just-the-docs">Just the Docs</a>, a documentation theme for Jekyll.
+    <footer class="nav-footer">
+      <!-- current version -->
+      {% if site.version != nil %}
+      <p class="text-small mb-4">Version {{site.version}}</p>
+      {% endif %}
+
+      <!-- copyright information -->
+      {% if site.copyright_info != nil %}
+      <p class="text-small mb-4">{{site.copyright_info}}</p>
+      {% endif %}
     </footer>
   </div>
   <div class="main" id="top">
