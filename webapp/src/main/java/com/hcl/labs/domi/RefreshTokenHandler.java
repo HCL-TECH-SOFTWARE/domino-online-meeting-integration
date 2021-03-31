@@ -1,5 +1,5 @@
 /* ========================================================================== *
- * Copyright (c) 2021 HCL ( http://www.hcl.com/ )                       *
+ * Copyright (c) 2021 HCL America, Inc.                       *
  *                            All rights reserved.                            *
  * ========================================================================== *
  * Licensed under the  Apache License, Version 2.0  (the "License").  You may *
