@@ -365,7 +365,7 @@ Function domiRevokeOAuthToken() As Boolean
 	If (nuidoc Is Nothing) Then Error ERR_PARAMETER_BLANK, MSG_PARAMETER_BLANK & |UI Document is Nothing.  | 
 	
 	Set ndoc = nuidoc.Document
-	If Not(ndoc.getItemValue(|Form|)(0) = |domiCredentials|) Then Error ERR_PARAMETER_INVALID, MSG_PARAMETER_INVALID & |UI Document is not a DOMI Credentials document.  |
+	If Not(LCase(ndoc.getItemValue(|Form|)(0)) = |domicredentials|) Then Error ERR_PARAMETER_INVALID, MSG_PARAMETER_INVALID & |UI Document is not a DOMI Credentials document.  |
 
 	Set domi = New DominoOnlineMeetingIntegrator(ndoc.ParentDatabase, Nothing, ||) 
 	Set domi.Document = ndoc 
@@ -538,7 +538,7 @@ Function getNewSTTokens(curDoc As NotesDocument) As Boolean
 	Set thisAgent = s.Currentagent
 	
 	If curDoc Is Nothing Then Error 1001, "You must provide a NotesDocument to use getNewSTTokens()"
-	If Not(LCase(curDoc.getItemValue("Form")(0)) = "domiCredentials") Then Error 1001, "You must provide a Credentials doc to use getNewSTTokens()"
+	If Not(curDoc.getItemValue("Form")(0) = "domiCredentials") Then Error 1001, "You must provide a Credentials doc to use getNewSTTokens()"
 		
 	
 	urlBase = DOMI_ROOTURL_SAMETIMEMEETINGS
@@ -668,7 +668,7 @@ Function getOAuthToken() As Boolean
 	If (nuidoc Is Nothing) Then Error ERR_PARAMETER_BLANK, MSG_PARAMETER_BLANK & |UI Document is Nothing.  | 
 	
 	Set ndoc = nuidoc.Document
-	If Not(ndoc.getItemValue(|Form|)(0) = |domiCredentials|) Then Error ERR_PARAMETER_INVALID, MSG_PARAMETER_INVALID & |UI Document is not a DOMI Credentials document.  |
+	If Not(LCase(ndoc.getItemValue(|Form|)(0)) = |domicredentials|) Then Error ERR_PARAMETER_INVALID, MSG_PARAMETER_INVALID & |UI Document is not a DOMI Credentials document.  |
 
 	meetingservice$ = ndoc.GetFirstItem(|service|).Text 
 	url$ = getDOMIrootURL(meetingservice$) & |/index.html|
