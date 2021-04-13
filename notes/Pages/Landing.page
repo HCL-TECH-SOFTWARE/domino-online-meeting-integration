@@ -717,7 +717,7 @@ yCvDHLPMM9Ncs80tA/qyzTvz3LPPPwPN8qc6B1200UcjnbTSeOL8J9FLQwgdtdRTU/1xQAA7
 <par def='9'><run><font size='11pt' color='#4f4f4f'/>From the action bar, click the "</run><run
 ><font size='11pt' style='bold' color='#4f4f4f'/>Install DOMI</run><run><font
  size='11pt' color='#4f4f4f'/>" button. You will be prompted to select the mail template into which to deploy DOMI. Within seconds the process will have copied the required design elements into the specified mail template. The standard Domino design task can be used to propagate changes to relevant users.</run></par>
-<par def='9'><run><font size='11pt' color='#4f4f4f'/>Installation will run quickest from a local replica of this database installking to a local replica of the mail template.</run></par></tablecell>
+<par def='9'><run><font size='11pt' color='#4f4f4f'/>Installation will run quickest from a local replica of this database installing to a local replica of the mail template.</run></par></tablecell>
 <tablecell borderwidth='0px' bgcolor='#f2f2f2'>
 <par def='8'><run><font size='15pt' style='bold' color='#4f4f4f'/></run></par></tablecell></tablerow>
 <tablerow>

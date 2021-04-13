@@ -127,7 +127,6 @@ refreshedToken:
 	paramList.content("name") = subj
 	paramList.content("moderators") = emailArr
 	paramList.content("allowGuestUser") = "false"
-	paramList.content("allowDialIn") = "true"
 	paramList.content("mode") = "Open"
 	
 	Set mtgList.content("meeting") = paramList
