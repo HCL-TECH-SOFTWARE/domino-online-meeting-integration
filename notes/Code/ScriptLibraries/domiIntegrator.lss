@@ -5,17 +5,17 @@
 
 	Domino Online Meeting Integrator  
 
-	Copyright 2021 HCL Software
-	Licensed under the Apache License, Version 2.0 (the "License"); 
-	you may not use this file except in compliance with the License. 
-	You may obtain a copy of the License at
-
+**************** LICENSE ****************
+	Copyright 2021 HCL America, Inc.
+	Licensed under the Apache License, Version 2.0 (the "License"); you may Not Use this file except 
+	In compliance With the License. You may obtain a copy of the License at
+	
 	http://www.apache.org/licenses/LICENSE-2.0
-
-	Unless required by applicable law or agreed to in writing, 
-	software distributed under the License is distributed on an "AS IS" BASIS, 
-	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
-	See the License for the specific language governing permissions and limitations under the License
+	
+	Unless required by applicable law Or agreed To In writing, software distributed under the License 
+	Is distributed On an "AS IS" BASIS, WITHOUT WARRANTIES Or CONDITIONS OF Any KIND, either express 
+	Or implied. See the License For the specific language governing permissions And limitations under 
+	the License
 %END REM
 Option Public
 Option Explicit 
@@ -2052,7 +2052,7 @@ Private Function getMeetingBodyArgs(context As NotesDocument, ndtStart As NotesD
 	extendedinfo(|Meeting Service|) = meetingservice$ 
 
 	
-	meetingtime.timeDiff = ndtEnd.Timedifference(ndtEnd)/60  ' zoom takes the ndtStart and the duration in minutes, not the end DT
+	meetingtime.timeDiff = ndtEnd.Timedifference(ndtStart)/60  ' zoom takes the ndtStart and the duration in minutes, not the end DT
 	' The online meeting platforms all require date/time values to be presented as strings in the ITC format - yyyy-mm-ddThh:mm:ss offset, 
 	' e.g. 2021-02-11T16:00:00-0500
 	' or (for MS_Graph) 2021-02-11T16:00:00-05:00
@@ -2302,6 +2302,8 @@ ErrorTrap:
 	enhLogException LIB_PREFIX, ||
 	Resume ExitPoint
 End Function
+
+
 
 
 
