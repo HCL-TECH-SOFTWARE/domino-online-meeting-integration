@@ -17,4 +17,6 @@ Running the command `mvn post-site` will generate project documentation into the
 
 ### Docker
 
-The application is also available as a Docker image. This is built using the command `mvn compile jib:build`, but requires access to the remote repository.
+The application camn also be built as a Docker image locally, using Google jib. You will need Docker installed and Maven 3.5 or newer. It is built using the command `mvn compile jib:dockerBuild`. For more information on using jib to build a Docker image locally, see https://cloud.google.com/java/getting-started/jib#build-jib.
+
+Alternatively, you can build using jib to deploy to a private repository, using `mvn compile jib:build`. You will need to amend the `<image>` tag in the pom.xml to point to the relevant server.
