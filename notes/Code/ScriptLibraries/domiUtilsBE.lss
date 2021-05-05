@@ -5,17 +5,17 @@
 
 	Domino Online Meeting Integration Back End Utilities 
 
-	Copyright 2021 HCL Software
-	Licensed under the Apache License, Version 2.0 (the "License"); 
-	you may not use this file except in compliance with the License. 
-	You may obtain a copy of the License at
-
+**************** LICENSE ****************
+	Copyright 2021 HCL America, Inc.
+	Licensed under the Apache License, Version 2.0 (the "License"); you may Not Use this file except 
+	In compliance With the License. You may obtain a copy of the License at
+	
 	http://www.apache.org/licenses/LICENSE-2.0
-
-	Unless required by applicable law or agreed to in writing, 
-	software distributed under the License is distributed on an "AS IS" BASIS, 
-	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
-	See the License for the specific language governing permissions and limitations under the License
+	
+	Unless required by applicable law Or agreed To In writing, software distributed under the License 
+	Is distributed On an "AS IS" BASIS, WITHOUT WARRANTIES Or CONDITIONS OF Any KIND, either express 
+	Or implied. See the License For the specific language governing permissions And limitations under 
+	the License
 %END REM
 Option Public
 Option Explicit
@@ -27,10 +27,7 @@ Use "domiConstantsBE"
 Declare Function getDOMIdesignElements(thisdb As NotesDatabase) As NotesNoteCollection
 Declare Function columnValArray(doc As NotesDocument, colnum As Integer) As Variant
 Declare Function getDOMIserviceLabel(meetingservice$) As String 
-Declare Function getSTHeaderTokens(urlBase As String, cookieVal As String, tokenVal As String) As Variant
 Declare Function getDOMIvalidationFailureMessages(flag As Integer) As Variant 
-Declare Function cleanupSTMeetingName(subj As String) As String
-Declare Function getSTTempTokens(urlBase As String, cookieVal As String, tokenVal As String) As Boolean
 Declare Sub logDOMIversion() 
 Declare Function getServiceEmail(service As String) As String
 Declare Function columnValStr(doc As NotesDocument, colnum As Integer) As String
@@ -43,7 +40,6 @@ Declare Property Get DOMI_JSON_NODES_EXCLUDE_FROM_LOG As BooleanList
 Declare Function getDOMIendpointURL(meetingservice$, operation$, replacements As StringList) As String 
 Declare Function domiValidateCalendarEntry(context As NotesDocument, ndtStart As NotesDateTime, ndtEnd As NotesDateTime) As Integer
 Declare Function atUniqueID() As String
-Declare Sub updateSTCalendarEntry(curDoc As NotesDocument, updateList As VariantList)
 
 '++LotusScript Development Environment:2:5:(Declarations):0:10
 
@@ -204,107 +200,6 @@ ErrorTrap:
 	Resume ExitPoint
 End Function
 
-'++LotusScript Development Environment:2:1:getSTHeaderTokens:15:8
-%REM
-	Function getSTTempTokens(urlBase As String, cookieVal As String, tokenVal As String) As Boolean
-	Description: This function is used to get the initial x-csrf token and related cookie from the 
-	ST Meeting server at the specified location. These tokens are then return back by Ref on the 
-	appropriate params, with the function return True/False based on success.
-	
-	--- PARAMS ---
-	urlBase (String) == the url of the ST Meetings server API
-	cookieVal (String) == the variable where the cookie will be returned
-	tokenVal (String) == the variable where the x-csrf token will be returned
-	
-	--- RETURNS ---
-	- returns True if successful, False if not
-%END REM
-Function getSTHeaderTokens(urlBase As String, cookieVal As String, tokenVal As String) As Variant
-	Dim s As New NotesSession
-	Dim thisDb As NotesDatabase
-	Dim credDoc As NotesDocument
-	Dim url As String, hdrList As New stringlist()
-	Dim nrest As NotesRESTConsumer
-	Dim jsonNav As NotesJSONNavigator
-	Dim resp As String
-	Dim tokenTag As String, cookieTag As String, preTag As String, tag As String, xcsrfTag As String
-	Dim token As String, fullCookie As String, cVal As String, tVal As String, cookieVar As Variant
-	Dim retList List As Variant
-	Dim rstr As String, rvar As Variant, rint As Integer, rbool As String, emptyvar As Variant, errtxt As String
-	
-	On Error GoTo errHandler
-	
-	Set thisDb = s.Currentdatabase
-	Set credDoc = getCredentialsDoc(thisDb, "sametime")
-	If LCase(Right(urlBase, 8)) = "/refresh" Then
-		url = urlBase
-	Else
-		url = urlBase & "/refresh"
-	End If
-	
-	rbool = getSTTempTokens(urlBase, cVal, tVal)  ' in domiUtilsBE
-	If rbool = False Then Error 1000, "Error retrieving needed initial tokens"
-	
-	Set nrest = New NotesRESTconsumer(DOMI_JSON_NODES_EXCLUDE_FROM_LOG)
-	token = getServiceToken("sametime", DOMI_TOKEN_REFRESH) ' in domiUtilsBE
-	fullCookie = "_csrf=" & cVal & "; sametimeRefresh=" & token
-	
-	hdrList.content("accept") = "application/json"
-	hdrList.content("X-CSRF-Token") = tVal
-	hdrList.content("cookie") = fullCookie
-	resp = nrest.httpGet(url, hdrList, Nothing)
-	rint = nrcParseResponseCode(resp)
-	If rint = 401 Then Error (1000 + rint), "ST Refresh Token Expired"
-	If rint <> 200 Then Error (1000 + rint), "Problem creating meeting (" & rstr & ")"
-	
-	rvar = emptyVar
-	rvar = nrest.ResponseHeaders
-	
-	If IsArray(rvar) Then
-		retList("sametimeJwt=") = ""
-		retList("sametimeRefresh=") = ""
-		pretag = "Set-Cookie: "
-		xcsrfTag = "x-csrf-token: "
-		ForAll z In rvar
-			If LCase(Left(z, Len(xcsrfTag))) = LCase(xcsrfTag) Then
-				retList(xcsrfTag) = StrRight(z, xcsrfTag, 5)
-			Else
-				ForAll c In retList
-					tag = pretag & ListTag(c)
-					' need to update the credentials doc with the updated tokens
-					If LCase(Left(z, Len(tag))) = LCase(tag) Then
-						rstr = StrRight(z, tag, 5)
-						c = rstr
-					End If			
-				End ForAll
-			End If
-		End ForAll
-		' update the corresponding credentials doc with the new tokens
-		If Not(credDoc Is Nothing) Then
-			If Not(retList("sametimeJwt=") = "") Then Call credDoc.Replaceitemvalue("stJWTTokenFull", retList("sametimeJwt="))
-			If Not(retList("sametimeRefresh=") = "") Then Call credDoc.Replaceitemvalue("stRefreshTokenFull", retList("sametimeRefresh="))
-			Call credDoc.Computewithform(True, False)
-			Call credDoc.Save(True, False, True)
-		End If
-		
-		retList("_csrf=") = cVal
-	Else
-		Error 1000, "Error retrieving ST Token"
-	End If
-
-	getSTHeaderTokens = retList
-
-getOut:
-	Exit Function
-errHandler:
-	getSTHeaderTokens = emptyvar
-	errtxt = Error$ & " [in: " & GetThreadInfo(1) & "; err: " & Err & "; line: " & Erl & "]"
-	On Error GoTo 0
-
-	Error Err, errtxt
-	Resume getOut
-End Function
-
 '++LotusScript Development Environment:2:1:getDOMIvalidationFailureMessages:28:8
 
 	
@@ -425,121 +320,6 @@ ErrorTrap:
 	End ForAll
 	enhLogException LIB_PREFIX, msg$
 	Resume ExitPoint
-End Function
-
-'++LotusScript Development Environment:2:1:cleanupSTMeetingName:7:8
-%REM
-	Function cleanupSTMeetingName
-	Description: ST Meetings has a strict requirement for characters allowed in their meeting names. Since the meeting name 
-	is used as the ID of the meeting as well and is used in the URL for the meeting, we need to make sure it also 
-	works as a part of a URL - so we need to replace spaces with underscores
-%END REM
-Function cleanupSTMeetingName(subj As String) As String
-	Dim badList List As String, cleansubj As String
-	
-	' ? &* : ‘ % # ( ) ! @ $ ^ * + = [ ] / \ ; , .
-	badList("?") = ""
-	badList("&") = ""
-	badList("*") = ""
-	badList(":") = ""
-	badList("'") = ""
-	badList("%") = ""
-	badList("#") = ""
-	badList("(") = "-"
-	badList(")") = "-"
-	badList("!") = ""
-	badList("@") = ""
-	badList("$") = ""
-	badList("^") = ""
-	badList("+") = ""
-	badList("=") = ""
-	badList("[") = "-"
-	badList("]") = "-"
-	badList(|/|) = ""
-	badList(|\|) = ""
-	badList(";") = ""
-	badList(",") = ""
-	badList(".") = ""
-	badList(" ") = "_"
-
-	ForAll b In badList
-		cleansubj = Replace(subj, ListTag(b), b)
-	End ForAll
-	
-	cleanupSTMeetingName = cleansubj
-	
-getOut:
-	Exit Function
-
-errHandler:
-	cleanupSTMeetingName = ""
-
-	On Error GoTo 0
-	Error Err, Error$ & " [in " & GetThreadInfo(1) & "]"
-	Resume getOut
-End Function
-
-
-
-'++LotusScript Development Environment:2:1:getSTTempTokens:15:8
-%REM
-	Function getSTTempTokens(urlBase As String, cookieVal As String, tokenVal As String) As Boolean
-	Description: This function is used to get the initial x-csrf token and related cookie from the 
-	ST Meeting server at the specified location. These tokens are then return back by Ref on the 
-	appropriate params, with the function return True/False based on success.
-	
-	--- PARAMS ---
-	urlBase (String) == the url of the ST Meetings server API
-	cookieVal (String) == the variable where the cookie will be returned
-	tokenVal (String) == the variable where the x-csrf token will be returned
-	
-	--- RETURNS ---
-	- returns True if successful, False if not
-%END REM
-Function getSTTempTokens(urlBase As String, cookieVal As String, tokenVal As String) As Boolean
-	Dim s As New NotesSession
-	Dim url As String
-	Dim nrest As NotesRESTConsumer
-	Dim jsonNav As NotesJSONNavigator
-	Dim resp As String
-	Dim tokenTag As String, cookieTag As String
-	Dim rstr As String, rvar As Variant, errtxt As String
-	Dim httpRequest As NotesHTTPRequest
-	
-	On Error GoTo errHandler
-	getSTTempTokens = True
-	If LCase(Right(urlBase, 8)) = "/refresh" Then
-		url = urlBase
-	Else
-		url = urlBase & "/refresh"
-	End If
-	
-	Set nrest = New NotesRESTconsumer(DOMI_JSON_NODES_EXCLUDE_FROM_LOG)
-
-	resp = nrest.httpGET(url, Nothing, Nothing)
-	rvar = nrest.ResponseHeaders
-	
-	If IsArray(rvar) Then
-		tokenTag = "x-csrf-token: "
-		cookieTag = "set-cookie: _csrf="
-		ForAll z In rvar
-			If LCase(Left(z, Len(tokenTag))) = tokenTag Then tokenVal = StrRight(z, tokenTag, 5)	
-			If LCase(Left(z, Len(cookieTag))) = cookieTag Then cookieVal = StrLeft(StrRight(z, cookieTag, 5), ";")
-		End ForAll
-	Else
-		Error 1000, "Error retrieving ST Token"
-	End If
-	If tokenVal = "" Then Error 1000, "Unable to retrieve a good initial ST token"
-	
-getOut:
-	Exit Function
-errHandler:
-	getSTTempTokens = False
-	errtxt = Error$ & " [in: " & GetThreadInfo(1) & "; err: " & Err & "; line: " & Erl & "]"
-	On Error GoTo 0
-
-	Error Err, errtxt
-	Resume getOut
 End Function
 
 '++LotusScript Development Environment:2:2:logDOMIversion:6:8
@@ -1336,56 +1116,3 @@ errHandler:
 	Error Err, errtxt
 	Resume getOut
 End Function
-
-'++LotusScript Development Environment:2:2:updateSTCalendarEntry:5:8
-%REM
-	Function updateSTCalendarEntry
-	Description: Comments for Function
-%END REM
-Sub updateSTCalendarEntry(curDoc As NotesDocument, updateList As VariantList)
-	Dim s As New NotesSession
-	Dim payload As NotesAgent_JsonHTTPHelper
-	Dim jsonNav As NotesJSONNavigator
-	Dim fldList List As Variant
-	Dim mtgName As String, mtgURL As String, mtgKey As String, pw As String, urlBase As String
-	Dim bodyMsg As String
-	Dim rstr As String, rlng As Long, rdbl As Double, rbool As Boolean, rdoc As NotesDocument, rint As Integer, rvar As Variant, emptyvar As Variant
-	Dim errtxt As String
-	Set payload = spawnJSONHttpHelper(Nothing, False, True)  ' in NotesHTTPJsonRequestHelper
-	Call payload.loadJson(s, CStr(updateList.content("meetingJSON")))
-	
-	rbool = payload.findStringByPointer("/password", pw)
-	rbool = payload.findStringByPointer("/name", mtgName)
-	urlBase = DOMI_ROOTURL_SAMETIMEMEETINGS
-	If rbool Then
-		mtgURL = urlBase & "/meeting/" & mtgName
-	Else
-		Error 1000, "Meeting Name not returned from Sametime Meetings"
-	End If
-
-	fldList("meetingService") = "sametime"
-	fldList("meetingServiceLabel") = "Sametime"
-	fldList("meetingId") = mtgName
-	fldList("meetingPassword") = pw
-	fldList("meetingTitle") = mtgName
-	fldList("meetingAgenda") = updateList.content("meetingAgenda")
-	fldList("meetingURL") = mtgURL
-	fldList("meetingStartStr") = updateList.content("meetingStartStr")
-	fldList("meetingEndStr") = updateList.content("meetingEndStr")
-	fldList("meetingDuration") = updateList.content("meetingDuration")
-	fldList("meetingJSON") = updateList.content("meetingJSON")
-	' these fields give us the "Join Online" link below the Location on the Calendar Entry
-	fldList("OnlineMeeting") = "1"
-	fldList("ApptUNIDURL") = fldList("meetingURL")
-	fldList("SametimeType") = "0"
-	' this puts the link and PW into the Location field of the Calendar Entry
-	bodyMsg = bodyMsg & "Attendee Link: " & fldList("meetingURL")
-	If Not(fldList("meetingPassword") = "") Then bodyMsg = Chr(10) & bodyMsg & "Password: " & fldList("meetingPassword")
-	fldList("meetingInfoInsert") = bodyMsg
-	fldList("Location") = bodyMsg
-	' now that we have all of our field values, update the Calendar Entry doc
-	ForAll f In fldList
-		Call curDoc.Replaceitemvalue(ListTag(f), f)
-	End ForAll
-	
-End Sub
