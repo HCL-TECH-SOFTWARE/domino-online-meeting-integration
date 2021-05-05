@@ -43,9 +43,9 @@ Private Const LIB_PREFIX 		= |Library: domiConstantsBE.|
  ************************************************************************************
 %END REM *********************************************************************  
 Private Const g_DOMI_ROOTURL_TOKEN_HCL 			= |https://domi.hcllabs.live/| ' HCL's default site
-Private Const g_DOMI_VERSION 					= |0.9|
-Private Const g_DOMI_BUILD 						= |1.746|
-Private Const g_DOMI_RELEASE_DATE 				= |19 March 2021|
+Private Const g_DOMI_VERSION 					= |0.95|
+Private Const g_DOMI_BUILD 						= |1.B99|
+Private Const g_DOMI_RELEASE_DATE 				= |04 April 2021|
 
 
 %REM ***************************************************************************
