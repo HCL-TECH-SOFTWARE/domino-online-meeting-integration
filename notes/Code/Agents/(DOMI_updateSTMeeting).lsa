@@ -1,24 +1,24 @@
 <?xml version='1.0' encoding='utf-8'?>
 <agent name='(DOMI_updateSTMeeting)' alias='DOMI_updateSTMeeting' xmlns='http://www.lotus.com/dxl'
- version='11.0' maintenanceversion='1.0' replicaid='8525867000756EB9' hide='v3'
- publicaccess='false' designerversion='8.5.3'>
-<noteinfo noteid='1d02' unid='5B8B231DD67A6A9890729EF60461F0AA' sequence='9'>
+ version='12.0' replicaid='8525867000756EB9' hide='v3' publicaccess='false'
+ designerversion='8.5.3'>
+<noteinfo noteid='1d0a' unid='5B8B231DD67A6A9890729EF60461F0AA' sequence='17'>
 <created><datetime dst='true'>158540704T091434,66+0045</datetime></created>
-<modified><datetime dst='true'>20210329T124641,28+01</datetime></modified>
-<revised><datetime>20210326T092303,01-05</datetime></revised>
-<lastaccessed><datetime dst='true'>20210329T124641,27+01</datetime></lastaccessed>
-<addedtofile><datetime dst='true'>20210329T124641,27+01</datetime></addedtofile></noteinfo>
+<modified><datetime dst='true'>20210505T164255,89-04</datetime></modified>
+<revised><datetime dst='true'>20210505T101811,03-04</datetime></revised>
+<lastaccessed><datetime dst='true'>20210505T164255,88-04</datetime></lastaccessed>
+<addedtofile><datetime dst='true'>20210505T164255,88-04</datetime></addedtofile></noteinfo>
 <updatedby><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name></updatedby>
 <wassignedby><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name></wassignedby>
-<designchange><datetime>20210326T092303,01-05</datetime></designchange>
+<designchange><datetime dst='true'>20210505T101811,03-04</datetime></designchange>
 <trigger type='actionsmenu'/>
 <documentset type='runonce'/><code event='options'><lotusscript>%REM
 	Agent (DOMI_updateSTMeeting)
 	Created Mar 01, 2021 by Rocky Oliver/USA/PNPHCL
 	Description: This agent is used to update a Sametime meeting
 	
-	**************** LICENSE ****************
-	Copyright 2021 HCL Labs And Rocky Oliver
+**************** LICENSE ****************
+	Copyright 2021 HCL America, Inc.
 	Licensed under the Apache License, Version 2.0 (the "License"); you may Not Use this file except 
 	In compliance With the License. You may obtain a copy of the License at
 	
@@ -33,6 +33,7 @@
 Option Public
 Option Declare
 
+Use "domiSTUtilsBE"
 Use "domiUtilsFE"
 Use "VoltMXHttpHelper" ' this is the wrapper lib for all libs/classes needed for Volt MX integration
 Use "JSONDateTime"
@@ -172,5 +173,5 @@ errHandler:
 	Resume getOut
 End Sub</lotusscript></code>
 <rundata processeddocs='0' exitcode='0'>
-<agentmodified><datetime>20210326T092302,96-05</datetime></agentmodified></rundata></agent>
+<agentmodified><datetime dst='true'>20210505T101811,00-04</datetime></agentmodified></rundata></agent>
 
