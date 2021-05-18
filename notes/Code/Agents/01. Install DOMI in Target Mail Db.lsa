@@ -32,7 +32,7 @@ Use "domiUtilsBE"
 	Dim deView As NotesView, deDoc As NotesDocument
 	Dim dbPathInfo As Variant, deTypes List As String
 	Dim deType As String, deName As String, deUNID As String, newUNID As String
-	Dim oldNote As NotesDocument, newNote As NotesDocument
+	Dim oldNote As NotesDocument, newNote As NotesDocument, checkForm As NotesDocument
 	Dim rbool As Boolean
 	
 	On Error GoTo errHandler
@@ -52,6 +52,10 @@ Use "domiUtilsBE"
 	If IsArray(dbPathInfo) Then
 		Set mailDb = s.Getdatabase(dbPathInfo(0), dbPathInfo(1), False)
 		If Not(mailDb.Isopen) Then Error 1000, "Unable to open selected database"
+		' Check Appointment form exists in target
+		Set checkform = getElementHandle(mailDb, "form", "Appointment")
+		If (checkform Is Nothing) Then Error 1000, "Cannot find Appointment form in target database, " _
+		& "installation can only be performed on Mail templates / databases"
 	Else
 		Exit Sub
 	End If
