@@ -1,16 +1,16 @@
 <?xml version='1.0' encoding='utf-8'?>
 <agent name='99. Admin\02. Clean up Target Mail Db' alias='uninstallDOMI'
  xmlns='http://www.lotus.com/dxl' version='11.0' maintenanceversion='1.0'
- replicaid='8525867000756EB9' hide='v3' publicaccess='false' designerversion='8.5.3'>
-<noteinfo noteid='1cda' unid='C12304FE02F0E6F18525868500472CAC' sequence='70'>
+ replicaid='852586DC005D7BD2' hide='v3' publicaccess='false' designerversion='8.5.3'>
+<noteinfo noteid='23a' unid='C12304FE02F0E6F18525868500472CAC' sequence='6'>
 <created><datetime>20210223T075724,92-05</datetime></created>
-<modified><datetime dst='true'>20210329T124641,22+01</datetime></modified>
-<revised><datetime>20210322T100408,78-05</datetime></revised>
-<lastaccessed><datetime dst='true'>20210329T124641,21+01</datetime></lastaccessed>
-<addedtofile><datetime dst='true'>20210329T124641,21+01</datetime></addedtofile></noteinfo>
-<updatedby><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name></updatedby>
-<wassignedby><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name></wassignedby>
-<designchange><datetime>20210322T100408,78-05</datetime></designchange>
+<modified><datetime dst='true'>20210521T131033,88-04</datetime></modified>
+<revised><datetime dst='true'>20210521T131033,87-04</datetime></revised>
+<lastaccessed><datetime dst='true'>20210521T131033,87-04</datetime></lastaccessed>
+<addedtofile><datetime dst='true'>20210521T130113,84-04</datetime></addedtofile></noteinfo>
+<updatedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></updatedby>
+<wassignedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></wassignedby>
+<designchange><datetime dst='true'>20210521T131033,83-04</datetime></designchange>
 <trigger type='actionsmenu'/>
 <documentset type='runonce'/><code event='options'><lotusscript>%REM
 	Agent Install DOMI in Target Mail Db
@@ -33,7 +33,7 @@ Use "domiUtilsBE"
 	Dim oldNote As NotesDocument, newNote As NotesDocument
 	Dim rbool As Boolean
 	
-	On Error GoTo errHandler
+	On Error Goto errHandler
 	
 	Set thisDb = s.Currentdatabase
 	Set deView = thisDb.getView("beFeatureSetDEProfiles")
@@ -43,7 +43,7 @@ Use "domiUtilsBE"
 	' prompt for target mail db
 	' 13 is the value for ChooseDatabase
 	dbPathInfo = ws.Prompt(13, "Choose Mail Database", "Choose the Mail database or template")
-	If IsArray(dbPathInfo) Then
+	If Isarray(dbPathInfo) Then
 		Set mailDb = s.Getdatabase(dbPathInfo(0), dbPathInfo(1), False)
 		If Not(mailDb.Isopen) Then Error 1000, "Unable to open selected database"
 	Else
@@ -58,7 +58,7 @@ Use "domiUtilsBE"
 	
 	Set deDoc = deView.Getfirstdocument()
 	Do While Not(deDoc Is Nothing)
-		Set oldNote = nothing
+		Set oldNote = Nothing
 		deName = columnValStr(deDoc, 0)
 		deType = columnValStr(deDoc, 2)
 		deUNID = columnValStr(deDoc, 3)
@@ -73,16 +73,16 @@ Use "domiUtilsBE"
 
 	rbool = removeDOMISubformFromAppointment(mailDb)
 	
-	If rbool Then MsgBox "Target Mail Db cleaned up successfully",, "Success"
+	If rbool Then Msgbox "Target Mail Db cleaned up successfully",, "Success"
 	
 getOut:
 	Exit Sub
 errHandler:
 	Select Case Err
 		Case 1000
-			MsgBox Error$,48 , "Error"
+			Msgbox Error$,48 , "Error"
 		Case Else
-			MsgBox Error$ &amp; " (err: " &amp; Err &amp; ", erl: " &amp; Erl &amp; ")",48 , "Error"
+			Msgbox Error$ &amp; " (err: " &amp; Err &amp; ", erl: " &amp; Erl &amp; ")",48 , "Error"
 	End Select
 	Resume getOut
 End Sub
@@ -100,7 +100,7 @@ Function removeDOMISubformFromAppointment(mailDb As NotesDatabase) As Boolean
 	Dim oldform As NotesDocument
 	Dim oldCode As String, newCode As String, sftag As String
 	Dim fstream As NotesStream, formcode As String, lf As String
-	Dim rlng As Long, rbool As Boolean, errtxt As string
+	Dim rlng As Long, rbool As Boolean, errtxt As String
 	
 	lf = Chr(10)
 	oldCode = "&lt;/richtext&gt;&lt;/body&gt;"
@@ -109,7 +109,7 @@ Function removeDOMISubformFromAppointment(mailDb As NotesDatabase) As Boolean
 
 	Set oldform = getElementHandle(mailDb, "form", "(BACKUP-OMI-Appointment)")
 	If Not(oldform Is Nothing) Then Call oldform.Removepermanently(True)
-	Set oldform = nothing
+	Set oldform = Nothing
 	
 	' getElementDXL(db As NotesDatabase, etype As String, formname As String, bkupkey As String, _
 	' oldnote As NotesDocument) As NotesDOMParser
@@ -123,7 +123,7 @@ Function removeDOMISubformFromAppointment(mailDb As NotesDatabase) As Boolean
 	Call fstream.Close
 	
 	' check to see if the tag is already in the subform; if so, our work here is done
-	If InStr(1, formcode, sftag, 5) = 0 Then
+	If Instr(1, formcode, sftag, 5) = 0 Then
 		removeDOMISubformFromAppointment = True
 		Exit Function
 	End If
@@ -138,13 +138,11 @@ Function removeDOMISubformFromAppointment(mailDb As NotesDatabase) As Boolean
 getOut:
 	Exit Function
 errHandler:
-	removeDOMISubformFromAppointment = false
-	errtxt = Error$ &amp; " [in: " &amp; GetThreadInfo(1) &amp; "; err: " &amp; Err &amp; "; line: " &amp; Erl &amp; "]"
-	On Error GoTo 0
+	removeDOMISubformFromAppointment = False
+	errtxt = Error$ &amp; " [in: " &amp; Getthreadinfo(1) &amp; "; err: " &amp; Err &amp; "; line: " &amp; Erl &amp; "]"
+	On Error Goto 0
 
 	Error Err, errtxt
 	Resume getOut
-End Function</lotusscript></code>
-<rundata processeddocs='0' exitcode='0'>
-<agentmodified><datetime>20210322T100408,73-05</datetime></agentmodified></rundata></agent>
+End Function</lotusscript></code></agent>
 

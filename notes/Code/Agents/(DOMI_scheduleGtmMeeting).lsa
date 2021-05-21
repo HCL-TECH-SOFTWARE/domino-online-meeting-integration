@@ -1,23 +1,16 @@
 <?xml version='1.0' encoding='utf-8'?>
 <agent name='(DOMI_scheduleGtmMeeting)' alias='DOMI_scheduleGtmMeeting' xmlns='http://www.lotus.com/dxl'
- version='11.0' maintenanceversion='1.0' replicaid='8525867000756EB9' hide='v3'
+ version='11.0' maintenanceversion='1.0' replicaid='852586DC005D7BD2' hide='v3'
  publicaccess='false' designerversion='8.5.3'>
-<noteinfo noteid='1c7e' unid='3951DCD0613451AC54FD1794CD6F3E43' sequence='1'>
+<noteinfo noteid='1ba' unid='3951DCD0613451AC54FD1794CD6F3E43' sequence='4'>
 <created><datetime/></created>
-<modified><datetime dst='true'>20210329T124641,09+01</datetime></modified>
-<revised><datetime>20210326T081924,77-05</datetime></revised>
-<lastaccessed><datetime dst='true'>20210329T124641,08+01</datetime></lastaccessed>
-<addedtofile><datetime dst='true'>20210329T124641,08+01</datetime></addedtofile></noteinfo>
-<updatedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name><name
->CN=Devin Olson/OU=USA/O=PNPHCL</name><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name><name
->CN=Devin Olson/OU=USA/O=PNPHCL</name><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name><name
->CN=Devin Olson/OU=USA/O=PNPHCL</name><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name><name
->CN=Devin Olson/OU=USA/O=PNPHCL</name><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name><name
->CN=Devin Olson/OU=USA/O=PNPHCL</name><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name><name
->CN=Devin Olson/OU=USA/O=PNPHCL</name><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name><name
->CN=Michael Alexander/OU=USA/O=PNPHCL</name><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name></updatedby>
+<modified><datetime dst='true'>20210521T131032,87-04</datetime></modified>
+<revised><datetime dst='true'>20210521T131032,86-04</datetime></revised>
+<lastaccessed><datetime dst='true'>20210521T131032,86-04</datetime></lastaccessed>
+<addedtofile><datetime dst='true'>20210521T130112,60-04</datetime></addedtofile></noteinfo>
+<updatedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></updatedby>
 <wassignedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></wassignedby>
-<designchange><datetime>20210319T125148,14-05</datetime></designchange>
+<designchange><datetime dst='true'>20210521T131032,79-04</datetime></designchange>
 <trigger type='actionsmenu'/>
 <documentset type='runonce'/><code event='options'><lotusscript>%REM
 	Agent DOMI_scheduleGtmMeeting
@@ -47,7 +40,7 @@ Use "domiUtilsFE" 	' Domino Online Meeting Integration Front End UI Utilities
 </lotusscript></code><code event='initialize'><lotusscript>
 
 Sub Initialize
-	On Error GoTo ErrorTrap
+	On Error Goto ErrorTrap
 
 	Dim nodesToCopy As New StringList() 
 	
@@ -65,10 +58,8 @@ Sub Initialize
 ExitPoint:
 	Exit Sub		
 ErrorTrap:
-	On Error GoTo 0
+	On Error Goto 0
 	enhLogAction ||, || 
 	Resume ExitPoint 		
-End Sub</lotusscript></code>
-<rundata processeddocs='0' exitcode='0'>
-<agentmodified><datetime>20210312T160611,88-05</datetime></agentmodified></rundata></agent>
+End Sub</lotusscript></code></agent>
 

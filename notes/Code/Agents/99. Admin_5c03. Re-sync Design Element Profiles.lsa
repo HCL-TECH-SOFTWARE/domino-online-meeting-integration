@@ -1,16 +1,16 @@
 <?xml version='1.0' encoding='utf-8'?>
 <agent name='99. Admin\03. Re-sync Design Element Profiles' xmlns='http://www.lotus.com/dxl'
- version='11.0' maintenanceversion='1.0' replicaid='8525867000756EB9' hide='v3'
+ version='11.0' maintenanceversion='1.0' replicaid='852586DC005D7BD2' hide='v3'
  publicaccess='false' designerversion='8.5.3'>
-<noteinfo noteid='1c36' unid='A20EAF321D278DA28525869500515160' sequence='49'>
+<noteinfo noteid='242' unid='A20EAF321D278DA28525869500515160' sequence='6'>
 <created><datetime>20210311T094812,48-05</datetime></created>
-<modified><datetime dst='true'>20210329T124641,00+01</datetime></modified>
-<revised><datetime>20210322T100607,61-05</datetime></revised>
-<lastaccessed><datetime dst='true'>20210329T124640,99+01</datetime></lastaccessed>
-<addedtofile><datetime dst='true'>20210329T124640,99+01</datetime></addedtofile></noteinfo>
-<updatedby><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name></updatedby>
-<wassignedby><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name></wassignedby>
-<designchange><datetime>20210322T100607,61-05</datetime></designchange>
+<modified><datetime dst='true'>20210521T131033,96-04</datetime></modified>
+<revised><datetime dst='true'>20210521T131033,95-04</datetime></revised>
+<lastaccessed><datetime dst='true'>20210521T131033,95-04</datetime></lastaccessed>
+<addedtofile><datetime dst='true'>20210521T130113,92-04</datetime></addedtofile></noteinfo>
+<updatedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></updatedby>
+<wassignedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></wassignedby>
+<designchange><datetime dst='true'>20210521T131033,90-04</datetime></designchange>
 <trigger type='actionsmenu'/>
 <documentset type='runonce'/><code event='options'><lotusscript>%REM
 	Agent Install OMI in Target Mail Db
@@ -29,7 +29,7 @@ Use "dxlUtilsBE"
 	Dim s As New NotesSession
 	Dim thisDb As NotesDatabase
 	
-	On Error GoTo errHandler
+	On Error Goto errHandler
 	
 	Set thisDb = s.Currentdatabase
 
@@ -40,14 +40,11 @@ getOut:
 errHandler:
 	Select Case Err
 		Case 1000
-			MsgBox Error$,48 , "Error"
+			Msgbox Error$,48 , "Error"
 		Case Else
-			MsgBox Error$ &amp; " (err: " &amp; Err &amp; ", erl: " &amp; Erl &amp; ")",48 , "Error"
+			Msgbox Error$ &amp; " (err: " &amp; Err &amp; ", erl: " &amp; Erl &amp; ")",48 , "Error"
 	End Select
 	Resume getOut
 End Sub
-
-</lotusscript></code>
-<rundata processeddocs='0' exitcode='0'>
-<agentmodified><datetime>20210322T100607,58-05</datetime></agentmodified></rundata></agent>
+</lotusscript></code></agent>
 

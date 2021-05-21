@@ -1,17 +1,16 @@
 <?xml version='1.0' encoding='utf-8'?>
 <agent name='(DOMI_getOAuthTokenFE)' alias='DOMI_getOAuthTokenFE' xmlns='http://www.lotus.com/dxl'
- version='11.0' maintenanceversion='1.0' replicaid='8525867000756EB9' hide='v3'
+ version='11.0' maintenanceversion='1.0' replicaid='852586DC005D7BD2' hide='v3'
  publicaccess='false' designerversion='8.5.3'>
-<noteinfo noteid='1c3e' unid='7DA52F2136D05D7D02074C784DB6DD23' sequence='1'>
+<noteinfo noteid='1a2' unid='7DA52F2136D05D7D02074C784DB6DD23' sequence='4'>
 <created><datetime/></created>
-<modified><datetime dst='true'>20210329T124641,01+01</datetime></modified>
-<revised><datetime>20210326T081924,68-05</datetime></revised>
-<lastaccessed><datetime dst='true'>20210329T124641,00+01</datetime></lastaccessed>
-<addedtofile><datetime dst='true'>20210329T124641,00+01</datetime></addedtofile></noteinfo>
-<updatedby><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name><name>CN=Michael Alexander/OU=USA/O=PNPHCL</name><name
->CN=Rocky Oliver/OU=USA/O=PNPHCL</name></updatedby>
-<wassignedby><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name></wassignedby>
-<designchange><datetime>20210323T073312,35-05</datetime></designchange>
+<modified><datetime dst='true'>20210521T131032,63-04</datetime></modified>
+<revised><datetime dst='true'>20210521T131032,62-04</datetime></revised>
+<lastaccessed><datetime dst='true'>20210521T131032,62-04</datetime></lastaccessed>
+<addedtofile><datetime dst='true'>20210521T130112,37-04</datetime></addedtofile></noteinfo>
+<updatedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></updatedby>
+<wassignedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></wassignedby>
+<designchange><datetime dst='true'>20210521T131032,58-04</datetime></designchange>
 <trigger type='actionsmenu'/>
 <documentset type='runonce'/><code event='options'><lotusscript>%REM
 	Agent (DOMI_getOAuthTokenFE)
@@ -37,7 +36,7 @@ Option Explicit
 Use "domiUtilsFE"
 
 </lotusscript></code><code event='initialize'><lotusscript>Sub Initialize
-	On Error GoTo ErrorTrap
+	On Error Goto ErrorTrap
 	
 	Call instantiateDOMIlog() ' Instantiate Logging and set options for DOMI operations
 
@@ -46,11 +45,9 @@ Use "domiUtilsFE"
 ExitPoint:
 	Exit Sub 
 ErrorTrap:
-	On Error GoTo 0
+	On Error Goto 0
 	enhLogException |Action Validate OAUTH Token.|, || 
-	MessageBox Error$(), 16, |Error | &amp; CStr(Err()) 
+	Messagebox Error$(), 16, |Error | &amp; Cstr(Err()) 
 	Resume ExitPoint 
-End Sub</lotusscript></code>
-<rundata processeddocs='0' exitcode='0'>
-<agentmodified><datetime>20210308T134544,89-05</datetime></agentmodified></rundata></agent>
+End Sub</lotusscript></code></agent>
 

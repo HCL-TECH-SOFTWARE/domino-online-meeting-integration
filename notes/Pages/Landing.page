@@ -1,15 +1,15 @@
 <?xml version='1.0' encoding='utf-8'?>
 <page name='Landing' xmlns='http://www.lotus.com/dxl' version='11.0' maintenanceversion='1.0'
- replicaid='8525867000756EB9' publicaccess='false' designerversion='8.5.3'
+ replicaid='852586DC005D7BD2' publicaccess='false' designerversion='8.5.3'
  bgcolor='#f2f2f2' renderpassthrough='true'>
-<noteinfo noteid='1d1e' unid='AB2BC49A12B9197E86258692005BA633' sequence='48'>
+<noteinfo noteid='292' unid='AB2BC49A12B9197E86258692005BA633' sequence='6'>
 <created><datetime>20210308T104103,23-06</datetime></created>
-<modified><datetime dst='true'>20210329T124641,35+01</datetime></modified>
-<revised><datetime>20210322T054144,63-06</datetime></revised>
-<lastaccessed><datetime dst='true'>20210329T124641,34+01</datetime></lastaccessed>
-<addedtofile><datetime dst='true'>20210329T124641,34+01</datetime></addedtofile></noteinfo>
-<updatedby><name>CN=Paul Withers/OU=UK/O=PNPHCL</name></updatedby>
-<wassignedby><name>CN=Paul Withers/OU=UK/O=PNPHCL</name></wassignedby>
+<modified><datetime dst='true'>20210521T131034,26-04</datetime></modified>
+<revised><datetime dst='true'>20210521T131034,25-04</datetime></revised>
+<lastaccessed><datetime dst='true'>20210521T131034,25-04</datetime></lastaccessed>
+<addedtofile><datetime dst='true'>20210521T130116,76-04</datetime></addedtofile></noteinfo>
+<updatedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></updatedby>
+<wassignedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></wassignedby>
 <actionbar bgcolor='#04633d' bordercolor='black'><actionbarstyle height='4.7500ex'
  repeat='tile'><font size='9pt' name='multilingual'/><imageref name='action bar flat.png'/></actionbarstyle>
 <actionbuttonstyle bgcolor='#04633d'><imageref name='ActionButton.gif'/></actionbuttonstyle><font
@@ -755,8 +755,8 @@ yCvDHLPMM9Ncs80tA/qyzTvz3LPPPwPN8qc6B1200UcjnbTSeOL8J9FLQwgdtdRTU/1xQAA7
 <par def='15'><run><font size='11pt' color='#4f4f4f'/>By default DOMI supports Zoom, WebEx, GoToMeeting and Microsoft Teams. If you wish to restrict these options, you will need to edit the Online Meeting credentials form in the DOMI installation database before running the install. The list of meeting providers available to end users is held in the serviceList field. Removing an option wil preventusers creating an online Meeting Credentials profile for that service provider. Sametime is automatically removed if you have not set a Sametime Meetings server.</run></par></tablecell>
 <tablecell borderwidth='0px' bgcolor='#f2f2f2'>
 <par def='8'><run><font size='15pt' style='bold' color='#4f4f4f'/></run></par></tablecell></tablerow></table>
-<pardef id='4' align='none' leftmargin='0.7500in' tabs='L0.5000in L1in L1.5000in L2in L2.5000in L3in L3.5000in L4in'/>
-<par def='4'><run><font size='24pt' color='white'/></run></par>
+<pardef id='16' align='none' leftmargin='0.7500in' tabs='L0.5000in L1in L1.5000in L2in L2.5000in L3in L3.5000in L4in'/>
+<par def='16'><run><font size='24pt' color='white'/></run></par>
 <par def='1'><run><font size='12pt' color='white'/></run></par>
 <par def='1'><run><font size='12pt' color='white'/></run></par></richtext></body>
 <item name='$$ScriptName' summary='false' sign='true'><text>Landing</text></item></page>

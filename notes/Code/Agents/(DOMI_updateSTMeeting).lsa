@@ -1,16 +1,16 @@
 <?xml version='1.0' encoding='utf-8'?>
 <agent name='(DOMI_updateSTMeeting)' alias='DOMI_updateSTMeeting' xmlns='http://www.lotus.com/dxl'
- version='12.0' replicaid='8525867000756EB9' hide='v3' publicaccess='false'
- designerversion='8.5.3'>
-<noteinfo noteid='1d0a' unid='5B8B231DD67A6A9890729EF60461F0AA' sequence='17'>
+ version='11.0' maintenanceversion='1.0' replicaid='852586DC005D7BD2' hide='v3'
+ publicaccess='false' designerversion='8.5.3'>
+<noteinfo noteid='1ea' unid='5B8B231DD67A6A9890729EF60461F0AA' sequence='4'>
 <created><datetime dst='true'>158540704T091434,66+0045</datetime></created>
-<modified><datetime dst='true'>20210505T164255,89-04</datetime></modified>
-<revised><datetime dst='true'>20210505T101811,03-04</datetime></revised>
-<lastaccessed><datetime dst='true'>20210505T164255,88-04</datetime></lastaccessed>
-<addedtofile><datetime dst='true'>20210505T164255,88-04</datetime></addedtofile></noteinfo>
-<updatedby><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name></updatedby>
-<wassignedby><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name></wassignedby>
-<designchange><datetime dst='true'>20210505T101811,03-04</datetime></designchange>
+<modified><datetime dst='true'>20210521T131033,32-04</datetime></modified>
+<revised><datetime dst='true'>20210521T131033,31-04</datetime></revised>
+<lastaccessed><datetime dst='true'>20210521T131033,31-04</datetime></lastaccessed>
+<addedtofile><datetime dst='true'>20210521T130113,09-04</datetime></addedtofile></noteinfo>
+<updatedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></updatedby>
+<wassignedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></wassignedby>
+<designchange><datetime dst='true'>20210521T131033,26-04</datetime></designchange>
 <trigger type='actionsmenu'/>
 <documentset type='runonce'/><code event='options'><lotusscript>%REM
 	Agent (DOMI_updateSTMeeting)
@@ -52,13 +52,13 @@ Use "JSONDateTime"
 	Dim httpRequest As NotesHTTPRequest, payload As NotesAgent_JsonHTTPHelper
 	Dim jsonNav As NotesJSONNavigator, jsonStr As String, jsonEl As NotesJSONElement
 	Dim jsonObj As NotesJSONObject, jsonArr As NotesJSONArray
-	Dim fldList List As Variant, badList List As string
+	Dim fldList List As Variant, badList List As String
 	Dim hdrList As New stringList(), paramList As New variantList(), mtgList As New variantList(), updateList As New VariantList()
 	Dim mtgName As String, mtgURL As String, mtgKey As String, subj As String, pw As String, mtgId As String
 	Dim rstr As String, rlng As Long, rdbl As Double, rbool As Boolean, rdoc As NotesDocument, rint As Integer, rvar As Variant, emptyvar As Variant
 	Dim errtxt As String
 	
-	On Error GoTo errHandler
+	On Error Goto errHandler
 	Call instantiateDOMIlog() ' Instantiate Logging and set options for DOMI operations
 	
 	Set thisDb = s.Currentdatabase
@@ -93,7 +93,7 @@ Use "JSONDateTime"
 	updateList.content("meetingEndStr") = endITC
 	updateList.content("meetingDuration") = timeDiff
 	updateList.content("meetingAgenda") = bodyTxt
-	mtgId = CStr(curDoc.getItemValue("meetingId")(0))
+	mtgId = Cstr(curDoc.getItemValue("meetingId")(0))
 	If mtgId = "" Then Error 1000, "Unable to locate a meeting ID for this meeting"
 	
 	urlBase = DOMI_ROOTURL_SAMETIMEMEETINGS
@@ -124,7 +124,7 @@ refreshedToken:
 	hdrList.content("cookie") = fullCookie
 	
 	' parameters for setting up the meeting
-	ReDim emailArr(0) As String
+	Redim emailArr(0) As String
 	emailArr(0) = loginEmail
 	paramList.content("name") = subj
 	paramList.content("moderators") = emailArr
@@ -147,7 +147,7 @@ refreshedToken:
 	Call curUIDoc.Reload()
 	
 	' 64 == Info Icon, 1 == OK button only
-	MsgBox "Updated Sametime Meeting", 64 + 1, "Success!"
+	Msgbox "Updated Sametime Meeting", 64 + 1, "Success!"
 getOut:
 	Exit Sub
 	
@@ -167,11 +167,9 @@ errHandler:
 			errtxt = Error$ &amp; " [E: " &amp; Str(Err) &amp; "; L: " &amp; Str(Erl) &amp; "]"
 	End Select
 	
-	MessageBox errtxt,, "ERROR"
+	Messagebox errtxt,, "ERROR"
 	enhLogException ||, ||
 	
 	Resume getOut
-End Sub</lotusscript></code>
-<rundata processeddocs='0' exitcode='0'>
-<agentmodified><datetime dst='true'>20210505T101811,00-04</datetime></agentmodified></rundata></agent>
+End Sub</lotusscript></code></agent>
 
