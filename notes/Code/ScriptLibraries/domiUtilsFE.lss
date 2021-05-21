@@ -20,6 +20,7 @@
 Option Public
 Option Declare
 Use "domiIntegrator" 
+Use "domiSTUtilsBE"
 
 '++LotusScript Development Environment:2:5:(Forward):0:1
 Declare Function domiGetMeeting(nodesToCopy As StringList, meetingservice$) As Boolean  
@@ -34,7 +35,6 @@ Declare Function getOAuthToken() As Boolean
 Declare Function domiUIvalidateCalendarEntry(context As NotesDocument, ndtStart As NotesDateTime, ndtEnd As NotesDateTime) As Integer
 
 '++LotusScript Development Environment:2:5:(Declarations):0:10
-
 
 
 
