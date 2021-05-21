@@ -1035,7 +1035,7 @@ Function domiValidateCalendarEntry(context As NotesDocument, ndtStart As NotesDa
 					extendedinfo(itemname$) = ||
 					If context.hasItem(itemname$) Then
 						Set nitm_endzone = context.getFirstItem(itemname$)
-						extendedinfo(itemname$) = nitm_startzone.Text
+						extendedinfo(itemname$) = nitm_endzone.Text
 						If isBlankString(extendedinfo(itemname$)) Then 
 							result = result + 256
 						Else  
