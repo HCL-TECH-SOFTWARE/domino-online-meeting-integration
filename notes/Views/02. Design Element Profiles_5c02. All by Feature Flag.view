@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <view name='02. Design Element Profiles\02. All by Feature Flag' alias='uiDesignElementsByFeatureFlag'
  xmlns='http://www.lotus.com/dxl' version='11.0' maintenanceversion='1.0'
- replicaid='8525867000756EB9' showinmenu='false' defaultdesign='true' publicaccess='false'
+ replicaid='852586DC005D7BD2' showinmenu='false' defaultdesign='true' publicaccess='false'
  designerversion='8.5.3' comment='Design Element Profiles (for users - can be modified)'
  unreadmarks='none' onopengoto='lastopened' onrefresh='displayindicator' headers='simple'
  opencollapsed='false' showresponsehierarchy='true' showmargin='true' shrinkrows='true'
@@ -10,14 +10,14 @@
  totalscolor='black' headerbgcolor='#e6e6e6' boldunreadrows='false' evaluateactions='false'
  allownewdocuments='false' allowcustomizations='false' hidemarginborder='false'
  marginwidth='0px' marginbgcolor='white' uniquekeys='false'>
-<noteinfo noteid='1c12' unid='08662EC6E15643068525867E0046374F' sequence='56'>
+<noteinfo noteid='2ba' unid='08662EC6E15643068525867E0046374F' sequence='6'>
 <created><datetime>20210216T074656,79-05</datetime></created>
-<modified><datetime dst='true'>20210329T124640,93+01</datetime></modified>
-<revised><datetime dst='true'>20210329T074301,33-04</datetime></revised>
-<lastaccessed><datetime dst='true'>20210329T124640,92+01</datetime></lastaccessed>
-<addedtofile><datetime dst='true'>20210329T124640,92+01</datetime></addedtofile></noteinfo>
-<updatedby><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name></updatedby>
-<wassignedby><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name></wassignedby><code
+<modified><datetime dst='true'>20210521T131034,59-04</datetime></modified>
+<revised><datetime dst='true'>20210521T131034,58-04</datetime></revised>
+<lastaccessed><datetime dst='true'>20210521T131034,58-04</datetime></lastaccessed>
+<addedtofile><datetime dst='true'>20210521T130117,75-04</datetime></addedtofile></noteinfo>
+<updatedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></updatedby>
+<wassignedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></wassignedby><code
  event='selection'><formula>SELECT Form = "desElement"</formula></code>
 <actionbar bgcolor='#04633d' bordercolor='black'><actionbarstyle height='32px'
  repeat='tile'><font size='9pt' name='Trebuchet MS' pitch='variable' truetype='true'

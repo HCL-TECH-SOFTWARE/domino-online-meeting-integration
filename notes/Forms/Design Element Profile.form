@@ -1,16 +1,15 @@
 <?xml version='1.0' encoding='utf-8'?>
 <form name='Design Element Profile' alias='desElement' xmlns='http://www.lotus.com/dxl'
- version='11.0' maintenanceversion='1.0' replicaid='8525867000756EB9' publicaccess='false'
+ version='11.0' maintenanceversion='1.0' replicaid='852586DC005D7BD2' publicaccess='false'
  designerversion='8.5.3' comment='Little form to store the tokens used for meeting integration'
  renderpassthrough='true'>
-<noteinfo noteid='1cba' unid='3C3DA40D37A4EB6B8525867600470097' sequence='67'>
+<noteinfo noteid='286' unid='3C3DA40D37A4EB6B8525867600470097' sequence='6'>
 <created><datetime>20210208T075532,07-05</datetime></created>
-<modified><datetime dst='true'>20210329T124641,17+01</datetime></modified>
-<revised><datetime>20210319T125149,30-05</datetime></revised>
-<lastaccessed><datetime dst='true'>20210329T124641,16+01</datetime></lastaccessed>
-<addedtofile><datetime dst='true'>20210329T124641,16+01</datetime></addedtofile></noteinfo>
-<updatedby><name>CN=Paul Withers/OU=UK/O=PNPHCL</name><name>CN=Devin Olson/OU=USA/O=PNPHCL</name><name
->CN=Rocky Oliver/OU=USA/O=PNPHCL</name><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></updatedby>
+<modified><datetime dst='true'>20210521T131034,10-04</datetime></modified>
+<revised><datetime dst='true'>20210521T131034,09-04</datetime></revised>
+<lastaccessed><datetime dst='true'>20210521T131034,09-04</datetime></lastaccessed>
+<addedtofile><datetime dst='true'>20210521T130116,49-04</datetime></addedtofile></noteinfo>
+<updatedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></updatedby>
 <wassignedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></wassignedby><code
  event='windowtitle'><formula>"Design Element Profile"</formula></code>
 <actionbar bgcolor='#04633d' bordercolor='black'><actionbarstyle height='4.7500ex'
@@ -57,18 +56,18 @@ Yg4BAIQAAAAAAAAAAAA=
  width='8.9000in'/><tablecolumn width='100%'/>
 <tablerow>
 <tablecell borderwidth='0px' bgcolor='#f2f2f2'>
-<pardef id='6' keepwithnext='true' keeptogether='true'/>
-<par def='6'><run><font size='12pt' color='#474747'/></run></par>
-<par def='6'><run><font size='12pt' color='#474747'/>Element Name</run></par>
-<par def='6'><run><font size='6pt' color='#474747'/></run></par></tablecell>
-<tablecell borderwidth='0px' bgcolor='#f2f2f2'>
 <pardef id='7' keepwithnext='true' keeptogether='true'/>
-<par def='7'><run><font size='12pt' color='#474747'/></run></par></tablecell></tablerow>
+<par def='7'><run><font size='12pt' color='#474747'/></run></par>
+<par def='7'><run><font size='12pt' color='#474747'/>Element Name</run></par>
+<par def='7'><run><font size='6pt' color='#474747'/></run></par></tablecell>
+<tablecell borderwidth='0px' bgcolor='#f2f2f2'>
+<pardef id='8' keepwithnext='true' keeptogether='true'/>
+<par def='8'><run><font size='12pt' color='#474747'/></run></par></tablecell></tablerow>
 <tablerow>
 <tablecell borderwidth='0px' bgcolor='white'>
-<pardef id='8' leftmargin='0.1250in' spacebefore='1.5' spaceafter='1.5' hide='web mobile'
+<pardef id='9' leftmargin='0.1250in' spacebefore='1.5' spaceafter='1.5' hide='web mobile'
  keepwithnext='true' keeptogether='true'/>
-<par def='8'><run><font size='9pt' color='#4f4f4f'/></run><run><font size='9pt'
+<par def='9'><run><font size='9pt' color='#4f4f4f'/></run><run><font size='9pt'
  color='#4f4f4f'/><field showdelimiters='false' type='text' kind='editable'
  name='elementName'><code event='defaultvalue'><formula>@ThisValue</formula></code><code
  event='inputtranslation'><formula>@Trim(@ThisValue)</formula></code></field></run><compositedata
@@ -78,17 +77,17 @@ Yg4BAIQAAAAAAAAAAAA=
 </compositedata><run><font size='12pt'
  color='#4f4f4f'/></run></par></tablecell>
 <tablecell borderwidth='0px' bgcolor='#f2f2f2'>
-<par def='7'><run><font size='12pt' color='#474747'/></run></par></tablecell></tablerow>
+<par def='8'><run><font size='12pt' color='#474747'/></run></par></tablecell></tablerow>
 <tablerow>
 <tablecell borderwidth='0px' bgcolor='#f2f2f2'>
-<par def='6'><run><font size='12pt' color='#474747'/></run></par>
-<par def='6'><run><font size='12pt' color='#474747'/>Element Type</run></par>
-<par def='6'><run><font size='6pt' color='#474747'/></run></par></tablecell>
+<par def='7'><run><font size='12pt' color='#474747'/></run></par>
+<par def='7'><run><font size='12pt' color='#474747'/>Element Type</run></par>
+<par def='7'><run><font size='6pt' color='#474747'/></run></par></tablecell>
 <tablecell borderwidth='0px' bgcolor='#f2f2f2'>
-<par def='7'><run><font size='9pt' style='bold' color='#474747'/></run></par></tablecell></tablerow>
+<par def='8'><run><font size='9pt' style='bold' color='#474747'/></run></par></tablecell></tablerow>
 <tablerow>
 <tablecell borderwidth='0px' bgcolor='white'>
-<par def='8'><run><font size='9pt' color='#4f4f4f'/></run><run><font size='9pt'
+<par def='9'><run><font size='9pt' color='#4f4f4f'/></run><run><font size='9pt'
  color='#4f4f4f'/><field showdelimiters='false' type='text' kind='editable'
  name='elementType'><code event='defaultvalue'><formula>@ThisValue</formula></code><code
  event='inputtranslation'><formula>@Trim(@ThisValue)</formula></code></field></run><compositedata
@@ -98,40 +97,40 @@ Yg4BAIQAAAAAAAAAAAA=
 </compositedata><run><font size='9pt'
  color='#4f4f4f'/></run></par></tablecell>
 <tablecell borderwidth='0px' bgcolor='#f2f2f2'>
-<par def='7'><run><font size='9pt' style='bold' color='#474747'/></run></par></tablecell></tablerow>
+<par def='8'><run><font size='9pt' style='bold' color='#474747'/></run></par></tablecell></tablerow>
 <tablerow>
 <tablecell borderwidth='0px' bgcolor='#f2f2f2'>
-<par def='6'><run><font size='15pt' color='#474747'/></run></par>
-<par def='6'><run><font size='12pt' color='#474747'/>Element Alias(es)</run></par>
-<par def='6'><run><font size='6pt' color='#474747'/></run></par></tablecell>
+<par def='7'><run><font size='15pt' color='#474747'/></run></par>
+<par def='7'><run><font size='12pt' color='#474747'/>Element Alias(es)</run></par>
+<par def='7'><run><font size='6pt' color='#474747'/></run></par></tablecell>
 <tablecell borderwidth='0px' bgcolor='#f2f2f2'>
-<par def='7'><run><font size='9pt' style='bold' color='#474747'/></run></par></tablecell></tablerow>
+<par def='8'><run><font size='9pt' style='bold' color='#474747'/></run></par></tablecell></tablerow>
 <tablerow>
 <tablecell borderwidth='0px' bgcolor='white'>
-<par def='8'><run><font size='9pt' color='#4f4f4f'/><field showdelimiters='false'
+<par def='9'><run><font size='9pt' color='#4f4f4f'/><field showdelimiters='false'
  type='text' allowmultivalues='true' kind='editable' name='elementAlias' description='Enter your access token here...'
  listinputseparators='semicolon newline' listdisplayseparator='newline' fieldhint='Enter your access token here...'><code
  event='defaultvalue'><formula>@ThisValue</formula></code><code event='inputtranslation'><formula
 >@Trim(@ThisValue)</formula></code></field></run><compositedata type='98'
- prevtype='65513' nexttype='222' afterparcount='8' containertype='65418' aftercontainercount='2'
+ prevtype='65513' nexttype='222' afterparcount='7' containertype='65418' aftercontainercount='2'
  afterbegincount='5'>
 Yg4BAIQAAAAAAAAAAAA=
 </compositedata><run><font size='9pt' style='bold' color='#4f4f4f'/></run></par></tablecell>
 <tablecell borderwidth='0px' bgcolor='#f2f2f2'>
-<pardef id='9' spacebefore='2' keepwithnext='true' keeptogether='true'/>
-<par def='9'><run><font size='9pt' style='bold' color='#474747'/></run></par></tablecell></tablerow>
+<pardef id='10' spacebefore='2' keepwithnext='true' keeptogether='true'/>
+<par def='10'><run><font size='9pt' style='bold' color='#474747'/></run></par></tablecell></tablerow>
 <tablerow>
 <tablecell borderwidth='0px' bgcolor='#f2f2f2'>
-<par def='6'><run><font size='15pt' color='#474747'/></run></par>
-<par def='6'><run><font size='12pt' color='#474747'/>Element Modified Date</run></par>
-<par def='6'><run><font size='6pt' color='#474747'/></run></par></tablecell>
+<par def='7'><run><font size='15pt' color='#474747'/></run></par>
+<par def='7'><run><font size='12pt' color='#474747'/>Element Modified Date</run></par>
+<par def='7'><run><font size='6pt' color='#474747'/></run></par></tablecell>
 <tablecell borderwidth='0px' bgcolor='#f2f2f2'>
-<par def='7'><run><font size='9pt' style='bold' color='#474747'/></run></par></tablecell></tablerow>
+<par def='8'><run><font size='9pt' style='bold' color='#474747'/></run></par></tablecell></tablerow>
 <tablerow>
 <tablecell borderwidth='0px' bgcolor='white'>
-<pardef id='10' leftmargin='0.1250in' spacebefore='1.5' spaceafter='1.5' hide='read print preview web mobile'
+<pardef id='11' leftmargin='0.1250in' spacebefore='1.5' spaceafter='1.5' hide='read print preview web mobile'
  keepwithnext='true' keeptogether='true'/>
-<par def='10'><run><font size='9pt' color='#4f4f4f'/><field showdelimiters='false'
+<par def='11'><run><font size='9pt' color='#4f4f4f'/><field showdelimiters='false'
  usenotesstyle='false' height='0.2500in' width='1.2500in' multiline='true'
  borderstyle='single' type='datetime' kind='editable' name='elementModifiedDate'
  description='Enter your access token here...' fieldhint='Enter your access token here...'><datetimeformat
@@ -141,9 +140,9 @@ Yg4BAIQAAAAAAAAAAAA=
  dateseparator3='/' timeseparator=':' preference='usersetting'/><code event='defaultvalue'><formula
 >@ThisValue</formula></code><code event='inputtranslation'><formula>@Trim(@ThisValue)</formula></code></field></run><run
 ><font color='#4f4f4f'/></run></par>
-<pardef id='11' leftmargin='0.1250in' spacebefore='1.5' spaceafter='1.5' hide='edit previewedit web mobile'
+<pardef id='12' leftmargin='0.1250in' spacebefore='1.5' spaceafter='1.5' hide='edit previewedit web mobile'
  keepwithnext='true' keeptogether='true'/>
-<par def='11'><run><font color='#4f4f4f'/></run><run><font size='9pt' color='#4f4f4f'/><field
+<par def='12'><run><font color='#4f4f4f'/></run><run><font size='9pt' color='#4f4f4f'/><field
  type='text' kind='computedfordisplay' name='dispElementModifiedDate'><code
  event='defaultvalue'><formula>@Text(elementModifiedDate)</formula></code></field></run><compositedata
  type='98' prevtype='65418' nexttype='222' afterparcount='10' containertype='65418'
@@ -151,44 +150,44 @@ Yg4BAIQAAAAAAAAAAAA=
 Yg4BAIQAAAAAAAAAAAA=
 </compositedata><run><font color='#4f4f4f'/></run></par></tablecell>
 <tablecell borderwidth='0px' bgcolor='#f2f2f2'>
-<par def='7'><run><font size='9pt' style='bold' color='#474747'/></run></par></tablecell></tablerow>
+<par def='8'><run><font size='9pt' style='bold' color='#474747'/></run></par></tablecell></tablerow>
 <tablerow>
 <tablecell borderwidth='0px' bgcolor='#f2f2f2'>
-<par def='6'><run><font size='15pt' color='#474747'/></run></par>
-<par def='6'><run><font size='12pt' color='#474747'/>Element UNID</run></par>
-<par def='6'><run><font size='6pt' color='#474747'/></run></par></tablecell>
+<par def='7'><run><font size='15pt' color='#474747'/></run></par>
+<par def='7'><run><font size='12pt' color='#474747'/>Element UNID</run></par>
+<par def='7'><run><font size='6pt' color='#474747'/></run></par></tablecell>
 <tablecell borderwidth='0px' bgcolor='#f2f2f2'>
-<par def='7'><run><font size='9pt' style='bold' color='#474747'/></run></par></tablecell></tablerow>
+<par def='8'><run><font size='9pt' style='bold' color='#474747'/></run></par></tablecell></tablerow>
 <tablerow>
 <tablecell borderwidth='0px' bgcolor='white'>
-<par def='8'><run><font size='9pt' color='#4f4f4f'/><field showdelimiters='false'
+<par def='9'><run><font size='9pt' color='#4f4f4f'/><field showdelimiters='false'
  type='text' kind='editable' name='elementUNID' description='Enter your access token here...'
  fieldhint='Enter your access token here...'><code event='defaultvalue'><formula
 >@ThisValue</formula></code><code event='inputtranslation'><formula>@Trim(@ThisValue)</formula></code></field></run><compositedata
- type='98' prevtype='65513' nexttype='222' afterparcount='8' containertype='65418'
+ type='98' prevtype='65513' nexttype='222' afterparcount='7' containertype='65418'
  aftercontainercount='2' afterbegincount='5'>
 Yg4BAIQAAAAAAAAAAAA=
 </compositedata><run><font size='11pt'
  color='#4f4f4f'/></run></par></tablecell>
 <tablecell borderwidth='0px' bgcolor='#f2f2f2'>
-<par def='7'><run><font size='9pt' style='bold' color='#474747'/></run></par></tablecell></tablerow>
+<par def='8'><run><font size='9pt' style='bold' color='#474747'/></run></par></tablecell></tablerow>
 <tablerow>
 <tablecell borderwidth='0px' bgcolor='#f2f2f2'>
-<par def='6'><run><font size='15pt' color='#474747'/></run></par>
-<par def='6'><run><font size='12pt' color='#474747'/>Featureset?</run></par>
-<par def='6'><run><font size='6pt' color='#474747'/></run></par></tablecell>
+<par def='7'><run><font size='15pt' color='#474747'/></run></par>
+<par def='7'><run><font size='12pt' color='#474747'/>Featureset?</run></par>
+<par def='7'><run><font size='6pt' color='#474747'/></run></par></tablecell>
 <tablecell borderwidth='0px' bgcolor='#f2f2f2'>
-<par def='7'><run><font size='9pt' style='bold' color='#474747'/></run></par></tablecell></tablerow>
+<par def='8'><run><font size='9pt' style='bold' color='#474747'/></run></par></tablecell></tablerow>
 <tablerow>
 <tablecell borderwidth='0px' bgcolor='white'>
-<par def='10'><run><font size='9pt' color='#4f4f4f'/><field showdelimiters='false'
+<par def='11'><run><font size='9pt' color='#4f4f4f'/><field showdelimiters='false'
  borderstyle='none' lookupeachchar='false' lookupaddressonrefresh='false'
  type='keyword' kind='editable' name='featureFlag' description='Enter your access token here...'
  fieldhint='Enter your access token here...'><keywords helperbutton='false'
  columns='2' ui='radiobutton'><textlist><text>Yes</text><text>No</text></textlist></keywords><code
  event='defaultvalue'><formula>"No"</formula></code></field></run><run><font
  size='11pt' color='#4f4f4f'/></run></par>
-<par def='11'><run><font size='11pt' color='#4f4f4f'/></run><run><font size='9pt'
+<par def='12'><run><font size='11pt' color='#4f4f4f'/></run><run><font size='9pt'
  color='#4f4f4f'/><field type='text' kind='computedfordisplay' name='dispFeatureFlag'><code
  event='defaultvalue'><formula>featureFlag</formula></code></field></run><compositedata
  type='98' prevtype='65418' nexttype='222' afterparcount='9' containertype='65418'
@@ -197,36 +196,36 @@ Yg4BAIQAAAAAAAAAAAA=
 </compositedata><run><font size='11pt'
  color='#4f4f4f'/></run></par></tablecell>
 <tablecell borderwidth='0px' bgcolor='#f2f2f2'>
-<pardef id='12' keepwithnext='true' keeptogether='true'><code event='hidewhen'><formula
+<pardef id='13' keepwithnext='true' keeptogether='true'><code event='hidewhen'><formula
 >ResourceType!="1"</formula></code></pardef>
-<par def='12'><run><font size='9pt' style='bold' color='#474747'/></run></par></tablecell></tablerow>
+<par def='13'><run><font size='9pt' style='bold' color='#474747'/></run></par></tablecell></tablerow>
 <tablerow>
 <tablecell borderwidth='0px' bgcolor='#f2f2f2'>
-<par def='6'><run><font size='15pt' color='#474747'/></run></par>
-<par def='6'><run><font size='12pt' color='#474747'/>Comments</run></par>
-<par def='6'><run><font size='6pt' color='#474747'/></run></par></tablecell>
+<par def='7'><run><font size='15pt' color='#474747'/></run></par>
+<par def='7'><run><font size='12pt' color='#474747'/>Comments</run></par>
+<par def='7'><run><font size='6pt' color='#474747'/></run></par></tablecell>
 <tablecell borderwidth='0px' bgcolor='#f2f2f2'>
-<par def='7'><run><font size='15pt' color='#474747'/></run></par></tablecell></tablerow>
+<par def='8'><run><font size='15pt' color='#474747'/></run></par></tablecell></tablerow>
 <tablerow>
 <tablecell borderwidth='0px' bgcolor='white'>
-<pardef id='13' spacebefore='1.5' spaceafter='1.5' hide='web mobile' keepwithnext='true'
+<pardef id='14' spacebefore='1.5' spaceafter='1.5' hide='web mobile' keepwithnext='true'
  keeptogether='true'/>
-<par def='13'><run><font size='9pt' color='#4f4f4f'/><field showdelimiters='false'
+<par def='14'><run><font size='9pt' color='#4f4f4f'/><field showdelimiters='false'
  type='text' kind='editable' name='comments' description='Enter your access token here...'
  fieldhint='Enter your access token here...'><code event='inputtranslation'><formula
 >@Trim(@ThisValue)</formula></code></field></run><compositedata type='98'
- prevtype='65513' nexttype='222' afterparcount='9' containertype='65418' aftercontainercount='2'
+ prevtype='65513' nexttype='222' afterparcount='8' containertype='65418' aftercontainercount='2'
  afterbegincount='5'>
 Yg4BAIQAAAAAAAAAAAA=
 </compositedata><run><font size='15pt' color='#4f4f4f'/></run></par></tablecell>
 <tablecell borderwidth='0px' bgcolor='#f2f2f2'>
-<par def='7'><run><font size='15pt' color='#474747'/></run></par></tablecell></tablerow></table>
+<par def='8'><run><font size='15pt' color='#474747'/></run></par></tablecell></tablerow></table>
 <par def='4'><run><font size='9pt' color='#474747'/></run></par></tablecell></tablerow></table>
-<pardef id='3' align='none' leftmargin='0.7500in' tabs='L0.5000in L1in L1.5000in L2in L2.5000in L3in L3.5000in L4in'/>
-<par def='3'><run><font size='8pt' style='bold' color='green'/></run></par>
-<pardef id='14' hide='read edit print notes web'><parstyle name='Hidden Text'
+<pardef id='15' align='none' leftmargin='0.7500in' tabs='L0.5000in L1in L1.5000in L2in L2.5000in L3in L3.5000in L4in'/>
+<par def='15'><run><font size='8pt' style='bold' color='green'/></run></par>
+<pardef id='16' hide='read edit print notes web'><parstyle name='Hidden Text'
  incyclekey='true'><font size='8pt' color='green' name='sans-serif'/></parstyle></pardef>
-<par def='14'><run><font size='8pt' color='green'/></run></par>
-<par def='14'><run><font size='8pt' color='green'/></run></par></richtext></body>
+<par def='16'><run><font size='8pt' color='green'/></run></par>
+<par def='16'><run><font size='8pt' color='green'/></run></par></richtext></body>
 <item name='$$ScriptName' summary='false' sign='true'><text>desElement</text></item></form>
 

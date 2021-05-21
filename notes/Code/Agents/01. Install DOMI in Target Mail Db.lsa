@@ -1,18 +1,16 @@
 <?xml version='1.0' encoding='utf-8'?>
 <agent name='01. Install DOMI in Target Mail Db' alias='installDOMI' xmlns='http://www.lotus.com/dxl'
- version='11.0' maintenanceversion='1.0' replicaid='8525867000756EB9' hide='v3'
+ version='11.0' maintenanceversion='1.0' replicaid='852586DC005D7BD2' hide='v3'
  publicaccess='false' designerversion='8.5.3'>
-<noteinfo noteid='1ce2' unid='EBA8109DDBD87E8E3360BF6D4A230B2A' sequence='42'>
+<noteinfo noteid='22a' unid='EBA8109DDBD87E8E3360BF6D4A230B2A' sequence='7'>
 <created><datetime>126470630T191646,02-0345</datetime></created>
-<modified><datetime dst='true'>20210329T124641,23+01</datetime></modified>
-<revised><datetime>20210319T125148,99-05</datetime></revised>
-<lastaccessed><datetime dst='true'>20210329T124641,22+01</datetime></lastaccessed>
-<addedtofile><datetime dst='true'>20210329T124641,22+01</datetime></addedtofile></noteinfo>
-<updatedby><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name><name>CN=Devin Olson/OU=USA/O=PNPHCL</name><name
->CN=Rocky Oliver/OU=USA/O=PNPHCL</name><name>CN=Devin Olson/OU=USA/O=PNPHCL</name><name
->CN=Rocky Oliver/OU=USA/O=PNPHCL</name><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></updatedby>
+<modified><datetime dst='true'>20210521T131033,74-04</datetime></modified>
+<revised><datetime dst='true'>20210521T131033,73-04</datetime></revised>
+<lastaccessed><datetime dst='true'>20210521T131033,73-04</datetime></lastaccessed>
+<addedtofile><datetime dst='true'>20210521T130113,70-04</datetime></addedtofile></noteinfo>
+<updatedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></updatedby>
 <wassignedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></wassignedby>
-<designchange><datetime>20210319T125148,94-05</datetime></designchange>
+<designchange><datetime dst='true'>20210521T131033,69-04</datetime></designchange>
 <trigger type='actionsmenu'/>
 <documentset type='runonce'/><code event='options'><lotusscript>%REM
 	Agent Install OMI in Target Mail Db
@@ -35,7 +33,7 @@ Use "domiUtilsBE"
 	Dim oldNote As NotesDocument, newNote As NotesDocument, checkForm As NotesDocument
 	Dim rbool As Boolean
 	
-	On Error GoTo errHandler
+	On Error Goto errHandler
 	
 	Set thisDb = s.Currentdatabase
 	
@@ -49,13 +47,13 @@ Use "domiUtilsBE"
 	' prompt for target mail db
 	' 13 is the value for ChooseDatabase
 	dbPathInfo = ws.Prompt(13, "Choose Mail Database", "Choose the Mail database or template")
-	If IsArray(dbPathInfo) Then
+	If Isarray(dbPathInfo) Then
 		Set mailDb = s.Getdatabase(dbPathInfo(0), dbPathInfo(1), False)
 		If Not(mailDb.Isopen) Then Error 1000, "Unable to open selected database"
 		' Check Appointment form exists in target
 		Set checkform = getElementHandle(mailDb, "form", "Appointment")
-		If (checkform Is Nothing) Then Error 1000, "Cannot find Appointment form in target database, " _
-		& "installation can only be performed on Mail templates / databases"
+		If (checkform Is Nothing) Then Error 1000, "Cannot find Appointment form in target database, " &amp; _
+		 "installation can only be performed on Mail templates / databases.  "
 	Else
 		Exit Sub
 	End If
@@ -68,18 +66,18 @@ Use "domiUtilsBE"
 	
 	Set deDoc = deView.Getfirstdocument()
 	Do While Not(deDoc Is Nothing)
-		Set oldNote = nothing
+		Set oldNote = Nothing
 		deName = columnValStr(deDoc, 0)
 		deType = columnValStr(deDoc, 2)
 		deUNID = columnValStr(deDoc, 3)
 		' change the UNIDs of agent and script lib elements to make sure there's no problems with import
-		If UCase(deType) = "SCRIPT LIBRARY - LS" Or UCase(deType) = "AGENT - LS" Then
+		If Ucase(deType) = "SCRIPT LIBRARY - LS" Or Ucase(deType) = "AGENT - LS" Then
 			newUNID = replaceDEUNID(deDoc) ' in domiUtilsBE
 			deUNID = newUNID
 		End If
 		
 		' first see if the element already exists - if it does, nuke it
-		Set oldNote = getElementHandle(mailDb, deTypes(UCase(deType)), deName)  ' in dxlUtilsBE
+		Set oldNote = getElementHandle(mailDb, deTypes(Ucase(deType)), deName)  ' in dxlUtilsBE
 		If Not(oldNote Is Nothing) Then Call oldNote.RemovePermanently(True)
 		Set oldNote = Nothing
 		
@@ -94,18 +92,18 @@ Use "domiUtilsBE"
 	' Now let's add the subform to the Calendar Entry
 	rbool = addDOMISubformToAppointment(mailDb)
 	
-	If rbool Then MsgBox "DOMI installation successful.",,"Success!"
+	If rbool Then Msgbox "DOMI installation successful.",,"Success!"
 	
 getOut:
 	Exit Sub
 errHandler:
 	Select Case Err
 		Case 1000
-			MsgBox Error$,48 , "Error"
+			Msgbox Error$,48 , "Error"
 		Case 4005
-			MsgBox Error$ &amp; Chr(10) &amp; "(Element Name: " &amp; deName &amp; ")",, "Error"
+			Msgbox Error$ &amp; Chr(10) &amp; "(Element Name: " &amp; deName &amp; ")",, "Error"
 		Case Else
-			MsgBox Error$ &amp; " (err: " &amp; Err &amp; ", erl: " &amp; Erl &amp; ")",48 , "Error"
+			Msgbox Error$ &amp; " (err: " &amp; Err &amp; ", erl: " &amp; Erl &amp; ")",48 , "Error"
 	End Select
 	Resume getOut
 End Sub
@@ -123,7 +121,7 @@ Function addDOMISubformToAppointment(mailDb As NotesDatabase) As Boolean
 	Dim oldform As NotesDocument
 	Dim oldCode As String, newCode As String, sftag As String
 	Dim fstream As NotesStream, formcode As String, lf As String
-	Dim rlng As Long, rbool As Boolean, errtxt As string
+	Dim rlng As Long, rbool As Boolean, errtxt As String
 	
 	lf = Chr(10)
 	oldCode = "&lt;/richtext&gt;&lt;/body&gt;"
@@ -146,7 +144,7 @@ Function addDOMISubformToAppointment(mailDb As NotesDatabase) As Boolean
 	Call fstream.Close
 	
 	' check to see if the tag is already in the subform; if so, our work here is done
-	If InStr(1, formcode, sftag, 5) &gt; 0 Then
+	If Instr(1, formcode, sftag, 5) &gt; 0 Then
 		addDOMISubformToAppointment = True
 		Exit Function
 	End If
@@ -161,18 +159,13 @@ Function addDOMISubformToAppointment(mailDb As NotesDatabase) As Boolean
 getOut:
 	Exit Function
 errHandler:
-	addDOMISubformToAppointment = false
-	errtxt = Error$ &amp; " [in: " &amp; GetThreadInfo(1) &amp; "; err: " &amp; Err &amp; "; line: " &amp; Erl &amp; "]"
-	On Error GoTo 0
+	addDOMISubformToAppointment = False
+	errtxt = Error$ &amp; " [in: " &amp; Getthreadinfo(1) &amp; "; err: " &amp; Err &amp; "; line: " &amp; Erl &amp; "]"
+	On Error Goto 0
 
 	Error Err, errtxt
 	Resume getOut
 End Function</lotusscript></code>
-<rundata processeddocs='0' exitcode='0' agentdata='CE5AF2884BD380D485258695005FFE53'>
-<agentmodified><datetime>20210319T115222,37-06</datetime></agentmodified>
-<agentrun><datetime>20210325T142711,24-06</datetime></agentrun>
-<runlog>Started running agent '01. Install DOMI in Target Mail Db|installDOMI' on 03/25/2021 03:26:01 PM
-Ran LotusScript code
-Done running agent '01. Install DOMI in Target Mail Db|installDOMI' on 03/25/2021 03:27:11 PM
-</runlog></rundata></agent>
+<rundata processeddocs='0' exitcode='0'>
+<agentmodified><datetime dst='true'>20210521T130524,03-04</datetime></agentmodified></rundata></agent>
 

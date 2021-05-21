@@ -1,19 +1,16 @@
 <?xml version='1.0' encoding='utf-8'?>
 <agent name='(DOMI_updateZoomMeeting)' alias='DOMI_updateZoomMeeting' xmlns='http://www.lotus.com/dxl'
- version='11.0' maintenanceversion='1.0' replicaid='8525867000756EB9' hide='v3'
+ version='11.0' maintenanceversion='1.0' replicaid='852586DC005D7BD2' hide='v3'
  publicaccess='false' designerversion='8.5.3'>
-<noteinfo noteid='1c96' unid='15D36F72FF60D162C0A7ED8E65BDF837' sequence='1'>
+<noteinfo noteid='202' unid='15D36F72FF60D162C0A7ED8E65BDF837' sequence='4'>
 <created><datetime dst='true'>254190618T143126,63+01</datetime></created>
-<modified><datetime dst='true'>20210329T124641,12+01</datetime></modified>
-<revised><datetime>20210326T081925,04-05</datetime></revised>
-<lastaccessed><datetime dst='true'>20210329T124641,11+01</datetime></lastaccessed>
-<addedtofile><datetime dst='true'>20210329T124641,11+01</datetime></addedtofile></noteinfo>
-<updatedby><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name><name>CN=Devin Olson/OU=USA/O=PNPHCL</name><name
->CN=Rocky Oliver/OU=USA/O=PNPHCL</name><name>CN=Devin Olson/OU=USA/O=PNPHCL</name><name
->CN=Rocky Oliver/OU=USA/O=PNPHCL</name><name>CN=Michael Alexander/OU=USA/O=PNPHCL</name><name
->CN=Rocky Oliver/OU=USA/O=PNPHCL</name></updatedby>
+<modified><datetime dst='true'>20210521T131033,54-04</datetime></modified>
+<revised><datetime dst='true'>20210521T131033,53-04</datetime></revised>
+<lastaccessed><datetime dst='true'>20210521T131033,53-04</datetime></lastaccessed>
+<addedtofile><datetime dst='true'>20210521T130113,32-04</datetime></addedtofile></noteinfo>
+<updatedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></updatedby>
 <wassignedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></wassignedby>
-<designchange><datetime>20210319T125148,77-05</datetime></designchange>
+<designchange><datetime dst='true'>20210521T131033,48-04</datetime></designchange>
 <trigger type='actionsmenu'/>
 <documentset type='runonce'/><code event='options'><lotusscript>%REM
 	Agent DOMI_updateTeamsMeeting
@@ -43,7 +40,7 @@ Use "domiUtilsFE" 	' Domino Online Meeting Integration Front End UI Utilities
 </lotusscript></code><code event='initialize'><lotusscript>
 
 Sub Initialize
-	On Error GoTo ErrorTrap
+	On Error Goto ErrorTrap
 
 	Dim nodesToCopy As New StringList() 
 	
@@ -67,10 +64,8 @@ Sub Initialize
 ExitPoint:
 	Exit Sub		
 ErrorTrap:
-	On Error GoTo 0
+	On Error Goto 0
 	enhLogAction ||, || 
 	Resume ExitPoint 		
-End Sub</lotusscript></code>
-<rundata processeddocs='0' exitcode='0'>
-<agentmodified><datetime>20210318T130347,07-05</datetime></agentmodified></rundata></agent>
+End Sub</lotusscript></code></agent>
 

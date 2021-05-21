@@ -1,16 +1,16 @@
 <?xml version='1.0' encoding='utf-8'?>
 <form name='(domiSTLoginDlg)' alias='domiSTLoginDlg' xmlns='http://www.lotus.com/dxl'
- version='11.0' maintenanceversion='1.0' replicaid='8525867000756EB9' publicaccess='false'
+ version='11.0' maintenanceversion='1.0' replicaid='852586DC005D7BD2' publicaccess='false'
  designerversion='8.5.3' comment='dialog for initial login into ST Meeting server'
  inherit='true' renderpassthrough='true'>
-<noteinfo noteid='1c1e' unid='63B8F0957714380B8525868D0048A2B0' sequence='57'>
+<noteinfo noteid='282' unid='63B8F0957714380B8525868D0048A2B0' sequence='6'>
 <created><datetime>20210303T081322,40-05</datetime></created>
-<modified><datetime dst='true'>20210329T124640,96+01</datetime></modified>
-<revised><datetime>20210321T112008,85-05</datetime></revised>
-<lastaccessed><datetime dst='true'>20210329T124640,95+01</datetime></lastaccessed>
-<addedtofile><datetime dst='true'>20210329T124640,95+01</datetime></addedtofile></noteinfo>
-<updatedby><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name></updatedby>
-<wassignedby><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name></wassignedby>
+<modified><datetime dst='true'>20210521T131034,01-04</datetime></modified>
+<revised><datetime dst='true'>20210521T131034,00-04</datetime></revised>
+<lastaccessed><datetime dst='true'>20210521T131034,00-04</datetime></lastaccessed>
+<addedtofile><datetime dst='true'>20210521T130116,43-04</datetime></addedtofile></noteinfo>
+<updatedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></updatedby>
+<wassignedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></wassignedby>
 <body><richtext>
 <pardef id='1' hide='read edit print notes web'><parstyle name='Hidden Text'
  incyclekey='true' alldocuments='true' username='Rocky Oliver-'><font size='8pt'
@@ -28,31 +28,31 @@
  width='2.8750in'/>
 <tablerow>
 <tablecell columnspan='2' borderwidth='0px 0px 1px'>
-<pardef id='5' keepwithnext='true' keeptogether='true'/>
-<par def='5'><run><font size='11pt' style='bold'/>Sametime Credentials</run></par>
-<par def='5'><run><font size='9pt'/>Please enter your login email and password for your Sametime Meetings server.</run></par>
-<par def='5'><run><font size='9pt' style='bold' color='red'/>NOTE:</run><run
+<pardef id='6' keepwithnext='true' keeptogether='true'/>
+<par def='6'><run><font size='11pt' style='bold'/>Sametime Credentials</run></par>
+<par def='6'><run><font size='9pt'/>Please enter your login email and password for your Sametime Meetings server.</run></par>
+<par def='6'><run><font size='9pt' style='bold' color='red'/>NOTE:</run><run
 ><font size='9pt' color='red'/> </run><run><font size='9pt'/>Your password will </run><run
 ><font size='9pt' style='bold' color='red'/>NOT</run><run><font size='9pt'/> be saved</run></par></tablecell></tablerow>
 <tablerow>
 <tablecell borderwidth='1px 0px 0px' bgcolor='#f5f5f5'>
-<pardef id='4' keepwithnext='true' keeptogether='true'/>
-<par def='4'><run><font size='9pt'/>Login Email</run></par></tablecell>
+<pardef id='7' keepwithnext='true' keeptogether='true'/>
+<par def='7'><run><font size='9pt'/>Login Email</run></par></tablecell>
 <tablecell borderwidth='1px 0px 0px'>
-<pardef id='6' keepwithnext='true' keeptogether='true'/>
-<par def='6'><run><font size='9pt'/></run><run><font size='9pt'/><field usenotesstyle='false'
+<pardef id='8' keepwithnext='true' keeptogether='true'/>
+<par def='8'><run><font size='9pt'/></run><run><font size='9pt'/><field usenotesstyle='false'
  height='0.2500in' width='2.7000in' multiline='true' borderstyle='single'
  type='text' kind='editable' name='loginEmail'><code event='defaultvalue'><formula
 >loginEmail</formula></code></field></run><run><font size='9pt'/></run></par></tablecell></tablerow>
 <tablerow>
 <tablecell borderwidth='0px' bgcolor='#f5f5f5'>
-<par def='4'><run><font size='9pt'/>Login Password (not saved)</run></par></tablecell>
+<par def='7'><run><font size='9pt'/>Login Password (not saved)</run></par></tablecell>
 <tablecell borderwidth='0px'>
-<par def='6'><run><font size='9pt'/></run><run><font size='9pt'/><field usenotesstyle='false'
+<par def='8'><run><font size='9pt'/></run><run><font size='9pt'/><field usenotesstyle='false'
  height='0.2500in' width='2.7000in' multiline='true' borderstyle='single'
  type='text' kind='editable' name='stPassword'><code event='defaultvalue'><formula
 >""</formula></code></field></run><run><font size='9pt'/></run></par></tablecell></tablerow></table>
-<pardef id='7' hide='read edit print notes web'/>
-<par def='7'><run><font size='8pt'/></run></par></richtext></body>
+<pardef id='9' hide='read edit print notes web'/>
+<par def='9'><run><font size='8pt'/></run></par></richtext></body>
 <item name='$$ScriptName' summary='false' sign='true'><text>domiSTLoginDlg</text></item></form>
 

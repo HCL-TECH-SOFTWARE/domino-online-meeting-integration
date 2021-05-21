@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <view name='(beFeatureSetDEProfiles)' alias='beFeatureSetDEProfiles' xmlns='http://www.lotus.com/dxl'
- version='11.0' maintenanceversion='1.0' replicaid='8525867000756EB9' showinmenu='false'
+ version='11.0' maintenanceversion='1.0' replicaid='852586DC005D7BD2' showinmenu='false'
  defaultdesign='true' publicaccess='false' designerversion='8.5.3' comment='Design Element Profiles (for users - can be modified)'
  unreadmarks='none' onopengoto='lastopened' onrefresh='displayindicator' headers='simple'
  opencollapsed='false' showresponsehierarchy='true' showmargin='true' shrinkrows='true'
@@ -9,14 +9,13 @@
  totalscolor='black' headerbgcolor='#e6e6e6' boldunreadrows='false' evaluateactions='false'
  allownewdocuments='false' allowcustomizations='false' hidemarginborder='false'
  marginwidth='0px' marginbgcolor='white' uniquekeys='false'>
-<noteinfo noteid='1c02' unid='04DCF86A7A8080658525867E0048DE8A' sequence='50'>
+<noteinfo noteid='2b2' unid='04DCF86A7A8080658525867E0048DE8A' sequence='6'>
 <created><datetime>20210216T081555,62-05</datetime></created>
-<modified><datetime dst='true'>20210329T124640,89+01</datetime></modified>
-<revised><datetime>20210319T125149,55-05</datetime></revised>
-<lastaccessed><datetime dst='true'>20210329T124640,88+01</datetime></lastaccessed>
-<addedtofile><datetime dst='true'>20210329T124640,88+01</datetime></addedtofile></noteinfo>
-<updatedby><name>CN=Paul Withers/OU=UK/O=PNPHCL</name><name>CN=Devin Olson/OU=USA/O=PNPHCL</name><name
->CN=Rocky Oliver/OU=USA/O=PNPHCL</name><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></updatedby>
+<modified><datetime dst='true'>20210521T131034,40-04</datetime></modified>
+<revised><datetime dst='true'>20210521T131034,39-04</datetime></revised>
+<lastaccessed><datetime dst='true'>20210521T131034,39-04</datetime></lastaccessed>
+<addedtofile><datetime dst='true'>20210521T130117,62-04</datetime></addedtofile></noteinfo>
+<updatedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></updatedby>
 <wassignedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></wassignedby><code
  event='selection'><formula>SELECT Form = "desElement" &amp; featureFlag = "Yes"</formula></code>
 <actionbar bgcolor='#ebebeb' bordercolor='black'><actionbarstyle height='5.5000ex'><font

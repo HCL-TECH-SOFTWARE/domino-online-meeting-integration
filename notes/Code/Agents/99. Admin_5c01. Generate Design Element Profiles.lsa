@@ -1,16 +1,16 @@
 <?xml version='1.0' encoding='utf-8'?>
 <agent name='99. Admin\01. Generate Design Element Profiles' xmlns='http://www.lotus.com/dxl'
- version='11.0' maintenanceversion='1.0' replicaid='8525867000756EB9' hide='v3'
+ version='11.0' maintenanceversion='1.0' replicaid='852586DC005D7BD2' hide='v3'
  publicaccess='false' designerversion='8.5.3'>
-<noteinfo noteid='1ca6' unid='A2A62F256284950885258677004ABB0D' sequence='63'>
+<noteinfo noteid='232' unid='A2A62F256284950885258677004ABB0D' sequence='6'>
 <created><datetime>20210209T083615,49-05</datetime></created>
-<modified><datetime dst='true'>20210329T124641,14+01</datetime></modified>
-<revised><datetime>20210322T100154,94-05</datetime></revised>
-<lastaccessed><datetime dst='true'>20210329T124641,13+01</datetime></lastaccessed>
-<addedtofile><datetime dst='true'>20210329T124641,13+01</datetime></addedtofile></noteinfo>
-<updatedby><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name></updatedby>
-<wassignedby><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name></wassignedby>
-<designchange><datetime>20210322T100154,92-05</datetime></designchange>
+<modified><datetime dst='true'>20210521T131033,82-04</datetime></modified>
+<revised><datetime dst='true'>20210521T131033,81-04</datetime></revised>
+<lastaccessed><datetime dst='true'>20210521T131033,81-04</datetime></lastaccessed>
+<addedtofile><datetime dst='true'>20210521T130113,78-04</datetime></addedtofile></noteinfo>
+<updatedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></updatedby>
+<wassignedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></wassignedby>
+<designchange><datetime dst='true'>20210521T131033,76-04</datetime></designchange>
 <trigger type='actionsmenu'/>
 <documentset type='runonce'/><code event='options'><lotusscript>%REM
 	Agent Generate Design Element Profiles
@@ -39,7 +39,7 @@ Use "dxlUtilsBE"
 	Dim desname As String, desname2 As String, destypes As String
 	Dim retflg As Boolean, commentval As Integer, emptyvar As Variant
 	
-	On Error GoTo errHandler
+	On Error Goto errHandler
 	
 	Set thisdb = s.CurrentDatabase
 	Set dnotecol = getDOMIdesignElements(thisDb)  ' from domiUtilsBE
@@ -78,12 +78,10 @@ getOut:
 errHandler:
 	Select Case Err
 		Case 1000
-			MsgBox Error$,48 , "Error"
+			Msgbox Error$,48 , "Error"
 		Case Else
-			MsgBox Error$ &amp; " (err: " &amp; Err &amp; ", erl: " &amp; Erl &amp; ")",48 , "Error"
+			Msgbox Error$ &amp; " (err: " &amp; Err &amp; ", erl: " &amp; Erl &amp; ")",48 , "Error"
 	End Select
 	Resume getOut
-End Sub</lotusscript></code>
-<rundata processeddocs='0' exitcode='0'>
-<agentmodified><datetime>20210322T100154,89-05</datetime></agentmodified></rundata></agent>
+End Sub</lotusscript></code></agent>
 

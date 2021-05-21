@@ -1,16 +1,16 @@
 <?xml version='1.0' encoding='utf-8'?>
 <agent name='(Open Local DOMI Db in DDE)' alias='openDOMIDDE' xmlns='http://www.lotus.com/dxl'
- version='11.0' maintenanceversion='1.0' replicaid='8525867000756EB9' hide='v3'
+ version='11.0' maintenanceversion='1.0' replicaid='852586DC005D7BD2' hide='v3'
  publicaccess='false' designerversion='8.5.3'>
-<noteinfo noteid='1c2e' unid='73C87899C618228D8525869200620FC0' sequence='52'>
+<noteinfo noteid='222' unid='73C87899C618228D8525869200620FC0' sequence='6'>
 <created><datetime>20210308T125105,60-05</datetime></created>
-<modified><datetime dst='true'>20210329T124640,99+01</datetime></modified>
-<revised><datetime>20210322T095924,15-05</datetime></revised>
-<lastaccessed><datetime dst='true'>20210329T124640,98+01</datetime></lastaccessed>
-<addedtofile><datetime dst='true'>20210329T124640,98+01</datetime></addedtofile></noteinfo>
-<updatedby><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name></updatedby>
-<wassignedby><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name></wassignedby>
-<designchange><datetime>20210322T095924,15-05</datetime></designchange>
+<modified><datetime dst='true'>20210521T131033,66-04</datetime></modified>
+<revised><datetime dst='true'>20210521T131033,65-04</datetime></revised>
+<lastaccessed><datetime dst='true'>20210521T131033,65-04</datetime></lastaccessed>
+<addedtofile><datetime dst='true'>20210521T130113,60-04</datetime></addedtofile></noteinfo>
+<updatedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></updatedby>
+<wassignedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></wassignedby>
+<designchange><datetime dst='true'>20210521T131033,61-04</datetime></designchange>
 <trigger type='actionsmenu'/>
 <documentset type='runonce'/><code event='options'><lotusscript>%REM
 	Agent Open Db in DDE Test
@@ -24,18 +24,11 @@ Option Declare
 </lotusscript></code><code event='initialize'><lotusscript>Sub Initialize
 	Dim s As New NotesSession
 	Dim thisDb As NotesDatabase
-	Dim res As Integer, filepath As String, server As String, openpath As string
+	Dim res As Integer, filepath As String, server As String, openpath As String
 	Set thisdb = s.currentDatabase
 	filepath = thisDb.Filepath
 	server = thisDb.server
 	
 	res = Shell(|designer.exe "| &amp; filepath &amp; |"|)
-End Sub</lotusscript></code>
-<rundata processeddocs='0' exitcode='0' agentdata='48E20C56D3D671E9862586A30051FC82'>
-<agentmodified><datetime>20210322T114923,81-06</datetime></agentmodified>
-<agentrun><datetime>20210325T085534,43-06</datetime></agentrun>
-<runlog>Started running agent '(Open Local DOMI Db in DDE)|openDOMIDDE' on 03/25/2021 09:55:29 AM
-Ran LotusScript code
-Done running agent '(Open Local DOMI Db in DDE)|openDOMIDDE' on 03/25/2021 09:55:34 AM
-</runlog></rundata></agent>
+End Sub</lotusscript></code></agent>
 
