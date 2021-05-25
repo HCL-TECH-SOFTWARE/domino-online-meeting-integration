@@ -24,7 +24,7 @@ public class DOMIConstants {
   public static final String CONFIG_DIR = "domiconfig.d";
 
   public static final String CONFIG_DEBUG = "DEBUG";
-  public static final String CONFIG_HOSTNAME = "HOSTNAME";
+  public static final String CONFIG_HOSTNAME = "OAUTH_HOSTNAME";
   public static final String CONFIG_PORT = "PORT";
   public static final String CONFIG_METRICSPORT = "METRICSPORT";
   public static final String CONFIG_LOG_DIR = "LOG_DIR";
