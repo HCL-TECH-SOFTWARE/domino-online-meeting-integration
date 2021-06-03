@@ -673,6 +673,10 @@ Function getOAuthToken() As Boolean
 	meetingservice$ = ndoc.GetFirstItem(|service|).Text 
 	url$ = getDOMIrootURL(meetingservice$) & |/index.html|
 	
+	enhLogExtendedContent LIB_PREFIX, ||, |Meeting Service: | & meetingservice$
+	enhLogExtendedContent ||, ||, |URL: | & url$ 
+	enhLogExtendedContent ||, ||, ||
+	
 	Call nuiwsp.URLOpen(url$) 
 	result = True
 	

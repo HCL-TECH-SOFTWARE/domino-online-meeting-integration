@@ -1,22 +1,34 @@
 <?xml version='1.0' encoding='utf-8'?>
 <agent name='01. Install DOMI in Target Mail Db' alias='installDOMI' xmlns='http://www.lotus.com/dxl'
- version='11.0' maintenanceversion='1.0' replicaid='852586DC005D7BD2' hide='v3'
- publicaccess='false' designerversion='8.5.3'>
-<noteinfo noteid='22a' unid='EBA8109DDBD87E8E3360BF6D4A230B2A' sequence='7'>
+ version='12.0' replicaid='8525867000756EB9' hide='v3' publicaccess='false'
+ designerversion='8.5.3'>
+<noteinfo noteid='1d6e' unid='EBA8109DDBD87E8E3360BF6D4A230B2A' sequence='55'>
 <created><datetime>126470630T191646,02-0345</datetime></created>
-<modified><datetime dst='true'>20210521T131033,74-04</datetime></modified>
-<revised><datetime dst='true'>20210521T131033,73-04</datetime></revised>
-<lastaccessed><datetime dst='true'>20210521T131033,73-04</datetime></lastaccessed>
-<addedtofile><datetime dst='true'>20210521T130113,70-04</datetime></addedtofile></noteinfo>
-<updatedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></updatedby>
-<wassignedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></wassignedby>
-<designchange><datetime dst='true'>20210521T131033,69-04</datetime></designchange>
+<modified><datetime dst='true'>20210603T131930,04-04</datetime></modified>
+<revised><datetime dst='true'>20210603T131930,03-04</datetime></revised>
+<lastaccessed><datetime dst='true'>20210603T131930,03-04</datetime></lastaccessed>
+<addedtofile><datetime dst='true'>20210519T141917,50-04</datetime></addedtofile></noteinfo>
+<updatedby><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name></updatedby>
+<wassignedby><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name></wassignedby>
+<designchange><datetime dst='true'>20210603T131929,98-04</datetime></designchange>
 <trigger type='actionsmenu'/>
 <documentset type='runonce'/><code event='options'><lotusscript>%REM
-	Agent Install OMI in Target Mail Db
+	Agent 01. Install DOMI in Target Mail Db
 	Created Feb 16, 2021 by Rocky Oliver/USA/PNPHCL
-	Description: This agent is used to install the design elements needed for OMI into the desired mail database
+	Description: This agent is used to install the design elements needed for DOMI into the desired mail database
 	or template. 
+	
+	**************** LICENSE ****************
+	Copyright 2021 HCL America, Inc.
+	Licensed under the Apache License, Version 2.0 (the "License"); you may Not Use this file except 
+	In compliance With the License. You may obtain a copy of the License at
+	
+	http://www.apache.org/licenses/LICENSE-2.0
+	
+	Unless required by applicable law Or agreed To In writing, software distributed under the License 
+	Is distributed On an "AS IS" BASIS, WITHOUT WARRANTIES Or CONDITIONS OF Any KIND, either express 
+	Or implied. See the License For the specific language governing permissions And limitations under 
+	the License
 %END REM
 Option Public
 Option Declare
@@ -167,5 +179,6 @@ errHandler:
 	Resume getOut
 End Function</lotusscript></code>
 <rundata processeddocs='0' exitcode='0'>
-<agentmodified><datetime dst='true'>20210521T130524,03-04</datetime></agentmodified></rundata></agent>
+<agentmodified><datetime dst='true'>20210603T131929,87-04</datetime></agentmodified></rundata>
+<item name='$POID'><datetime dst='true'>20210521T131033,73-04</datetime></item></agent>
 

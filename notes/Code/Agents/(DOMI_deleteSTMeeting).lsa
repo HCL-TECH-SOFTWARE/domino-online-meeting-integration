@@ -1,13 +1,13 @@
 <?xml version='1.0' encoding='utf-8'?>
 <agent name='(DOMI_deleteSTMeeting)' alias='DOMI_deleteSTMeeting' xmlns='http://www.lotus.com/dxl'
- version='11.0' maintenanceversion='1.0' replicaid='852586DC005D7BD2' hide='v3'
- publicaccess='false' designerversion='8.5.3'>
-<noteinfo noteid='182' unid='8258B89C81EE54AD4EEF54ED366A56E4' sequence='4'>
-<created><datetime>382310720T055627,24+14</datetime></created>
-<modified><datetime dst='true'>20210521T131032,35-04</datetime></modified>
+ version='12.0' replicaid='8525867000756EB9' hide='v3' publicaccess='false'
+ designerversion='8.5.3'>
+<noteinfo noteid='1d7a' unid='4FA24E7D57CEB099C88FEAFB9FE8DA1F' sequence='4'>
+<created><datetime/></created>
+<modified><datetime dst='true'>20210603T123024,06-04</datetime></modified>
 <revised><datetime dst='true'>20210521T131032,34-04</datetime></revised>
-<lastaccessed><datetime dst='true'>20210521T131032,34-04</datetime></lastaccessed>
-<addedtofile><datetime dst='true'>20210521T130112,06-04</datetime></addedtofile></noteinfo>
+<lastaccessed><datetime dst='true'>20210603T123024,05-04</datetime></lastaccessed>
+<addedtofile><datetime dst='true'>20210519T141917,52-04</datetime></addedtofile></noteinfo>
 <updatedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></updatedby>
 <wassignedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></wassignedby>
 <designchange><datetime dst='true'>20210521T131032,28-04</datetime></designchange>
@@ -154,5 +154,6 @@ errHandler:
 	enhLogException ||, ||
 	
 	Resume getOut
-End Sub</lotusscript></code></agent>
+End Sub</lotusscript></code>
+<item name='$POID'><datetime dst='true'>20210521T131032,34-04</datetime></item></agent>
 

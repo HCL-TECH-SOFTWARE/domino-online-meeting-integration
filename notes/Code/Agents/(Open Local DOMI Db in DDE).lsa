@@ -1,21 +1,21 @@
 <?xml version='1.0' encoding='utf-8'?>
 <agent name='(Open Local DOMI Db in DDE)' alias='openDOMIDDE' xmlns='http://www.lotus.com/dxl'
- version='11.0' maintenanceversion='1.0' replicaid='852586DC005D7BD2' hide='v3'
- publicaccess='false' designerversion='8.5.3'>
-<noteinfo noteid='222' unid='73C87899C618228D8525869200620FC0' sequence='6'>
+ version='12.0' replicaid='8525867000756EB9' hide='v3' publicaccess='false'
+ designerversion='8.5.3'>
+<noteinfo noteid='1cba' unid='73C87899C618228D8525869200620FC0' sequence='59'>
 <created><datetime>20210308T125105,60-05</datetime></created>
-<modified><datetime dst='true'>20210521T131033,66-04</datetime></modified>
-<revised><datetime dst='true'>20210521T131033,65-04</datetime></revised>
-<lastaccessed><datetime dst='true'>20210521T131033,65-04</datetime></lastaccessed>
-<addedtofile><datetime dst='true'>20210521T130113,60-04</datetime></addedtofile></noteinfo>
-<updatedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></updatedby>
-<wassignedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></wassignedby>
-<designchange><datetime dst='true'>20210521T131033,61-04</datetime></designchange>
+<modified><datetime dst='true'>20210603T131843,10-04</datetime></modified>
+<revised><datetime dst='true'>20210603T131843,09-04</datetime></revised>
+<lastaccessed><datetime dst='true'>20210603T131843,09-04</datetime></lastaccessed>
+<addedtofile><datetime dst='true'>20210519T141917,26-04</datetime></addedtofile></noteinfo>
+<updatedby><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name></updatedby>
+<wassignedby><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name></wassignedby>
+<designchange><datetime dst='true'>20210603T131843,05-04</datetime></designchange>
 <trigger type='actionsmenu'/>
 <documentset type='runonce'/><code event='options'><lotusscript>%REM
-	Agent Open Db in DDE Test
+	Agent (Open Local DOMI Db in DDE)
 	Created Mar 8, 2021 by Rocky Oliver/USA/PNPHCL
-	Description: Comments for Agent
+	Description: Opens the local db in DDE
 %END REM
 Option Public
 Option Declare
@@ -30,5 +30,8 @@ Option Declare
 	server = thisDb.server
 	
 	res = Shell(|designer.exe "| &amp; filepath &amp; |"|)
-End Sub</lotusscript></code></agent>
+End Sub</lotusscript></code>
+<rundata processeddocs='0' exitcode='0'>
+<agentmodified><datetime dst='true'>20210603T131842,95-04</datetime></agentmodified></rundata>
+<item name='$POID'><datetime dst='true'>20210521T131033,65-04</datetime></item></agent>
 

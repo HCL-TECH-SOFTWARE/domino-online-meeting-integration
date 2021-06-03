@@ -155,7 +155,7 @@ Const MSG_DATABASE_NOTOPEN = |Could not open the specified database.  |
 
 
 Const ERR_PARENT_METHOD_NOT_ALLOWED = 1100
-Const MSG_PARENT_METHOD_NOT_ALLOWED = |Method must be overriden in child class.  |
+Const MSG_PARENT_METHOD_NOT_ALLOWED = |Method must be overridden in child class.  |
 
 Const ERR_PARAMETER_INVALID = 1195
 Const MSG_PARAMETER_INVALID = |A passed parameter is invalid.  |
@@ -224,7 +224,7 @@ Const ERR_NOTES_URL_REQ =  						4838
 Const MSG_NOTES_URL_REQ =  						|Requested URL failure.  | 
 
 Const ERR_NOTES_HTTP_REQUEST_FAILED =  			4839 
-Const MSG_NOTES_HTTP_REQUEST_FAILED =  			|HTTP fequest has failed.  | 
+Const MSG_NOTES_HTTP_REQUEST_FAILED =  			|HTTP request has failed.  | 
 
 Const ERR_NOTES_UNSUPPORTED_CONTENT_TYPE = 	 	4840 
 Const MSG_NOTES_UNSUPPORTED_CONTENT_TYPE =  	|Unsupported content type.  | 
