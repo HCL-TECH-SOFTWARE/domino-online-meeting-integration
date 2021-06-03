@@ -1,26 +1,23 @@
 <?xml version='1.0' encoding='utf-8'?>
 <agent name='(DOMI_deleteGtmMeeting)' alias='DOMI_deleteGtmMeeting' xmlns='http://www.lotus.com/dxl'
- version='11.0' maintenanceversion='1.0' replicaid='8525867000756EB9' hide='v3'
- publicaccess='false' designerversion='8.5.3'>
-<noteinfo noteid='1c4e' unid='3151243F487B3440AFD7621D459CCD9E' sequence='1'>
-<created><datetime dst='true'>339340609T134041,58-1430</datetime></created>
-<modified><datetime dst='true'>20210329T124641,03+01</datetime></modified>
-<revised><datetime>20210326T081924,53-05</datetime></revised>
-<lastaccessed><datetime dst='true'>20210329T124641,02+01</datetime></lastaccessed>
-<addedtofile><datetime dst='true'>20210329T124641,02+01</datetime></addedtofile></noteinfo>
-<updatedby><name>CN=Paul Withers/OU=UK/O=PNPHCL</name><name>CN=Devin Olson/OU=USA/O=PNPHCL</name><name
->CN=Rocky Oliver/OU=USA/O=PNPHCL</name><name>CN=Devin Olson/OU=USA/O=PNPHCL</name><name
->CN=Rocky Oliver/OU=USA/O=PNPHCL</name><name>CN=Michael Alexander/OU=USA/O=PNPHCL</name><name
->CN=Rocky Oliver/OU=USA/O=PNPHCL</name></updatedby>
-<wassignedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></wassignedby>
-<designchange><datetime>20210319T125147,59-05</datetime></designchange>
+ version='12.0' replicaid='8525867000756EB9' hide='v3' publicaccess='false'
+ designerversion='8.5.3'>
+<noteinfo noteid='1cda' unid='F589A539C1C268098DFFC6B73FAE505A' sequence='8'>
+<created><datetime dst='true'>411820317T034444,42-12</datetime></created>
+<modified><datetime dst='true'>20210603T131355,83-04</datetime></modified>
+<revised><datetime dst='true'>20210603T131355,82-04</datetime></revised>
+<lastaccessed><datetime dst='true'>20210603T131355,82-04</datetime></lastaccessed>
+<addedtofile><datetime dst='true'>20210519T141917,30-04</datetime></addedtofile></noteinfo>
+<updatedby><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name></updatedby>
+<wassignedby><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name></wassignedby>
+<designchange><datetime dst='true'>20210603T131355,79-04</datetime></designchange>
 <trigger type='actionsmenu'/>
 <documentset type='runonce'/><code event='options'><lotusscript>%REM
-	Agent DOMI_deleteTeamsMeeting
+	Agent (DOMI_deleteGtmMeeting)
 
 	Created Mar 2021 by Devin Olson/USA/PNPHCL, Rocky Oliver/USA/PNPHCL, Paul Withers/USA/PNPHCL 
 
-	Deletes a Teams Meeting
+	Deletes a GoToMeeting Meeting
 
 	Copyright 2021 HCL Software
 	Licensed under the Apache License, Version 2.0 (the "License"); 
@@ -43,7 +40,7 @@ Use "domiUtilsFE" 	' Domino Online Meeting Integration Front End UI Utilities
 </lotusscript></code><code event='initialize'><lotusscript>
 
 Sub Initialize
-	On Error GoTo ErrorTrap
+	On Error Goto ErrorTrap
 	
 	' BEGIN CODE 
 	Call instantiateDOMIlog() ' Instantiate Logging and set options for DOMI operations
@@ -53,11 +50,11 @@ Sub Initialize
 ExitPoint:
 	Exit Sub		
 ErrorTrap:
-	On Error GoTo 0
+	On Error Goto 0
 	enhLogAction ||, || 
 	Resume ExitPoint 		
 End Sub</lotusscript></code>
 <rundata processeddocs='0' exitcode='0'>
-<agentmodified><datetime>20210318T155940,59+00</datetime></agentmodified></rundata>
-<item name='$POID'><datetime>20210222T144150,11-05</datetime></item></agent>
+<agentmodified><datetime dst='true'>20210603T131355,72-04</datetime></agentmodified></rundata>
+<item name='$POID'><datetime dst='true'>20210521T131032,26-04</datetime></item></agent>
 

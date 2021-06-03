@@ -1,27 +1,19 @@
 <?xml version='1.0' encoding='utf-8'?>
 <agent name='(DOMI_deleteTeamsMeeting)' alias='DOMI_deleteTeamsMeeting' xmlns='http://www.lotus.com/dxl'
- version='11.0' maintenanceversion='1.0' replicaid='8525867000756EB9' hide='v3'
- publicaccess='false' designerversion='8.5.3'>
-<noteinfo noteid='1c5e' unid='D96B4CA8CBFB5BF6A99BCB55742F2079' sequence='1'>
-<created><datetime dst='true'>232420418T060415,61-0830</datetime></created>
-<modified><datetime dst='true'>20210329T124641,05+01</datetime></modified>
-<revised><datetime>20210326T081924,59-05</datetime></revised>
-<lastaccessed><datetime dst='true'>20210329T124641,04+01</datetime></lastaccessed>
-<addedtofile><datetime dst='true'>20210329T124641,04+01</datetime></addedtofile></noteinfo>
-<updatedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name><name
->CN=Devin Olson/OU=USA/O=PNPHCL</name><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name><name
->CN=Devin Olson/OU=USA/O=PNPHCL</name><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name><name
->CN=Devin Olson/OU=USA/O=PNPHCL</name><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name><name
->CN=Devin Olson/OU=USA/O=PNPHCL</name><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name><name
->CN=Devin Olson/OU=USA/O=PNPHCL</name><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name><name
->CN=Devin Olson/OU=USA/O=PNPHCL</name><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name><name
->CN=Devin Olson/OU=USA/O=PNPHCL</name><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name><name
->CN=Michael Alexander/OU=USA/O=PNPHCL</name><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name></updatedby>
-<wassignedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></wassignedby>
-<designchange><datetime>20210319T125147,74-05</datetime></designchange>
+ version='12.0' replicaid='8525867000756EB9' hide='v3' publicaccess='false'
+ designerversion='8.5.3'>
+<noteinfo noteid='1cea' unid='536C08A60BE898567FDFBDAA54082311' sequence='6'>
+<created><datetime>354340121T195454,09+1545</datetime></created>
+<modified><datetime dst='true'>20210603T131417,94-04</datetime></modified>
+<revised><datetime dst='true'>20210603T131417,93-04</datetime></revised>
+<lastaccessed><datetime dst='true'>20210603T131417,93-04</datetime></lastaccessed>
+<addedtofile><datetime dst='true'>20210519T141917,32-04</datetime></addedtofile></noteinfo>
+<updatedby><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name></updatedby>
+<wassignedby><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name></wassignedby>
+<designchange><datetime dst='true'>20210603T131417,89-04</datetime></designchange>
 <trigger type='actionsmenu'/>
 <documentset type='runonce'/><code event='options'><lotusscript>%REM
-	Agent DOMI_deleteTeamsMeeting
+	Agent (DOMI_deleteTeamsMeeting)
 
 	Created Feb 2021 by Devin Olson/USA/PNPHCL, Rocky Oliver/USA/PNPHCL, Paul Withers/USA/PNPHCL 
 
@@ -48,7 +40,7 @@ Use "domiUtilsFE" 	' Domino Online Meeting Integration Front End UI Utilities
 </lotusscript></code><code event='initialize'><lotusscript>
 
 Sub Initialize
-	On Error GoTo ErrorTrap
+	On Error Goto ErrorTrap
 	
 	' BEGIN CODE 
 	Call instantiateDOMIlog() ' Instantiate Logging and set options for DOMI operations
@@ -58,11 +50,11 @@ Sub Initialize
 ExitPoint:
 	Exit Sub		
 ErrorTrap:
-	On Error GoTo 0
+	On Error Goto 0
 	enhLogAction ||, || 
 	Resume ExitPoint 		
 End Sub</lotusscript></code>
 <rundata processeddocs='0' exitcode='0'>
-<agentmodified><datetime>20210308T134714,02-05</datetime></agentmodified></rundata>
-<item name='$POID'><datetime>20210222T144150,11-05</datetime></item></agent>
+<agentmodified><datetime dst='true'>20210603T131417,81-04</datetime></agentmodified></rundata>
+<item name='$POID'><datetime dst='true'>20210521T131032,40-04</datetime></item></agent>
 

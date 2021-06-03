@@ -1,26 +1,17 @@
 <?xml version='1.0' encoding='utf-8'?>
 <agent name='(FeatureFlagYes)' alias='FeatureFlagYes' xmlns='http://www.lotus.com/dxl'
- version='11.0' maintenanceversion='1.0' replicaid='8525867000756EB9' hide='v3'
- publicaccess='false' designerversion='8.5.3'>
-<noteinfo noteid='1bf2' unid='7BF3BCDCC430F4DF8525867E00470863' sequence='4'>
+ version='12.0' replicaid='8525867000756EB9' hide='v3' publicaccess='false'
+ designerversion='8.5.3'>
+<noteinfo noteid='1c7e' unid='7BF3BCDCC430F4DF8525867E00470863' sequence='7'>
 <created><datetime>20210216T075552,03-05</datetime></created>
-<modified><datetime dst='true'>20210329T124640,85+01</datetime></modified>
-<revised><datetime>20210216T075759,11-05</datetime></revised>
-<lastaccessed><datetime dst='true'>20210329T124640,84+01</datetime></lastaccessed>
-<addedtofile><datetime dst='true'>20210329T124640,84+01</datetime></addedtofile></noteinfo>
-<updatedby><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name></updatedby>
-<wassignedby><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name></wassignedby>
-<designchange><datetime>20210216T075759,09-05</datetime></designchange>
+<modified><datetime dst='true'>20210603T123023,65-04</datetime></modified>
+<revised><datetime dst='true'>20210521T130113,57-04</datetime></revised>
+<lastaccessed><datetime dst='true'>20210603T123023,64-04</datetime></lastaccessed>
+<addedtofile><datetime dst='true'>20210519T141917,12-04</datetime></addedtofile></noteinfo>
+<updatedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></updatedby>
+<designchange><datetime dst='true'>20210521T130113,51-04</datetime></designchange>
 <trigger type='actionsmenu'/>
 <documentset type='selected'/><code event='action'><formula>@SetField("FeatureFlag"; "Yes");
 SELECT @All</formula></code>
-<rundata processeddocs='12' exitcode='0'>
-<agentmodified><datetime>20210216T075759,12-05</datetime></agentmodified>
-<agentrun><datetime>20210216T080343,10-05</datetime></agentrun>
-<runlog>Started running agent '(FeatureFlagYes)|FeatureFlagYes' on 02/16/2021 08:03:43 AM
-Running on selected documents: 12 total
-Found 12 document(s) that match search criteria
-12 document(s) were modified by formula
-Done running agent '(FeatureFlagYes)|FeatureFlagYes' on 02/16/2021 08:03:43 AM
-</runlog></rundata></agent>
+<item name='$POID'><datetime dst='true'>20210521T130113,57-04</datetime></item></agent>
 

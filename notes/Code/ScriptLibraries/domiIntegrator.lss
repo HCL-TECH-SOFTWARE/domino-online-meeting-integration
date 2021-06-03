@@ -1580,7 +1580,7 @@ ErrorTrap:
 		
 		' BEGIN CODE
 		If Not me.validateContext(context, ndtStart, ndtEnd) Then GoTo ExitPoint 
-		If isBlankString(me.MeetingService) Then Error ERR_PARAMETER_BLANK, MSG_PARAMETER_BLANK & |Meeting Service not Specified| 
+		If isBlankString(me.MeetingService) Then Error ERR_PARAMETER_BLANK, MSG_PARAMETER_BLANK & |Meeting Service not Specified.  | 
 		
 		If (context Is Nothing) Or isBlankString(me.MeetingService) Then Error ERR_PARAMETER_BLANK, MSG_PARAMETER_BLANK 
 		If Not(|Appointment| = context.getItemValue(|Form|)(0)) Then Error ERR_PARAMETER_INVALID, MSG_PARAMETER_INVALID & |Context document is not a Calendar Entry.  |
@@ -2302,6 +2302,7 @@ ErrorTrap:
 	enhLogException LIB_PREFIX, ||
 	Resume ExitPoint
 End Function
+
 
 
 

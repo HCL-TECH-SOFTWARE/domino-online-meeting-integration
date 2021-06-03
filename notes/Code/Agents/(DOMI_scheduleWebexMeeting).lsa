@@ -1,31 +1,23 @@
 <?xml version='1.0' encoding='utf-8'?>
 <agent name='(DOMI_scheduleWebexMeeting)' alias='DOMI_scheduleWebexMeeting'
- xmlns='http://www.lotus.com/dxl' version='11.0' maintenanceversion='1.0'
- replicaid='8525867000756EB9' hide='v3' publicaccess='false' designerversion='8.5.3'>
-<noteinfo noteid='1cb6' unid='81DE5D2A72E0B1361BAB29060C807433' sequence='1'>
-<created><datetime>259990609T192229,47-1115</datetime></created>
-<modified><datetime dst='true'>20210329T124641,16+01</datetime></modified>
-<revised><datetime>20210326T081924,86-05</datetime></revised>
-<lastaccessed><datetime dst='true'>20210329T124641,15+01</datetime></lastaccessed>
-<addedtofile><datetime dst='true'>20210329T124641,15+01</datetime></addedtofile></noteinfo>
-<updatedby><name>CN=Paul Withers/OU=UK/O=PNPHCL</name><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name><name
->CN=Devin Olson/OU=USA/O=PNPHCL</name><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name><name
->CN=Devin Olson/OU=USA/O=PNPHCL</name><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name><name
->CN=Devin Olson/OU=USA/O=PNPHCL</name><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name><name
->CN=Devin Olson/OU=USA/O=PNPHCL</name><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name><name
->CN=Devin Olson/OU=USA/O=PNPHCL</name><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name><name
->CN=Devin Olson/OU=USA/O=PNPHCL</name><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name><name
->CN=Devin Olson/OU=USA/O=PNPHCL</name><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name><name
->CN=Michael Alexander/OU=USA/O=PNPHCL</name><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name></updatedby>
-<wassignedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></wassignedby>
-<designchange><datetime>20210319T125148,38-05</datetime></designchange>
+ xmlns='http://www.lotus.com/dxl' version='12.0' replicaid='8525867000756EB9'
+ hide='v3' publicaccess='false' designerversion='8.5.3'>
+<noteinfo noteid='1d2a' unid='1FFA759F5FBDC5E5437FD6F8CF149FDE' sequence='8'>
+<created><datetime/></created>
+<modified><datetime dst='true'>20210603T131549,44-04</datetime></modified>
+<revised><datetime dst='true'>20210603T131549,43-04</datetime></revised>
+<lastaccessed><datetime dst='true'>20210603T131549,43-04</datetime></lastaccessed>
+<addedtofile><datetime dst='true'>20210519T141917,40-04</datetime></addedtofile></noteinfo>
+<updatedby><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name></updatedby>
+<wassignedby><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name></wassignedby>
+<designchange><datetime dst='true'>20210603T131549,38-04</datetime></designchange>
 <trigger type='actionsmenu'/>
 <documentset type='runonce'/><code event='options'><lotusscript>%REM
-	Agent DOMI_scheduleGtmMeeting
+	Agent (DOMI_scheduleWebexMeeting)
 
 	Created Mar 2021 by Devin Olson/USA/PNPHCL, Rocky Oliver/USA/PNPHCL, Paul Withers/USA/PNPHCL 
 
-	Creates a Teams meeting
+	Creates a Webex meeting
 
 	Copyright 2021 HCL Software
 	Licensed under the Apache License, Version 2.0 (the "License"); 
@@ -48,7 +40,7 @@ Use "domiUtilsFE" 	' Domino Online Meeting Integration Front End UI Utilities
 </lotusscript></code><code event='initialize'><lotusscript>
 
 Sub Initialize
-	On Error GoTo ErrorTrap
+	On Error Goto ErrorTrap
 
 	Dim nodesToCopy As New StringList() 
 	
@@ -71,15 +63,11 @@ Sub Initialize
 ExitPoint:
 	Exit Sub		
 ErrorTrap:
-	On Error GoTo 0
+	On Error Goto 0
 	enhLogAction ||, || 
 	Resume ExitPoint 		
 End Sub</lotusscript></code>
-<rundata processeddocs='0' exitcode='0' agentdata='1B8C837387330CA98025869600473E62'>
-<agentmodified><datetime>20210312T124729,31+00</datetime></agentmodified>
-<agentrun><datetime>20210312T125900,17+00</datetime></agentrun>
-<runlog>Started running agent '(DOMI_scheduleWebexMeeting)|DOMI_scheduleWebexMeeting' on 12/03/2021 12:58:51
-Ran LotusScript code
-Done running agent '(DOMI_scheduleWebexMeeting)|DOMI_scheduleWebexMeeting' on 12/03/2021 12:59:00
-</runlog></rundata></agent>
+<rundata processeddocs='0' exitcode='0'>
+<agentmodified><datetime dst='true'>20210603T131549,32-04</datetime></agentmodified></rundata>
+<item name='$POID'><datetime dst='true'>20210521T131033,09-04</datetime></item></agent>
 

@@ -1,24 +1,16 @@
 <?xml version='1.0' encoding='utf-8'?>
 <agent name='(DOMI_revokeOAuthTokenFE)' alias='DOMI_revokeOAuthTokenFE' xmlns='http://www.lotus.com/dxl'
- version='11.0' maintenanceversion='1.0' replicaid='8525867000756EB9' hide='v3'
- publicaccess='false' designerversion='8.5.3'>
-<noteinfo noteid='1cd2' unid='B1F5944DAEB55F75815260D2FBA28829' sequence='1'>
+ version='12.0' replicaid='8525867000756EB9' hide='v3' publicaccess='false'
+ designerversion='8.5.3'>
+<noteinfo noteid='1d56' unid='2011BAD1232C83ABE71AF9E9D3BBB6D9' sequence='4'>
 <created><datetime/></created>
-<modified><datetime dst='true'>20210329T124641,21+01</datetime></modified>
-<revised><datetime>20210326T081924,74-05</datetime></revised>
-<lastaccessed><datetime dst='true'>20210329T124641,20+01</datetime></lastaccessed>
-<addedtofile><datetime dst='true'>20210329T124641,20+01</datetime></addedtofile></noteinfo>
-<updatedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name><name
->CN=Devin Olson/OU=USA/O=PNPHCL</name><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name><name
->CN=Devin Olson/OU=USA/O=PNPHCL</name><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name><name
->CN=Devin Olson/OU=USA/O=PNPHCL</name><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name><name
->CN=Devin Olson/OU=USA/O=PNPHCL</name><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name><name
->CN=Devin Olson/OU=USA/O=PNPHCL</name><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name><name
->CN=Devin Olson/OU=USA/O=PNPHCL</name><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name><name
->CN=Devin Olson/OU=USA/O=PNPHCL</name><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name><name
->CN=Michael Alexander/OU=USA/O=PNPHCL</name><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name></updatedby>
+<modified><datetime dst='true'>20210603T123024,01-04</datetime></modified>
+<revised><datetime dst='true'>20210521T131032,76-04</datetime></revised>
+<lastaccessed><datetime dst='true'>20210603T123024,00-04</datetime></lastaccessed>
+<addedtofile><datetime dst='true'>20210519T141917,47-04</datetime></addedtofile></noteinfo>
+<updatedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></updatedby>
 <wassignedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></wassignedby>
-<designchange><datetime>20210319T125148,06-05</datetime></designchange>
+<designchange><datetime dst='true'>20210521T131032,72-04</datetime></designchange>
 <trigger type='agentlist'/>
 <documentset type='runonce'/><code event='options'><lotusscript>%REM
 	Agent (DOMI_validateOAuthTokenFE)
@@ -94,7 +86,7 @@ Private Const IDYES = 6                 ' Yes button pressed
 Private Const IDNO = 7                  ' No button pressed
 
 </lotusscript></code><code event='initialize'><lotusscript>Sub Initialize
-	On Error GoTo ErrorTrap
+	On Error Goto ErrorTrap
 	
 	Call instantiateDOMIlog() ' Instantiate Logging and set options for DOMI operations
 
@@ -103,11 +95,10 @@ Private Const IDNO = 7                  ' No button pressed
 ExitPoint:
 	Exit Sub 
 ErrorTrap:
-	On Error GoTo 0
+	On Error Goto 0
 	enhLogException |Action Validate OAUTH Token.|, || 
-	MessageBox Error$(), 16, |Error | &amp; CStr(Err()) 
+	Messagebox Error$(), 16, |Error | &amp; Cstr(Err()) 
 	Resume ExitPoint 
 End Sub</lotusscript></code>
-<rundata processeddocs='0' exitcode='0'>
-<agentmodified><datetime>20210310T132939,61+00</datetime></agentmodified></rundata></agent>
+<item name='$POID'><datetime dst='true'>20210521T131032,76-04</datetime></item></agent>
 

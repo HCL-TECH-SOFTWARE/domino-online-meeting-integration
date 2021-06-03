@@ -2,15 +2,15 @@
 <agent name='(DOMI_deleteSTMeeting)' alias='DOMI_deleteSTMeeting' xmlns='http://www.lotus.com/dxl'
  version='12.0' replicaid='8525867000756EB9' hide='v3' publicaccess='false'
  designerversion='8.5.3'>
-<noteinfo noteid='1cf6' unid='8258B89C81EE54AD4EEF54ED366A56E4' sequence='9'>
-<created><datetime>382310720T055627,24+14</datetime></created>
-<modified><datetime dst='true'>20210505T164255,86-04</datetime></modified>
-<revised><datetime dst='true'>20210505T101647,01-04</datetime></revised>
-<lastaccessed><datetime dst='true'>20210505T164255,85-04</datetime></lastaccessed>
-<addedtofile><datetime dst='true'>20210505T164255,85-04</datetime></addedtofile></noteinfo>
-<updatedby><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name></updatedby>
-<wassignedby><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name></wassignedby>
-<designchange><datetime dst='true'>20210505T101647,01-04</datetime></designchange>
+<noteinfo noteid='1d7a' unid='4FA24E7D57CEB099C88FEAFB9FE8DA1F' sequence='4'>
+<created><datetime/></created>
+<modified><datetime dst='true'>20210603T123024,06-04</datetime></modified>
+<revised><datetime dst='true'>20210521T131032,34-04</datetime></revised>
+<lastaccessed><datetime dst='true'>20210603T123024,05-04</datetime></lastaccessed>
+<addedtofile><datetime dst='true'>20210519T141917,52-04</datetime></addedtofile></noteinfo>
+<updatedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></updatedby>
+<wassignedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></wassignedby>
+<designchange><datetime dst='true'>20210521T131032,28-04</datetime></designchange>
 <trigger type='actionsmenu'/>
 <documentset type='runonce'/><code event='options'><lotusscript>%REM
 	Agent (DOMI_deleteSTMeeting)
@@ -51,11 +51,11 @@ Use "JSONDateTime"
 	Dim jsonNav As NotesJSONNavigator
 	Dim fldList List As Variant
 	Dim hdrList As New stringList()
-	Dim mtgName As String, mtgId As string
+	Dim mtgName As String, mtgId As String
 	Dim rstr As String, rlng As Long, rdbl As Double, rbool As Boolean, rdoc As NotesDocument, rint As Integer, rvar As Variant, emptyvar As Variant
 	Dim errtxt As String
 	
-	On Error GoTo errHandler
+	On Error Goto errHandler
 	Call instantiateDOMIlog() ' Instantiate Logging and set options for DOMI operations
 	
 	Set thisDb = s.Currentdatabase
@@ -68,7 +68,7 @@ Use "JSONDateTime"
 	End If
 	If Not(curDoc.getItemValue("Form")(0) = "Appointment") Then Error 1000, "This action must be run from a Calendar Entry"
 	
-	mtgId = CStr(curDoc.getItemValue("meetingId")(0))
+	mtgId = Cstr(curDoc.getItemValue("meetingId")(0))
 	If mtgId = "" Then Error 1000, "Unable to locate a meeting ID for this meeting"
 	
 	urlBase = DOMI_ROOTURL_SAMETIMEMEETINGS
@@ -122,14 +122,14 @@ refreshedToken:
 	fldList("meetingInfoInsert") = ""
 	fldList("Location") = ""
 	' now that we have all of our field values, update the Calendar Entry doc
-	ForAll f In fldList
-		Call curDoc.Replaceitemvalue(ListTag(f), f)
-	End ForAll
+	Forall f In fldList
+		Call curDoc.Replaceitemvalue(Listtag(f), f)
+	End Forall
 
 	Call curUIDoc.Reload()
 	
 	' 64 == Info Icon, 1 == OK button only
-	MsgBox "Deleted Sametime Meeting", 64 + 1, "Success!"
+	Msgbox "Deleted Sametime Meeting", 64 + 1, "Success!"
 	
 getOut:
 	Exit Sub
@@ -150,11 +150,10 @@ errHandler:
 			errtxt = Error$ &amp; " [E: " &amp; Str(Err) &amp; "; L: " &amp; Str(Erl) &amp; "]"
 	End Select
 	
-	MessageBox errtxt,, "ERROR"
+	Messagebox errtxt,, "ERROR"
 	enhLogException ||, ||
 	
 	Resume getOut
 End Sub</lotusscript></code>
-<rundata processeddocs='0' exitcode='0'>
-<agentmodified><datetime dst='true'>20210505T101646,97-04</datetime></agentmodified></rundata></agent>
+<item name='$POID'><datetime dst='true'>20210521T131032,34-04</datetime></item></agent>
 
