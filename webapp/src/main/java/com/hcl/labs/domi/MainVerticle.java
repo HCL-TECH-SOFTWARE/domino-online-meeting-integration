@@ -271,6 +271,7 @@ public class MainVerticle extends AbstractVerticle {
     if (null == hostName) {
       throw new DOMIException("Cannot continue without a valid hostname in config");
     }
+    MainVerticle.LOGGER.info("Starting up with hostname " + hostName);
 
     final HttpServerOptions serverOptions = new HttpServerOptions()
         .setPort(this.config().getInteger(DOMIConstants.CONFIG_PORT, 8880));

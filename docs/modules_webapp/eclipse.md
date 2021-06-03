@@ -33,7 +33,7 @@ After a successful install, you are ready to run the application. All Client IDs
 |----------------------|------------------|
 |GTM_CLIENT_ID         |Client ID for your GoToMeeting OAuth application, setup on GoToMeeting (LogMeIn Developers) site|
 |GTM_CLIENT_SECRET     |Client secret for your GoToMeeting OAuth application|
-|HOSTNAME              |Host and port the web application is available on, e.g. "http://localhost:8878". This will be appended with the relevant callback path (e.g. "/zoomCallback") during the OAuth dance as the redirect URL. It will need to match the callback URL set up in the OAuth application on the relevant online meeting providers developer console.|
+|OAUTH_HOSTNAME        |Host and port the web application is available on, e.g. "http://localhost:8878". This will be appended with the relevant callback path (e.g. "/zoomCallback") during the OAuth dance as the redirect URL. It will need to match the callback URL set up in the OAuth application on the relevant online meeting providers developer console.|
 |TEAMS_CLIENT_ID       |Client ID for your Teams OAuth application, setup in the Azure Portal|
 |TEAMS_CLIENT_SECRET   |Client secret for your Teams OAuth application|
 |WEBEX_CLIENT_ID       |Client ID for your Webex OAuth application, setup on Cisco Webex for Developers site|
