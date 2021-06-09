@@ -17,4 +17,4 @@ However, it has been built with extensibility in mind. So it is possible to add 
 
 ## Documentation
 
-See [GitHub Pages site](/pages/hcl-labs/domino-online-meeting-integration).
+See [GitHub Pages site](https://opensource.hcltechsw.com/domino-online-meeting-integration).
