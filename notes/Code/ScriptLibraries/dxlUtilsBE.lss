@@ -24,16 +24,20 @@ Use "domiUtilsBE"
 
 '++LotusScript Development Environment:2:5:(Forward):0:1
 Declare Function getElementHandle(db As NotesDatabase, etype As String, ename As String) As NotesDocument
+Declare Function getAllElementsByName(db As NotesDatabase, etype As String, ename As String) As NotesDocumentCollection
 Declare Function getElementType(eldoc As NotesDocument) As String
 Declare Function importDXL(tgtDb As NotesDatabase, dxlfile As String, _
 desFlg As Boolean, docFlg As Boolean, aclFlg As Boolean, signFlg As Boolean)As Boolean	
 Declare Function getElementNames(dnote As NotesDocument, elementName As String, aliases As Variant) As Boolean
+Declare Sub resyncDEProfiles(thisDb As NotesDatabase)
 Declare Function getElementDXL(db As NotesDatabase, etype As String, formname As String, bkupkey As String, _
 oldnote As NotesDocument) As NotesDOMParser
+Declare Function replaceDEUNID(deDoc As NotesDocument) As String
 Declare Function importDXLStream(tgtDb As NotesDatabase, dxlStream As NotesStream, _
 desFlg As Boolean, docFlg As Boolean, aclFlg As Boolean, signFlg As Boolean)As Boolean	
-Declare Sub resyncDEProfiles(thisDb As NotesDatabase)
-Declare Function replaceDEUNID(deDoc As NotesDocument) As String
+Declare Function getElementNoteIDsByName(db As NotesDatabase, etype As String, ename As String) As Variant
+Declare Function getElementDXLByNoteID(db As NotesDatabase, noteID As String, bkupkey As String, _
+oldnote As NotesDocument) As NotesDOMParser
 
 '++LotusScript Development Environment:2:5:(Declarations):0:2
 
@@ -118,7 +122,90 @@ errhandler:
 	Resume getOut
 End Function
 
+'++LotusScript Development Environment:2:1:getAllElementsByName:12:8
 
+%REM
+	Function getAllElementsByName(db As NotesDatabase, etype As String, ename As String) As NotesDocumentCollection
+	db == database containing the desired design element
+	etype == the type of the desired design element - form or subform, etc.
+	ename == the name of the desired design element
+
+	-- used to easily get a an array of all elements with the given type and name/alias. Returns the 
+		design elements as a NotesDocumentCollection
+%END REM
+
+Function getAllElementsByName(db As NotesDatabase, etype As String, ename As String) As NotesDocumentCollection
+	Dim curtitle As String
+	Dim ddoc As NotesDocument
+	Dim nc As NotesNoteCollection, ndc As NotesDocumentCollection
+	Dim nid As String, i As Double, nextid As String
+	Dim titles As Variant, elementname As String, aliases As Variant
+	Dim elObjArr As Variant
+	Dim rbool As Boolean, emptyvar As Variant
+	
+	On Error GoTo errHandler
+	
+ 	' Create note collection for current database
+	Set nc = db.CreateNoteCollection(False)
+	Select Case LCase(etype)
+	Case "form"
+		nc.SelectForms = True
+	Case "subform"
+		nc.SelectSubforms = True
+	Case "scriptlib"
+		nc.SelectScriptLibraries = True
+	Case "agent"
+		nc.Selectagents = True
+	Case "view"
+		nc.Selectviews = True
+	Case Else
+		' we don't know what they want, so we'll walk all elements
+		Call nc.SelectAllDesignElements(True)
+	End Select
+	Call nc.BuildCollection
+	
+	Set ndc = db.Createdocumentcollection()
+ 	' Cycle through the notes and find the desired element(s)
+	nid = nc.GetFirstNoteId
+	For i = 1 To nc.Count
+		Set ddoc = Nothing
+		elementname = ""
+		aliases = emptyvar
+    	'get the next note ID before processing
+		nextid = nc.GetNextNoteId(nid)
+		Set ddoc = db.GetDocumentByID(nid)
+
+		rbool = getElementNames(ddoc, elementname, aliases)
+		If LCase(elementname) = LCase(ename) Then
+			Call ndc.Adddocument(ddoc)
+		Else
+			If IsArray(aliases) Then
+				
+				ForAll a In aliases
+					If LCase(a) = LCase(ename) Then
+						Call ndc.Adddocument(ddoc)
+					End If
+				End ForAll
+			End If
+		End If
+
+		nid = nextid
+	Next
+	
+	If ndc.Count > 0 Then Set getAllElementsByName = ndc
+getOut:
+	Exit Function
+errhandler:
+	Set getAllElementsByName = Nothing
+	On Error GoTo 0
+	Select Case Err
+		Case 1000
+			Error Err, Error$ & "[ in " & GetThreadInfo(1) & "]"
+		Case Else
+			Error Err, Error$ & Chr(10) & "[line: " & Erl & " in " & GetThreadInfo(1) & "]"
+	End Select
+	Resume getOut
+End Function
 
 '++LotusScript Development Environment:2:1:getElementType:11:8
 %REM
@@ -356,6 +443,53 @@ errhandler:
 	Resume getOut
 End Function
 
+'++LotusScript Development Environment:2:2:resyncDEProfiles:8:8
+%REM
+	Sub resyncDEProfiles(thisDb As NotesDatabase)
+	Description: Resyncs the UNIDs of the feature design elements with their corresponding profiles
+	
+	---- PARAMS ----
+	thisDb (NotesDatabase) - the database (should be the current db) containing the design element profiles
+%END REM
+Sub resyncDEProfiles(thisDb As NotesDatabase)
+	Dim deView As NotesView, deDoc As NotesDocument
+	Dim dbPathInfo As Variant, deTypes List As String
+	Dim deType As String, deName As String, deUNID As String, curUNID As String
+	Dim curNote As NotesDocument
+	Dim rbool As Boolean
+	
+	Set deView = thisDb.getView("beFeatureSetDEProfiles")
+	If deView Is Nothing Then Error 1000, "Unable to find Design Element Profile view"
+	deView.Autoupdate = False
+	
+	deTypes("AGENT - LS") = "agent"
+	deTypes("FORM") = "form"
+	deTypes("SCRIPT LIBRARY - LS") = "scriptlib"
+	deTypes("SUBFORM") = "subform"
+	deTypes("VIEW") = "view"
+	
+	Set deDoc = deView.Getfirstdocument()
+	Do While Not(deDoc Is Nothing)
+		Set curNote = Nothing
+		deName = columnValStr(deDoc, 0)
+		deType = columnValStr(deDoc, 2)
+		deUNID = columnValStr(deDoc, 3)
+		
+		Set curNote = getElementHandle(thisDb, deTypes(UCase(deType)), deName)  ' in dxlUtilsBE
+		If Not(curNote Is Nothing) Then
+			curUNID = curNote.Universalid
+			If Not(curUNID = deUNID) Then
+				Call deDoc.replaceItemValue("elementUNID", curUNID)
+				Call deDoc.save(True, False, True)
+			End If
+		End If
+
+		Set deDoc = deView.Getnextdocument(deDoc)
+	Loop
+End Sub
+
+
+
 '++LotusScript Development Environment:2:1:getElementDXL:2:8
 Function getElementDXL(db As NotesDatabase, etype As String, formname As String, bkupkey As String, _
 oldnote As NotesDocument) As NotesDOMParser
@@ -418,6 +552,75 @@ oldnote As NotesDocument) As NotesDOMParser
 		
 		nid = nextid
 	Next
+End Function
+
+'++LotusScript Development Environment:2:1:replaceDEUNID:13:8
+%REM
+	Function replaceDEUNID
+	Description: Updates the design element UNID for the selected design element profile
+	
+	Returns the NEW unid of the design element
+	
+	---- PARAMS ----
+	deDoc (NotesDocument) - the design element profile doc object
+	
+	---- RETURNS ----
+	the new UNID of the design element
+%END REM
+Function replaceDEUNID(deDoc As NotesDocument) As String
+	Dim thisDb As NotesDatabase
+	Dim oldDE As NotesDocument, newDE As NotesDocument
+	Dim oldUNID As String, newUNID As String
+	Dim rbool As Boolean, rvar As Variant
+	
+	On Error GoTo errHandler
+	replaceDEUNID = ""
+	
+	If LCase(deDoc.getItemValue("form")(0)) <> "deselement" Then Error 1000, "You must run this from a Design Element Profile document"
+	
+	Set thisDb = deDoc.Parentdatabase
+	
+	If deDoc.Hasitem("elementUNID") Then
+		oldUNID = deDoc.getItemValue("elementUNID")(0)
+		If oldUNID = "" Then Error 1000, "Design Element Profile does not contain an element UNID"
+	Else
+		Error 1000, "Design Element Profile does not contain an element UNID"
+	End If
+	
+	Set oldDE = thisDb.Getdocumentbyunid(oldUNID)
+	If oldDE Is Nothing Then Error 1000, "Unable to find Design Element by UNID (" & oldUNID & ")"
+	
+	rvar = Evaluate(|@ReplaceSubString(@Text(@Password(@Unique)); "(":")";"")|, oldDE)
+	If IsArray(rvar) Then
+		newUNID = CStr(rvar(0))
+	Else
+		Error 1000, "Unknown problem with creation of new UNID"
+	End If
+	If newUNID = "" Then Error 1000, "Unknown problem with creation of new UNID"
+	
+	oldDE.Universalid = newUNID
+	rbool = oldDE.save(True, False, True)
+	
+	Set newDE = thisDb.Getdocumentbyunid(newUNID)
+	If newDE Is Nothing Then Error 1000, "Error changing UNID of Design Element - new UNID not found (" & newUNID & ")"
+	
+	Call deDoc.Replaceitemvalue("elementUNID", newUNID)
+	Call deDoc.Save(True, False, True)
+
+	Set oldDE = Nothing
+	Set oldDE = thisDb.Getdocumentbyunid(oldUNID)
+	Call oldDE.Remove(True)
+	
+	replaceDEUNID = newUNID
+getOut:
+	Exit Function
+
+errHandler:
+	replaceDEUNID = ""
+
+	On Error GoTo 0
+	Error Err, Error$ & " [in " & GetThreadInfo(1) & "]"
+	Resume getOut
 End Function
 
 
@@ -498,119 +701,134 @@ End Function
 
 
 
-'++LotusScript Development Environment:2:2:resyncDEProfiles:8:8
+'++LotusScript Development Environment:2:1:getElementNoteIDsByName:12:8
+
 %REM
-	Sub resyncDEProfiles(thisDb As NotesDatabase)
-	Description: Resyncs the UNIDs of the feature design elements with their corresponding profiles
-	
-	---- PARAMS ----
-	thisDb (NotesDatabase) - the database (should be the current db) containing the design element profiles
+	Function getElementNoteIDsByName(db As NotesDatabase, etype As String, ename As String) As Variant
+	db == database containing the desired design element
+	etype == the type of the desired design element - form or subform, etc.
+	ename == the name of the desired design element
+
+	-- used to easily get a an array of all elements with the given type and name/alias. Returns the 
+		design elements as a NotesDocumentCollection
 %END REM
-Sub resyncDEProfiles(thisDb As NotesDatabase)
-	Dim deView As NotesView, deDoc As NotesDocument
-	Dim dbPathInfo As Variant, deTypes List As String
-	Dim deType As String, deName As String, deUNID As String, curUNID As String
-	Dim curNote As NotesDocument
-	Dim rbool As Boolean
-	
-	Set deView = thisDb.getView("beFeatureSetDEProfiles")
-	If deView Is Nothing Then Error 1000, "Unable to find Design Element Profile view"
-	deView.Autoupdate = False
-	
-	deTypes("AGENT - LS") = "agent"
-	deTypes("FORM") = "form"
-	deTypes("SCRIPT LIBRARY - LS") = "scriptlib"
-	deTypes("SUBFORM") = "subform"
-	deTypes("VIEW") = "view"
-	
-	Set deDoc = deView.Getfirstdocument()
-	Do While Not(deDoc Is Nothing)
-		Set curNote = Nothing
-		deName = columnValStr(deDoc, 0)
-		deType = columnValStr(deDoc, 2)
-		deUNID = columnValStr(deDoc, 3)
-		
-		Set curNote = getElementHandle(thisDb, deTypes(UCase(deType)), deName)  ' in dxlUtilsBE
-		If Not(curNote Is Nothing) Then
-			curUNID = curNote.Universalid
-			If Not(curUNID = deUNID) Then
-				Call deDoc.replaceItemValue("elementUNID", curUNID)
-				Call deDoc.save(True, False, True)
-			End If
-		End If
-		
-		Set deDoc = deView.Getnextdocument(deDoc)
-	Loop
-End Sub
 
-
-
-'++LotusScript Development Environment:2:1:replaceDEUNID:13:8
-%REM
-	Function replaceDEUNID
-	Description: Updates the design element UNID for the selected design element profile
-	
-	Returns the NEW unid of the design element
-	
-	---- PARAMS ----
-	deDoc (NotesDocument) - the design element profile doc object
-	
-	---- RETURNS ----
-	the new UNID of the design element
-%END REM
-Function replaceDEUNID(deDoc As NotesDocument) As String
-	Dim thisDb As NotesDatabase
-	Dim oldDE As NotesDocument, newDE As NotesDocument
-	Dim oldUNID As String, newUNID As String
-	Dim rbool As Boolean, rvar As Variant
+Function getElementNoteIDsByName(db As NotesDatabase, etype As String, ename As String) As Variant
+	Dim curtitle As String
+	Dim ddoc As NotesDocument
+	Dim nc As NotesNoteCollection
+	Dim nid As String, i As Double, nextid As String, j As Long
+	Dim titles As Variant, elementname As String, aliases As Variant
+	Dim elObjArr As Variant, noteIDArr As Variant
+	Dim rbool As Boolean, emptyvar As Variant
 	
 	On Error GoTo errHandler
-	replaceDEUNID = ""
 	
-	If LCase(deDoc.getItemValue("form")(0)) <> "deselement" Then Error 1000, "You must run this from a Design Element Profile document"
+ 	' Create note collection for current database
+	Set nc = db.CreateNoteCollection(False)
+	Select Case LCase(etype)
+	Case "form"
+		nc.SelectForms = True
+	Case "subform"
+		nc.SelectSubforms = True
+	Case "scriptlib"
+		nc.SelectScriptLibraries = True
+	Case "agent"
+		nc.Selectagents = True
+	Case "view"
+		nc.Selectviews = True
+	Case Else
+		' we don't know what they want, so we'll walk all elements
+		Call nc.SelectAllDesignElements(True)
+	End Select
+	Call nc.BuildCollection
 	
-	Set thisDb = deDoc.Parentdatabase
+	ReDim noteIDArr(nc.Count) As String
+	j = 0
 	
-	If deDoc.Hasitem("elementUNID") Then
-		oldUNID = deDoc.getItemValue("elementUNID")(0)
-		If oldUNID = "" Then Error 1000, "Design Element Profile does not contain an element UNID"
-	Else
-		Error 1000, "Design Element Profile does not contain an element UNID"
-	End If
-	
-	Set oldDE = thisDb.Getdocumentbyunid(oldUNID)
-	If oldDE Is Nothing Then Error 1000, "Unable to find Design Element by UNID (" & oldUNID & ")"
-	
-	rvar = Evaluate(|@ReplaceSubString(@Text(@Password(@Unique)); "(":")";"")|, oldDE)
-	If IsArray(rvar) Then
-		newUNID = CStr(rvar(0))
-	Else
-		Error 1000, "Unknown problem with creation of new UNID"
-	End If
-	If newUNID = "" Then Error 1000, "Unknown problem with creation of new UNID"
-	
-	oldDE.Universalid = newUNID
-	rbool = oldDE.save(True, False, True)
-	
-	Set newDE = thisDb.Getdocumentbyunid(newUNID)
-	If newDE Is Nothing Then Error 1000, "Error changing UNID of Design Element - new UNID not found (" & newUNID & ")"
-	
-	Call deDoc.Replaceitemvalue("elementUNID", newUNID)
-	Call deDoc.Save(True, False, True)
+ 	' Cycle through the notes and find the desired element(s)
+	nid = nc.GetFirstNoteId
+	For i = 1 To nc.Count
+		Set ddoc = Nothing
+		elementname = ""
+		aliases = emptyvar
+    	'get the next note ID before processing
+		nextid = nc.GetNextNoteId(nid)
+		Set ddoc = db.GetDocumentByID(nid)
 
-	Set oldDE = Nothing
-	Set oldDE = thisDb.Getdocumentbyunid(oldUNID)
-	Call oldDE.Remove(True)
-	
-	replaceDEUNID = newUNID
+		rbool = getElementNames(ddoc, elementname, aliases)
+		If LCase(elementname) = LCase(ename) Then
+			noteIDArr(j) = nid
+			j = j + 1
+		Else
+			If IsArray(aliases) Then			
+				ForAll a In aliases
+					If LCase(a) = LCase(ename) Then
+						noteIDArr(j) = nid
+						j = j + 1
+					End If
+				End ForAll
+			End If
+		End If
+
+		nid = nextid
+	Next
+	noteIDArr = FullTrim(noteIDArr)
+	If  UBound(noteIDArr) > 0 Then
+		getElementNoteIDsByName = noteIDArr
+	Else
+		getElementNoteIDsByName = emptyvar
+	End IF
 getOut:
 	Exit Function
-
-errHandler:
-	replaceDEUNID = ""
-
+errhandler:
+	Set getElementNoteIDsByName = Nothing
 	On Error GoTo 0
-	Error Err, Error$ & " [in " & GetThreadInfo(1) & "]"
+	Select Case Err
+		Case 1000
+			Error Err, Error$ & "[ in " & GetThreadInfo(1) & "]"
+		Case Else
+			Error Err, Error$ & Chr(10) & "[line: " & Erl & " in " & GetThreadInfo(1) & "]"
+	End Select
 	Resume getOut
 End Function
+
+
+'++LotusScript Development Environment:2:1:getElementDXLByNoteID:3:8
+
+Function getElementDXLByNoteID(db As NotesDatabase, noteID As String, bkupkey As String, _
+oldnote As NotesDocument) As NotesDOMParser
+	Dim s As New NotesSession
+	Dim retflg As Boolean
+	Dim stream As NotesStream
+	Dim nc As NotesNoteCollection
+	Dim exporter As NotesDXLExporter
+	Dim domobj As NotesDOMParser
+	Dim elementname As String, aliases As Variant
+	
+	Dim nextid As String, i As Integer
+	Dim ddoc As NotesDocument, bkupdoc As NotesDocument
+
+
+	Set ddoc = db.GetDocumentByID(noteid)
+	
+	Call getElementNames(ddoc, elementname, aliases)
+	
+	If bkupkey <> "" Then
+		Set bkupdoc = ddoc.CopyToDatabase(db)
+		Call bkupdoc.ReplaceItemValue("$TITLE", "(BACKUP-" & bkupkey & "-" & elementname & ")")
+		Call bkupdoc.ReplaceItemValue("OldTitle", ddoc.GetItemValue("$Title"))
+		Call bkupdoc.Save(True, False)
+		Set oldnote = bkupdoc
+	End If
+	
+	Set getElementDXLByNoteID = s.CreateDOMParser()
+	getElementDXLByNoteID.AddXMLDeclNode = False
+	Set exporter = s.CreateDXLExporter(ddoc, getElementDXLByNoteID)
+	exporter.OutputDOCTYPE = False
+	Call exporter.Process
+
+End Function
+
+
 
