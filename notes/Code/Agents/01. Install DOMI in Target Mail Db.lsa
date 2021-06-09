@@ -2,15 +2,15 @@
 <agent name='01. Install DOMI in Target Mail Db' alias='installDOMI' xmlns='http://www.lotus.com/dxl'
  version='12.0' replicaid='8525867000756EB9' hide='v3' publicaccess='false'
  designerversion='8.5.3'>
-<noteinfo noteid='1d6e' unid='EBA8109DDBD87E8E3360BF6D4A230B2A' sequence='55'>
-<created><datetime>126470630T191646,02-0345</datetime></created>
-<modified><datetime dst='true'>20210603T131930,04-04</datetime></modified>
-<revised><datetime dst='true'>20210603T131930,03-04</datetime></revised>
-<lastaccessed><datetime dst='true'>20210603T131930,03-04</datetime></lastaccessed>
-<addedtofile><datetime dst='true'>20210519T141917,50-04</datetime></addedtofile></noteinfo>
+<noteinfo noteid='1f4a' unid='826A17A25DCFE471852586EE006895E6' sequence='15'>
+<created><datetime dst='true'>20210608T150221,18-04</datetime></created>
+<modified><datetime dst='true'>20210609T101011,83-04</datetime></modified>
+<revised><datetime dst='true'>20210609T101011,82-04</datetime></revised>
+<lastaccessed><datetime dst='true'>20210609T101011,82-04</datetime></lastaccessed>
+<addedtofile><datetime dst='true'>20210608T150222,86-04</datetime></addedtofile></noteinfo>
 <updatedby><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name></updatedby>
 <wassignedby><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name></wassignedby>
-<designchange><datetime dst='true'>20210603T131929,98-04</datetime></designchange>
+<designchange><datetime dst='true'>20210609T101011,77-04</datetime></designchange>
 <trigger type='actionsmenu'/>
 <documentset type='runonce'/><code event='options'><lotusscript>%REM
 	Agent 01. Install DOMI in Target Mail Db
@@ -102,7 +102,7 @@ Use "domiUtilsBE"
 	Loop
 	
 	' Now let's add the subform to the Calendar Entry
-	rbool = addDOMISubformToAppointment(mailDb)
+	rbool = addDOMISubformToAppointments(mailDb)
 	
 	If rbool Then Msgbox "DOMI installation successful.",,"Success!"
 	
@@ -122,56 +122,75 @@ End Sub
 
 
 
-</lotusscript></code><code event='addDOMISubformToAppointment'><lotusscript
+</lotusscript></code><code event='addDOMISubformToAppointments'><lotusscript
 >%REM
 	Function addOMISubformToAppointment
 	Description: Comments for Function
 %END REM
-Function addDOMISubformToAppointment(mailDb As NotesDatabase) As Boolean
+Function addDOMISubformToAppointments(mailDb As NotesDatabase) As Boolean
 	Dim s As New NotesSession
-	Dim formobj As NotesDOMParser, sform As String
-	Dim oldform As NotesDocument
+	Dim formobj As NotesDOMParser, sform As String, formdoc As NotesDocument
+	Dim oldform As NotesDocument, curform As NotesDocument
 	Dim oldCode As String, newCode As String, sftag As String
+	Dim  noteIDs As Variant, flags As string
 	Dim fstream As NotesStream, formcode As String, lf As String
-	Dim rlng As Long, rbool As Boolean, errtxt As String
+	Dim rlng As Long, rbool As Boolean, rvar As Variant, errtxt As String
 	
 	lf = Chr(10)
 	oldCode = "&lt;/richtext&gt;&lt;/body&gt;"
 	sftag = "&lt;subformref name='DOMI_onlineMeetingActions | onlineMeetingActions'/&gt;"
 	newCode = sftag &amp; lf &amp; oldCode
 
-	Set oldform = getElementHandle(mailDb, "form", "(BACKUP-DOMI-Appointment)")
-	If Not(oldform Is Nothing) Then Call oldform.Removepermanently(True)
-	Set oldform = Nothing
+	noteIDs = getElementNoteIDsByName(mailDb, "form", "Appointment")  ' from dxlUtilsBE
+	If IsArray(noteIDs) = False Then Error 1010, "No forms found with the Name or Alias of Appointment"
 	
-	' getElementDXL(db As NotesDatabase, etype As String, formname As String, bkupkey As String, _
-	' oldnote As NotesDocument) As NotesDOMParser
-	Set formobj = getElementDXL(maildb, "form", "Appointment", "DOMI", oldform)  ' from dxlUtilsBE
-	Set fstream = s.CreateStream
-	' this part puts the form DXL into a string var
-	Call formobj.setOutput(fstream)
-	Call formobj.Serialize
-	fstream.Position = 0
-	formcode = fstream.ReadText
-	Call fstream.Close
-	
-	' check to see if the tag is already in the subform; if so, our work here is done
-	If Instr(1, formcode, sftag, 5) &gt; 0 Then
-		addDOMISubformToAppointment = True
-		Exit Function
-	End If
+	ForAll nid in noteIDs
+		Set curform = maildb.Getdocumentbyid(nid)
+		If Not(curform Is Nothing) Then
+			If curform.hasItem("OldTitle") Then
+				Set oldform = getElementHandle(mailDb, "form", curform.getItemValue("OldTitle")(0))  ' from dxlUtilsBE
+				If Not(oldform Is Nothing) Then Call oldform.Removepermanently(True)
+				Set oldform = nothing
+			End If
+			
+			flags = curform.Getitemvalue("$Flags")(0)
+			' the "n" flag in $flags indicates that the form is hidden from the Notes client. Since this is 
+			' written to be used in the Notes client, it doesn't make sense to add it to forms not visible 
+			' there. So, we check to see if "n" is in the Flags; if it's not, we add the subform
+			If InStr(1, flags, "n", 4) = 0 Then
+				' getElementDXLByNoteID(db As NotesDatabase, noteID As String, bkupkey As String, _
+				' oldnote As NotesDocument) As NotesDOMParser
+				Set formobj = getElementDXLByNoteID(maildb, CStr(nid), "DOMI", oldform)
+				
+				Set fstream = s.CreateStream
+				' this part puts the form DXL into a string var
+				Call formobj.setOutput(fstream)
+				Call formobj.Serialize
+				fstream.Position = 0
+				formcode = fstream.ReadText
+				Call fstream.Close
+				
+				' check to see if the tag is already in the subform; if so, our work here is done
+				If InStr(1, formcode, sftag, 5) &gt; 0 Then
+					addDOMISubformToAppointments = True
+					Exit Function
+				End If
 
-	formcode = Replace(formcode, oldCode, newCode)
-	
-	Set fstream = s.createStream
-	rlng = fstream.Writetext(formcode)
-	rbool = importDXLStream(mailDb, fstream, True, False, False, False)  ' from dxlUtilsBE
-	
-	addDOMISubformToAppointment = rbool
+				formcode = Replace(formcode, oldCode, newCode)
+				
+				Set fstream = s.createStream
+				rlng = fstream.Writetext(formcode)
+				rbool = importDXLStream(mailDb, fstream, True, False, False, False)  ' from dxlUtilsBE
+			End If			
+		End If
+		Set formdoc = nothing
+	End ForAll
+	Print "Added DOMI subform to " &amp; CStr(UBound(noteIDs)) &amp; " subform(s)"
+	addDOMISubformToAppointments = rbool
 getOut:
 	Exit Function
 errHandler:
-	addDOMISubformToAppointment = False
+	addDOMISubformToAppointments = False
 	errtxt = Error$ &amp; " [in: " &amp; Getthreadinfo(1) &amp; "; err: " &amp; Err &amp; "; line: " &amp; Erl &amp; "]"
 	On Error Goto 0
 
@@ -179,6 +198,6 @@ errHandler:
 	Resume getOut
 End Function</lotusscript></code>
 <rundata processeddocs='0' exitcode='0'>
-<agentmodified><datetime dst='true'>20210603T131929,87-04</datetime></agentmodified></rundata>
+<agentmodified><datetime dst='true'>20210609T101011,09-04</datetime></agentmodified></rundata>
 <item name='$POID'><datetime dst='true'>20210521T131033,73-04</datetime></item></agent>
 
