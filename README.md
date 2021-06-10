@@ -7,7 +7,7 @@ Domino Online Meeting Integration is an extension to the Domino Mail template al
 - GoToMeeting
 - HCL Sametime
 
-**Zoom requires approval so is not yet working**
+**The Zoom OAuth app is currently going through approval so is not yet working**
 
 GoToMeeting requires a paid account. Free accounts do not have access to run GoToMeeting REST APIs and an HTTP status code 412 will be returned.
 
