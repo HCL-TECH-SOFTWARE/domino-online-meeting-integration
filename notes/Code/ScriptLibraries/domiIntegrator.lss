@@ -1561,6 +1561,7 @@ ErrorTrap:
 		Dim meetingtime As MeetingTimeCarrier
 
 		Dim fldList List As Variant
+		Dim keys List As String 
 
 		Dim bodymsg As String
 
@@ -1620,35 +1621,34 @@ ErrorTrap:
 		fldList(|SametimeType|) = |0|
 
 
-		' this puts the link and PW into the Location field of the Calendar Entry
+		' build the link and list of Meeting Values to be added to the Location
+		Erase keys 
 		Select Case me.MeetingService
 			Case DOMI_SERVICE_WEBEX:
-				If MeetingValues.hasTag(|meetingURL|) Then
-					If meetingValues.hasTag(|meetingURL|) Then
-						bodyMsg = bodyMsg & |Attendee Link: | & CStr(meetingValues.getValue(|meetingURL|))
-						bodyMsg = bodyMsg & Chr(10) & |Password: | & CStr(meetingValues.getValue(|meetingPassword|))
-						bodyMsg = bodyMsg & Chr(10) & |SIP Link: | & CStr(meetingValues.getValue(|meetingSipAddress|))
-						bodyMsg = bodyMsg & Chr(10) & |Phone/Video Password: | & CStr(MeetingValues.getValue(|meetingPhoneVideoPassword|))
-					End If
-				End If				
+				keys(|Attendee Link|) = |meetingURL|
+				keys(|Password|) = |meetingPassword|
+				keys(|SIP Link|) = |meetingSipAddress|
+				keys(|Phone/Video Password|) = |meetingPhoneVideoPassword|
 				
-			Case DOMI_SERVICE_ZOOM	
-				If MeetingValues.hasTag(|meetingURL|) Then
-					If meetingValues.hasTag(|meetingURL|) Then
-						bodyMsg = bodyMsg & |Attendee Link: | & CStr(meetingValues.getValue(|meetingURL|))
-						If Not(CStr(meetingValues.getValue(|meetingPassword|)) = "") Then
-							bodyMsg = bodyMsg & Chr(10) & |Password: | & CStr(meetingValues.getValue(|meetingPassword|))
-						End If					
-					End If
-				End If	
+			Case DOMI_SERVICE_ZOOM
+				keys(|Attendee Link|) = |meetingURL|
+				keys(|Password|) = |meetingPassword|
 				
 			Case Else: 
-				If meetingValues.hasTag(|meetingURL|) Then bodyMsg = bodyMsg & |Attendee Link: | & CStr(meetingValues.getValue(|meetingURL|))
+				keys(|Attendee Link|) = |meetingURL|
 
 		End Select
 
-			
-		
+		' retrieve the link an list of meeting values
+		If mv.hasTag(|meetingURL|) Then
+			ForAll key In keys 
+				If mv.hasTag(key) Then 
+					rstr$ = mv.getScalarStringValue(key) 
+					If Not isBlankString(rstr$) Then bodyMsg$ = bodyMsg$ & LF & ListTag(key) & |: | & rstr$
+				End If 
+			End ForAll			
+		End If
+
 		fldList(|meetingInfoInsert|) = bodyMsg
 		fldList(|Location|) = bodyMsg
 
@@ -1665,7 +1665,6 @@ ErrorTrap:
 			Case Else:
 				' do nothing
 		End Select 
-'		If result Then enhLogMethodResult ||, |Pushed meeting | & meetingid$ 
 		
 		pushMeeting = result
 		Exit Function 
@@ -1679,6 +1678,7 @@ ErrorTrap:
 		End ForAll
 		enhLogExtendedContent ||, ||, ||
 		Resume ExitPoint
+
 	End Function
 
 
@@ -1862,7 +1862,7 @@ ErrorTrap:
 		fldList(|SametimeType|) = |0|
 
 		' this puts the link and PW into the Location field of the Calendar Entry
-		If meetingValues.hasTag(|meetingURL|) Then bodyMsg = bodyMsg & |Attendee Link: | & CStr(meetingValues.getValue(|meetingURL|))
+		If me.MeetingValues.hasTag(|meetingURL|) Then bodyMsg = bodyMsg & |Attendee Link: | & mv.getScalarStringValue(|meetingURL|)
 		
 		fldList(|meetingInfoInsert|) = bodyMsg
 		fldList(|Location|) = bodyMsg
@@ -2302,6 +2302,9 @@ ErrorTrap:
 	enhLogException LIB_PREFIX, ||
 	Resume ExitPoint
 End Function
+
+
+
 
 
 
