@@ -1105,6 +1105,33 @@ Public Class VariantList As azlwListCarrier
 		Resume ExitPoint 
 	End Function
 
+
+	%REM
+		Function getScalarStringValue
+		Gets the scalar value of an element as a string 
+		
+		@param key$ Identifies the element to retrieve as a string
+		
+		@return String Scalar value of the element.  
+	%END REM
+	Function getScalarStringValue(key$) As String 
+		On Error GoTo ErrorTrap
+		
+		Dim result$
+		
+		' BEGIN CODE
+		result$ = getScalarString(me.getValue(key$))		
+	
+	ExitPoint: 
+		getScalarStringValue = result$
+		Exit Function 
+	ErrorTrap:
+		On Error GoTo 0
+		enhLogException me.CLASS_PREFIX, |key: | & key$
+		Resume ExitPoint 
+	End Function
+
+
 	Property Get json As String 
 		On Error GoTo ErrorTrap
 		
@@ -3850,6 +3877,10 @@ End Function
 Function popExceptionCarrier() As ExceptionCarrier 
 	Set popExceptionCarrier = getExceptionCarrierStack().pop()
 End Function
+
+
+
+
 
 
 
