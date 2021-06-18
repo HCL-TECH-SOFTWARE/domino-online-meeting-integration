@@ -11,12 +11,15 @@ last_modified_date: 2021.03.15
 
 The web application is also available as a Docker image, hclsoftware/domino-domi.
 
+NOTE: You will need to build the Docker image locally, it is not available to download. To do so, follow the instructions on the [development page](../development).
+{: .alert .alert-warning}
+
 ## Creating a Docker Container
 
 You can create and run a Docker container with the standard `docker run` command, e.g.:
 
 ```docker
-docker run -it -e OAUTH_HOSTNAME=http://localhost:8878 -e WEBEX_CLIENT_ID=YOUR_CLIENT_ID -e WEBEX_CLIENT_SECRET=YOUR_CLIENT_SECRET -p 8878:8878 -p 8879:8879 docker.hcllabs.net/hclsoftware/domino-domi
+docker run -it -e OAUTH_HOSTNAME=http://localhost:8878 -e WEBEX_CLIENT_ID=YOUR_CLIENT_ID -e WEBEX_CLIENT_SECRET=YOUR_CLIENT_SECRET -p 8878:8878 -p 8879:8879 hclsoftware/domino-domi
 ```
 
 ### Environment Variables
