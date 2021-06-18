@@ -294,7 +294,9 @@
 					</from>
 					<to>
 						<image>docker.hcllabs.net/hclsoftware/domino-domi</image>
-						<tags>${project.version}</tags>
+						<tags>
+							<tag>${project.version}</tag>
+						</tags>
 					</to>
 					<container>
 						<creationTime>USE_CURRENT_TIMESTAMP</creationTime>
