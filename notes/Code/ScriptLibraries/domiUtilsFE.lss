@@ -300,11 +300,15 @@ End Function
 Function domiValidateOAuthToken() As Boolean  
 	On Error GoTo ErrorTrap
 	
+	Const MSG_USE_BUTTON = |use the "Get OAuth Token" action button to get your token and paste it into the "Refresh Token" field.  |
+	
 	Dim nuiwsp As New NotesUIWorkspace()
 	Dim nuidoc As NotesUIDocument
 	Dim ndoc As NotesDocument 
 	
 	Dim domi As DominoOnlineMeetingIntegrator
+	
+	Dim refreshToken$
 	
 	Dim result As Boolean 
 	
@@ -315,18 +319,26 @@ Function domiValidateOAuthToken() As Boolean
 	Set ndoc = nuidoc.Document
 	If Not(ndoc.getItemValue(|Form|)(0) = |domiCredentials|) Then Error ERR_PARAMETER_INVALID, MSG_PARAMETER_INVALID & |UI Document is not a DOMI Credentials document.  |
 
+	If ndoc.hasItem(DOMI_TOKEN_REFRESH) Then refreshToken$ = ndoc.getFirstItem(DOMI_TOKEN_REFRESH).Text 
+	If isBlankString(refreshToken$) Then 
+		MessageBox |Please | & MSG_USE_BUTTON, MB_ICONEXCLAMATION, |Refresh Token is blank.  |
+		GoTo ExitPoint  
+	End If
+
+
 	Set domi = New DominoOnlineMeetingIntegrator(ndoc.ParentDatabase, Nothing, ||) 
 	Set domi.Document = ndoc 
-	
+
 	If domi.refreshAuthToken(False) Then 
 		Call nuidoc.Reload()
-		MessageBox |Your OAUTH Token is Valid|, MB_ICONINFORMATION, |Success|
+		MessageBox |Your OAuth Token is Valid|, MB_ICONINFORMATION, |Success|
 		result = True 
-	Else 
-		MessageBox |Please use the Get OAUTH Token to get your Token and paste it into the Refresh Token field.|, MB_ICONEXCLAMATION, |Failed to Validate your OAUTH Token.|
+	Else
+		MessageBox |Your OAuth token appears to be invalid.  | & LF & LF & _ 
+		|Please clear the "Refresh Token" Field, then | & MSG_USE_BUTTON, MB_ICONEXCLAMATION, |Failed to Validate your OAuth Token. |
 	End If
 	
-	
+		
 ExitPoint:
 	domiValidateOAuthToken = result 
 	Exit Function  
