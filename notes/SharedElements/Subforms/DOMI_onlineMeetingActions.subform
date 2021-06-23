@@ -1,19 +1,19 @@
 <?xml version='1.0' encoding='utf-8'?>
 <subform name='DOMI_onlineMeetingActions' alias='onlineMeetingActions' xmlns='http://www.lotus.com/dxl'
- version='11.0' maintenanceversion='1.0' replicaid='852586DC005D7BD2' publicaccess='true'
+ version='11.0' maintenanceversion='1.0' replicaid='852586FD0077AA6C' publicaccess='true'
  designerversion='8.5.3' renderpassthrough='true'>
-<noteinfo noteid='2aa' unid='7879459AF296C17663442FBA59495A57' sequence='6'>
+<noteinfo noteid='2aa' unid='7879459AF296C17663442FBA59495A57' sequence='3'>
 <created><datetime>75220911T123314,79+0330</datetime></created>
-<modified><datetime dst='true'>20210521T131034,18-04</datetime></modified>
-<revised><datetime dst='true'>20210521T131034,17-04</datetime></revised>
-<lastaccessed><datetime dst='true'>20210521T131034,17-04</datetime></lastaccessed>
-<addedtofile><datetime dst='true'>20210521T130117,46-04</datetime></addedtofile></noteinfo>
+<modified><datetime dst='true'>20210623T180118,78-04</datetime></modified>
+<revised><datetime dst='true'>20210623T180118,77-04</datetime></revised>
+<lastaccessed><datetime dst='true'>20210623T180118,77-04</datetime></lastaccessed>
+<addedtofile><datetime dst='true'>20210623T174807,50-04</datetime></addedtofile></noteinfo>
 <updatedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></updatedby>
 <wassignedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></wassignedby><code
  event='postopen'><formula>@Command([RefreshHideFormulas])</formula></code>
 <actionbar bgcolor='#f0f0f0' bordercolor='black'>
-<actionbuttonstyle bgcolor='#f0f0f0'/><font size='9pt' color='system'/><border
- style='solid' width='0px 0px 1px'/>
+<actionbuttonstyle bgcolor='#f0f0f0'/><font color='system'/><border style='solid'
+ width='0px 0px 1px' color='system'/>
 <action title='Update Meeting' hide='preview previewedit'><code event='click'><formula
 >@If(
 	meetingService = "gtm"; @Command([RunAgent]; "DOMI_updateGtmMeeting");
@@ -69,24 +69,25 @@
 <pardef id='2' hide='read edit print notes web'/>
 <par def='2'><run><font size='8pt' style='bold' color='green'/>Hidden Fields</run></par>
 <par def='2'><run><font size='8pt' color='green'/></run><run><font size='8pt'/><field
- type='text' allowmultivalues='true' kind='computed' name='confList' listinputseparators='comma semicolon newline'
- listdisplayseparator='newline'><code event='defaultvalue'><formula>list := @DbColumn("" : "NoCache"; ""; "DOMI_beMeetingCredentials"; 1);
+ type='text' allowmultivalues='true' kind='computedfordisplay' name='confList'
+ listinputseparators='comma semicolon newline' listdisplayseparator='newline'><code
+ event='defaultvalue'><formula>list := @DbColumn("" : "NoCache"; ""; "DOMI_beMeetingCredentials"; 1);
 @If(@IsError(list); ""; list)</formula></code></field></run><compositedata
  type='98' prevtype='65418' nexttype='222' afterparcount='9' containertype='65418'
  aftercontainercount='1' afterbegincount='3'>
 Yg4BAIQAAAAAAAAAAAA=
 </compositedata><run><font size='8pt'
- color='green'/> (C) - list of conference platforms with Meeting Credentials</run></par>
+ color='green'/> (CFD) - list of conference platforms with Meeting Credentials</run></par>
 <par def='2'><run><font size='8pt'/><field type='text' kind='computedwhencomposed'
  name='meetingService'><code event='defaultvalue'><formula>meetingService</formula></code></field></run><compositedata
- type='98' prevtype='65418' nexttype='222' afterparcount='5' containertype='65418'
+ type='98' prevtype='65418' nexttype='222' afterparcount='6' containertype='65418'
  aftercontainercount='1' afterbegincount='3'>
 Yg4BAIQAAAAAAAAAAAA=
 </compositedata><run><font size='8pt'
  color='green'/> (CWC) - service of currently scheduled online meeting related to this entry</run></par>
 <par def='2'><run><font size='8pt'/><field type='text' kind='computed' name='meetingServiceLabel'><code
  event='defaultvalue'><formula>meetingServiceLabel</formula></code></field></run><compositedata
- type='98' prevtype='65418' nexttype='222' afterparcount='5' containertype='65418'
+ type='98' prevtype='65418' nexttype='222' afterparcount='6' containertype='65418'
  aftercontainercount='1' afterbegincount='3'>
 Yg4BAIQAAAAAAAAAAAA=
 </compositedata><run><font size='8pt'
@@ -135,7 +136,7 @@ Yg4BAIQAAAAAAAAAAAA=
 </compositedata><run><font size='8pt' color='green'/> (CWC) - start date/time of currently scheduled online meeting, as an ITC string</run></par>
 <par def='2'><run><font size='8pt'/><field type='text' kind='computedwhencomposed'
  name='meetingEndStr'><code event='defaultvalue'><formula>meetingEndStr</formula></code></field></run><compositedata
- type='98' prevtype='65418' nexttype='222' afterparcount='5' containertype='65418'
+ type='98' prevtype='65418' nexttype='222' afterparcount='6' containertype='65418'
  aftercontainercount='1' afterbegincount='3'>
 Yg4BAIQAAAAAAAAAAAA=
 </compositedata><run><font size='8pt'
