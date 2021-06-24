@@ -1,20 +1,19 @@
 <?xml version='1.0' encoding='utf-8'?>
-<page name='Landing' xmlns='http://www.lotus.com/dxl' version='11.0' maintenanceversion='1.0'
- replicaid='852586DC005D7BD2' publicaccess='false' designerversion='8.5.3'
- bgcolor='#f2f2f2' renderpassthrough='true'>
-<noteinfo noteid='292' unid='AB2BC49A12B9197E86258692005BA633' sequence='6'>
+<page name='Landing' xmlns='http://www.lotus.com/dxl' version='12.0' replicaid='852586FD0077AA6C'
+ publicaccess='false' designerversion='8.5.3' bgcolor='#f2f2f2' renderpassthrough='true'>
+<noteinfo noteid='292' unid='AB2BC49A12B9197E86258692005BA633' sequence='3'>
 <created><datetime>20210308T104103,23-06</datetime></created>
-<modified><datetime dst='true'>20210521T131034,26-04</datetime></modified>
-<revised><datetime dst='true'>20210521T131034,25-04</datetime></revised>
-<lastaccessed><datetime dst='true'>20210521T131034,25-04</datetime></lastaccessed>
-<addedtofile><datetime dst='true'>20210521T130116,76-04</datetime></addedtofile></noteinfo>
+<modified><datetime dst='true'>20210624T104733,87-04</datetime></modified>
+<revised><datetime dst='true'>20210624T104733,86-04</datetime></revised>
+<lastaccessed><datetime dst='true'>20210624T104733,86-04</datetime></lastaccessed>
+<addedtofile><datetime dst='true'>20210623T174806,77-04</datetime></addedtofile></noteinfo>
 <updatedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></updatedby>
 <wassignedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></wassignedby>
 <actionbar bgcolor='#04633d' bordercolor='black'><actionbarstyle height='4.7500ex'
  repeat='tile'><font size='9pt' name='multilingual'/><imageref name='action bar flat.png'/></actionbarstyle>
 <actionbuttonstyle bgcolor='#04633d'><imageref name='ActionButton.gif'/></actionbuttonstyle><font
  size='9pt' style='bold' name='multilingual' color='white'/><border style='solid'
- width='0px 0px 1px'/>
+ width='0px 0px 1px' color='system'/>
 <action title='Install DOMI'><code event='click'><formula>@Command([ToolsRunMacro]; "01. Install DOMI in Target Mail Db")</formula></code></action>
 <action title='Uninstall DOMI' align='right'><code event='click'><formula
 >@Command([ToolsRunMacro]; "99. Admin\\02. Clean up Target Mail Db")</formula></code></action></actionbar>
@@ -22,14 +21,14 @@
 <pardef id='1'/>
 <par def='1'/>
 <table widthtype='fitwindow' minrowheight='1.1167in' leftmargin='0.7396in'
- refwidth='12.3229in'><tablecolumn width='100%'/>
+ refwidth='14.1563in'><tablecolumn width='100%'/>
 <tablerow>
 <tablecell valign='center' borderwidth='0px' bgcolor='white'>
 <pardef id='3' leftmargin='0.4500in' spacebefore='1.5' tabs='L0.5000in L1in L1.5000in L2in L2.5000in L3in L3.5000in L4in'
  keepwithnext='true' keeptogether='true'/>
 <par def='3'><run><font size='24pt' color='#4f4f4f'/>Domino Online Meeting Integration</run></par></tablecell></tablerow></table>
 <par def='1'><run><font size='1pt'/></run></par>
-<table widthtype='fitwindow' leftmargin='0.7500in' refwidth='13.9111in'><tablecolumn
+<table widthtype='fitwindow' leftmargin='0.7500in' refwidth='14.1458in'><tablecolumn
  width='0.4000in'/><tablecolumn width='13.3861in'/><tablecolumn width='100%'/>
 <tablerow>
 <tablecell borderwidth='0px' bgcolor='#f2f2f2'>
@@ -54,40 +53,39 @@
 <par def='9'><run><font size='11pt' style='bold' color='#4f4f4f'/>Users will need to be on HCL Notes 11.0.1 FP3 or higher. They will be warned if they are not using a valid version.</run></par>
 <par def='9'><run><font size='11pt' color='#4f4f4f'/>There are no restrictions on server version for using the online meeting integration in calendars in HCL Notes Client.</run></par></tablecell>
 <tablecell borderwidth='0px' bgcolor='#f2f2f2'>
-<pardef id='10' keepwithnext='true' keeptogether='true'/>
-<par def='10'><run><font size='9pt' style='bold' color='#474747'/></run></par></tablecell></tablerow>
+<par def='8'><run><font size='9pt' style='bold' color='#474747'/></run></par></tablecell></tablerow>
 <tablerow>
 <tablecell borderwidth='0px' bgcolor='#f2f2f2'>
 <par def='5'><run><font size='15pt' style='bold' color='#4f4f4f'/></run></par></tablecell>
 <tablecell borderwidth='0px' bgcolor='#f2f2f2'>
-<pardef id='11' keepwithnext='true' keeptogether='true'/>
-<par def='11'><run><font size='15pt' style='bold' color='#4f4f4f'/></run></par>
-<par def='11'><run><font size='16pt' color='#474747'/>Pre-Requisite Configuration</run></par>
-<par def='11'><run><font size='6pt' color='#4f4f4f'/></run></par></tablecell>
+<pardef id='10' keepwithnext='true' keeptogether='true'/>
+<par def='10'><run><font size='15pt' style='bold' color='#4f4f4f'/></run></par>
+<par def='10'><run><font size='16pt' color='#474747'/>Pre-Requisite Configuration</run></par>
+<par def='10'><run><font size='6pt' color='#4f4f4f'/></run></par></tablecell>
 <tablecell borderwidth='0px' bgcolor='#f2f2f2'>
 <par def='8'><run><font size='15pt' style='bold' color='#4f4f4f'/></run></par></tablecell></tablerow>
 <tablerow>
 <tablecell borderwidth='0px' bgcolor='#f2f2f2'>
 <par def='5'><run><font size='15pt' style='bold' color='#4f4f4f'/></run></par></tablecell>
 <tablecell borderwidth='0px' bgcolor='white'>
-<pardef id='12' leftmargin='0.1250in' spacebefore='1.5' keepwithnext='true'
+<pardef id='11' leftmargin='0.1250in' spacebefore='1.5' keepwithnext='true'
  keeptogether='true'/>
-<par def='12'><run><font size='11pt' color='#4f4f4f'/>1. If you are using the new Sametime Meetings, you will need to update the base URL for the server. To do this:</run></par>
-<par def='12'><run><font size='11pt' color='#4f4f4f'/>    a) </run><actionhotspot
+<par def='11'><run><font size='11pt' color='#4f4f4f'/>1. If you are using the new Sametime Meetings, you will need to update the base URL for the server. To do this:</run></par>
+<par def='11'><run><font size='11pt' color='#4f4f4f'/>    a) </run><actionhotspot
  hotspotstyle='none'><code event='click'><formula>@Command([ToolsRunMacro];"openDOMIDDE")</formula></code><run
 ><font size='11pt' color='#01539b'/>Open this application in Domino Designer</run></actionhotspot><run
 ><font size='11pt' color='#4f4f4f'/>.</run></par>
-<par def='12'><run><font size='11pt' color='#4f4f4f'/>    b) Go to Code &gt; Script Libraries and open </run><run
+<par def='11'><run><font size='11pt' color='#4f4f4f'/>    b) Go to Code &gt; Script Libraries and open </run><run
 ><font size='11pt' style='bold' color='#4f4f4f'/>domiConstantsBE</run><run
 ><font size='11pt' color='#4f4f4f'/>.</run></par>
-<par def='12'><run><font size='11pt' color='#4f4f4f'/>    c) In Declarations, set the value for the </run><run
+<par def='11'><run><font size='11pt' color='#4f4f4f'/>    c) In Declarations, set the value for the </run><run
 ><font size='11pt' style='bold' color='#4f4f4f'/>g_DOMI_ROOTURL_SAMETIMEMEETINGS </run><run
 ><font size='11pt' color='#4f4f4f'/>constant to your Sametime server, e.g. "</run><run
 ><font size='11pt' style='italic' color='#4f4f4f'/>https://demomeetings.hcltechsw.com</run><run
 ><font size='11pt' color='#4f4f4f'/>"</run></par>
-<pardef id='13' leftmargin='0.1250in' spaceafter='1.5' keepwithnext='true'
+<pardef id='12' leftmargin='0.1250in' spaceafter='1.5' keepwithnext='true'
  keeptogether='true'/>
-<par def='13'><picture width='929px' height='200px'><gif>
+<par def='12'><picture width='929px' height='200px'><gif>
 R0lGODlhoQPIAOcAAP////j48PD4+Pj46Oj4+OD4+Pj44PD48Pj42Nj4+NDQ0Li4uNjY2NDo0Ojg
 gMDw8PjwwFi4WPD46ND4+PDwwPjw0Oj48EiYCMDQYPjwsIjQiNDw+Pj40Njw+Njw8Pj4yMj4+LDA
 QOjw+OD44AiYCAiYGHDAcJjg6PDw2FiYYNjgmBiYCODw4CCgILDw+LjQcMDQaJjASPjosOj46DjA
@@ -687,10 +685,9 @@ z1JbbbX8IItbttZy262334Ibrrif4tqpruOim66667LbrrvvwhuvvPPS+2i5nJ5br7778tuvv/8C
 HLDAA+t776X5Epywwgsz3LDDD0McMa0GW4qwxBdjnLHGG3PcscezUvyoxR+TXLLJJ6Ocssrwhhzo
 yCvDHLPMM9Ncs80tA/qyzTvz3LPPPwPN8qc6B1200UcjnbTSeOL8J9FLQwgdtdRTU/1xQAA7
 </gif></picture></par>
-<par def='13'><run><font size='11pt' color='#4f4f4f'/></run></par>
-<pardef id='14' leftmargin='0.1250in' spacebefore='1.5' spaceafter='1.5' keepwithnext='true'
- keeptogether='true'/>
-<par def='14'><run><font size='11pt' color='#4f4f4f'/>2. If you have decided to host your own version of the OAuth application that communicates to Zoom, Teams, GoToMeeting and Webex. You will also need to update the </run><run
+<par def='12'/>
+<par def='12'><run><font size='11pt' color='#4f4f4f'/></run></par>
+<par def='9'><run><font size='11pt' color='#4f4f4f'/>2. If you have decided to host your own version of the OAuth application that communicates to Zoom, Teams, GoToMeeting and Webex. You will also need to update the </run><run
 ><font size='11pt' style='bold' color='#4f4f4f'/>g_DOMI_ROOTURL_TOKEN</run><run
 ><font size='11pt' color='#4f4f4f'/> constant in the same place. This should just be the hostname of the server, in the format "</run><run
 ><font size='11pt' style='italic' color='#4f4f4f'/>https://d</run><run><font
@@ -702,10 +699,10 @@ yCvDHLPMM9Ncs80tA/qyzTvz3LPPPwPN8qc6B1200UcjnbTSeOL8J9FLQwgdtdRTU/1xQAA7
 <tablecell borderwidth='0px' bgcolor='#f2f2f2'>
 <par def='5'><run><font size='15pt' style='bold' color='#4f4f4f'/></run></par></tablecell>
 <tablecell borderwidth='0px' bgcolor='#f2f2f2'>
-<par def='11'><run><font size='15pt' style='bold' color='#4f4f4f'/></run></par>
-<par def='11'><run><font size='16pt' color='#474747'/>Install</run><run><font
+<par def='10'><run><font size='15pt' style='bold' color='#4f4f4f'/></run></par>
+<par def='10'><run><font size='16pt' color='#474747'/>Install</run><run><font
  size='16pt' color='#474747'/>ation</run></par>
-<par def='11'><run><font size='6pt' style='bold' color='#4f4f4f'/></run></par></tablecell>
+<par def='10'><run><font size='6pt' style='bold' color='#4f4f4f'/></run></par></tablecell>
 <tablecell borderwidth='0px' bgcolor='#f2f2f2'>
 <par def='8'><run><font size='15pt' style='bold' color='#4f4f4f'/></run></par></tablecell></tablerow>
 <tablerow>
@@ -724,16 +721,16 @@ yCvDHLPMM9Ncs80tA/qyzTvz3LPPPwPN8qc6B1200UcjnbTSeOL8J9FLQwgdtdRTU/1xQAA7
 <tablecell borderwidth='0px' bgcolor='#f2f2f2'>
 <par def='5'><run><font size='15pt' style='bold' color='#4f4f4f'/></run></par></tablecell>
 <tablecell borderwidth='0px' bgcolor='#f2f2f2'>
-<par def='11'><run><font size='15pt' style='bold' color='#4f4f4f'/></run></par>
-<par def='11'><run><font size='16pt' color='#474747'/>Uninstall</run></par>
-<par def='11'><run><font size='6pt' style='bold' color='#4f4f4f'/></run></par></tablecell>
+<par def='10'><run><font size='15pt' style='bold' color='#4f4f4f'/></run></par>
+<par def='10'><run><font size='16pt' color='#474747'/>Uninstall</run></par>
+<par def='10'><run><font size='6pt' style='bold' color='#4f4f4f'/></run></par></tablecell>
 <tablecell borderwidth='0px' bgcolor='#f2f2f2'>
 <par def='8'><run><font size='15pt' style='bold' color='#4f4f4f'/></run></par></tablecell></tablerow>
 <tablerow>
 <tablecell borderwidth='0px' bgcolor='#f2f2f2'>
 <par def='5'><run><font size='15pt' style='bold' color='#4f4f4f'/></run></par></tablecell>
 <tablecell borderwidth='0px' bgcolor='white'>
-<par def='14'><run><font size='11pt' color='#4f4f4f'/>To uninstall DOMI from a mail template, use the "</run><run
+<par def='9'><run><font size='11pt' color='#4f4f4f'/>To uninstall DOMI from a mail template, use the "</run><run
 ><font size='11pt' style='bold' color='#4f4f4f'/>Uninstall DOMI</run><run
 ><font size='11pt' color='#4f4f4f'/>" button. You will be prompted to select the mail template to revert. The process will remove the DOMI design elements from the specified mail template and revert the Calendar Entry form. The standard Domino design task can be used to propagate changes to relevant users.</run></par></tablecell>
 <tablecell borderwidth='0px' bgcolor='#f2f2f2'>
@@ -742,21 +739,21 @@ yCvDHLPMM9Ncs80tA/qyzTvz3LPPPwPN8qc6B1200UcjnbTSeOL8J9FLQwgdtdRTU/1xQAA7
 <tablecell borderwidth='0px' bgcolor='#f2f2f2'>
 <par def='5'><run><font size='15pt' style='bold' color='#4f4f4f'/></run></par></tablecell>
 <tablecell borderwidth='0px' bgcolor='#f2f2f2'>
-<par def='11'><run><font size='15pt' style='bold' color='#4f4f4f'/></run></par>
-<par def='11'><run><font size='16pt' color='#474747'/>Restricting Meeting Provider Options</run></par>
-<par def='11'><run><font size='6pt' style='bold' color='#4f4f4f'/></run></par></tablecell>
+<par def='10'><run><font size='15pt' style='bold' color='#4f4f4f'/></run></par>
+<par def='10'><run><font size='16pt' color='#474747'/>Restricting Meeting Provider Options</run></par>
+<par def='10'><run><font size='6pt' style='bold' color='#4f4f4f'/></run></par></tablecell>
 <tablecell borderwidth='0px' bgcolor='#f2f2f2'>
 <par def='8'><run><font size='15pt' style='bold' color='#4f4f4f'/></run></par></tablecell></tablerow>
 <tablerow>
 <tablecell borderwidth='0px' bgcolor='#f2f2f2'>
 <par def='5'><run><font size='15pt' style='bold' color='#4f4f4f'/></run></par></tablecell>
 <tablecell borderwidth='0px' bgcolor='white'>
-<pardef id='15' spacebefore='1.5' spaceafter='1.5' keepwithnext='true' keeptogether='true'/>
-<par def='15'><run><font size='11pt' color='#4f4f4f'/>By default DOMI supports Zoom, WebEx, GoToMeeting and Microsoft Teams. If you wish to restrict these options, you will need to edit the Online Meeting credentials form in the DOMI installation database before running the install. The list of meeting providers available to end users is held in the serviceList field. Removing an option wil prevent users creating an online Meeting Credentials profile for that service provider. Sametime is automatically removed if you have not set a Sametime Meetings server.</run></par></tablecell>
+<pardef id='13' spacebefore='1.5' spaceafter='1.5' keepwithnext='true' keeptogether='true'/>
+<par def='13'><run><font size='11pt' color='#4f4f4f'/>By default DOMI supports Zoom, Webex, GoToMeeting and Microsoft Teams. If you wish to restrict these options, you will need to edit the Online Meeting credentials form in the DOMI installation database before running the install. The list of meeting providers available to end users is held in the serviceList field. Removing an option wil prevent users creating an online Meeting Credentials profile for that service provider. Sametime is automatically removed if you have not set a Sametime Meetings server.</run></par></tablecell>
 <tablecell borderwidth='0px' bgcolor='#f2f2f2'>
 <par def='8'><run><font size='15pt' style='bold' color='#4f4f4f'/></run></par></tablecell></tablerow></table>
-<pardef id='16' align='none' leftmargin='0.7500in' tabs='L0.5000in L1in L1.5000in L2in L2.5000in L3in L3.5000in L4in'/>
-<par def='16'><run><font size='24pt' color='white'/></run></par>
+<pardef id='14' align='none' leftmargin='0.7500in' tabs='L0.5000in L1in L1.5000in L2in L2.5000in L3in L3.5000in L4in'/>
+<par def='14'><run><font size='24pt' color='white'/></run></par>
 <par def='1'><run><font size='12pt' color='white'/></run></par>
 <par def='1'><run><font size='12pt' color='white'/></run></par></richtext></body>
 <item name='$$ScriptName' summary='false' sign='true'><text>Landing</text></item></page>
