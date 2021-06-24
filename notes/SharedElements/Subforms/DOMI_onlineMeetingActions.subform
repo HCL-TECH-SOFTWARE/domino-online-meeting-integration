@@ -1,12 +1,12 @@
 <?xml version='1.0' encoding='utf-8'?>
 <subform name='DOMI_onlineMeetingActions' alias='onlineMeetingActions' xmlns='http://www.lotus.com/dxl'
- version='11.0' maintenanceversion='1.0' replicaid='852586FD0077AA6C' publicaccess='true'
- designerversion='8.5.3' renderpassthrough='true'>
-<noteinfo noteid='2aa' unid='7879459AF296C17663442FBA59495A57' sequence='3'>
+ version='12.0' replicaid='852586FD0077AA6C' publicaccess='true' designerversion='8.5.3'
+ renderpassthrough='true'>
+<noteinfo noteid='2aa' unid='7879459AF296C17663442FBA59495A57' sequence='4'>
 <created><datetime>75220911T123314,79+0330</datetime></created>
-<modified><datetime dst='true'>20210623T180118,78-04</datetime></modified>
-<revised><datetime dst='true'>20210623T180118,77-04</datetime></revised>
-<lastaccessed><datetime dst='true'>20210623T180118,77-04</datetime></lastaccessed>
+<modified><datetime dst='true'>20210624T104447,15-04</datetime></modified>
+<revised><datetime dst='true'>20210624T104447,14-04</datetime></revised>
+<lastaccessed><datetime dst='true'>20210624T104447,14-04</datetime></lastaccessed>
 <addedtofile><datetime dst='true'>20210623T174807,50-04</datetime></addedtofile></noteinfo>
 <updatedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></updatedby>
 <wassignedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></wassignedby><code
@@ -44,23 +44,28 @@
 >@Trim("Delete " + meetingServiceLabel + " Meeting")</formula></code></action>
 <action title='Schedule Online Meeting...\Sametime' hide='preview previewedit'><code
  event='click'><formula>@Command([RunAgent]; "DOMI_scheduleSTMeeting");
-@Command([RefreshHideFormulas])</formula></code><code event='hidewhen'><formula
+@Command([RefreshHideFormulas]);
+@Command([ViewRefreshFields])</formula></code><code event='hidewhen'><formula
 >@IsNotMember("sametime"; confList) | meetingId != ""</formula></code></action>
 <action title='Schedule Online Meeting...\Zoom' hide='preview previewedit'><code
  event='click'><formula>@Command([RunAgent]; "DOMI_scheduleZoomMeeting");
-@Command([RefreshHideFormulas])</formula></code><code event='hidewhen'><formula
+@Command([RefreshHideFormulas]);
+@Command([ViewRefreshFields])</formula></code><code event='hidewhen'><formula
 >@IsNotMember("zoom"; confList) | meetingId != ""</formula></code></action>
 <action title='Schedule Online Meeting...\GoToMeeting' hide='preview previewedit'><code
  event='click'><formula>@Command([RunAgent]; "DOMI_scheduleGtmMeeting");
-@Command([RefreshHideFormulas])</formula></code><code event='hidewhen'><formula
+@Command([RefreshHideFormulas]);
+@Command([ViewRefreshFields])</formula></code><code event='hidewhen'><formula
 >@IsNotMember("gtm"; confList) | meetingId != ""</formula></code></action>
 <action title='Schedule Online Meeting...\WebEx' hide='preview previewedit'><code
- event='click'><formula>@Command([RunAgent]; "DOMI_scheduleWebExMeeting");
-@Command([RefreshHideFormulas])</formula></code><code event='hidewhen'><formula
+ event='click'><formula>@Command([RunAgent]; "DOMI_scheduleWebexMeeting");
+@Command([RefreshHideFormulas]);
+@Command([ViewRefreshFields])</formula></code><code event='hidewhen'><formula
 >@IsNotMember("webex"; confList) | meetingId != ""</formula></code></action>
 <action title='Schedule Online Meeting...\Teams' hide='preview previewedit'><code
  event='click'><formula>@Command([RunAgent]; "DOMI_scheduleTeamsMeeting");
-@Command([RefreshHideFormulas])</formula></code><code event='hidewhen'><formula
+@Command([RefreshHideFormulas]);
+@Command([ViewRefreshFields])</formula></code><code event='hidewhen'><formula
 >@IsNotMember("teams"; confList) | meetingId != ""</formula></code></action></actionbar>
 <body><richtext>
 <pardef id='1' leftmargin='1in' rightmargin='100%' hide='read edit print preview previewedit notes web'><parstyle
