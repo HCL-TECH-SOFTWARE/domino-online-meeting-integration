@@ -1,13 +1,13 @@
 <?xml version='1.0' encoding='utf-8'?>
 <subform name='DOMI_onlineMeetingActions' alias='onlineMeetingActions' xmlns='http://www.lotus.com/dxl'
- version='12.0' replicaid='852586FD0077AA6C' publicaccess='true' designerversion='8.5.3'
+ version='12.0' replicaid='852586FE00669899' publicaccess='true' designerversion='8.5.3'
  renderpassthrough='true'>
 <noteinfo noteid='2aa' unid='7879459AF296C17663442FBA59495A57' sequence='5'>
 <created><datetime>75220911T123314,79+0330</datetime></created>
-<modified><datetime dst='true'>20210624T110257,12-04</datetime></modified>
-<revised><datetime dst='true'>20210624T110257,11-04</datetime></revised>
-<lastaccessed><datetime dst='true'>20210624T110257,11-04</datetime></lastaccessed>
-<addedtofile><datetime dst='true'>20210623T174807,50-04</datetime></addedtofile></noteinfo>
+<modified><datetime dst='true'>20210624T170712,45-04</datetime></modified>
+<revised><datetime dst='true'>20210624T170712,44-04</datetime></revised>
+<lastaccessed><datetime dst='true'>20210624T170712,44-04</datetime></lastaccessed>
+<addedtofile><datetime dst='true'>20210624T144059,77-04</datetime></addedtofile></noteinfo>
 <updatedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></updatedby>
 <wassignedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></wassignedby><code
  event='postopen'><formula>@Command([RefreshHideFormulas])</formula></code>
@@ -76,15 +76,24 @@
 <pardef id='2' hide='read edit print notes web'/>
 <par def='2'><run><font size='8pt' style='bold' color='green'/>Hidden Fields</run></par>
 <par def='2'><run><font size='8pt' color='green'/></run><run><font size='8pt'/><field
- type='text' allowmultivalues='true' kind='computedfordisplay' name='confList'
- listinputseparators='comma semicolon newline' listdisplayseparator='newline'><code
- event='defaultvalue'><formula>list := @DbColumn("" : "NoCache"; ""; "DOMI_beMeetingCredentials"; 1);
-@If(@IsError(list); ""; list)</formula></code></field></run><compositedata
+ type='text' allowmultivalues='true' kind='computed' name='confList' listinputseparators='comma semicolon newline'
+ listdisplayseparator='newline'><code event='defaultvalue'><formula>REM { 
+	This field is used by action button  hide/when formulae.  
+	If it is CFD the hide/when formulae will get the value only when the document is being loaded, but after that they will not "see" the value. 
+	So it is set as Computed.  However, we DO  NOT want this value saved with the document, 
+	so we set to @Unavailable if the doucment is being saved.
+	-Devin
+};
+
+@If(@IsDocBeingSaved; @Return(@Unavailable); "");
+
+vValue := @DbColumn("" : "NoCache"; ""; "DOMI_beMeetingCredentials"; 1);
+@If(@IsError(vValue); ""; vValue)</formula></code></field></run><compositedata
  type='98' prevtype='65418' nexttype='222' afterparcount='9' containertype='65418'
  aftercontainercount='1' afterbegincount='3'>
 Yg4BAIQAAAAAAAAAAAA=
 </compositedata><run><font size='8pt'
- color='green'/> (CFD) - list of conference platforms with Meeting Credentials</run></par>
+ color='green'/> (C) - list of conference platforms with Meeting Credentials</run></par>
 <par def='2'><run><font size='8pt'/><field type='text' kind='computedwhencomposed'
  name='meetingService'><code event='defaultvalue'><formula>meetingService</formula></code></field></run><compositedata
  type='98' prevtype='65418' nexttype='222' afterparcount='6' containertype='65418'
