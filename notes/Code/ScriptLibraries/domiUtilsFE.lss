@@ -309,6 +309,7 @@ Function domiValidateOAuthToken() As Boolean
 	Dim domi As DominoOnlineMeetingIntegrator
 	
 	Dim refreshToken$
+	Dim service$
 	
 	Dim result As Boolean 
 	
@@ -319,6 +320,14 @@ Function domiValidateOAuthToken() As Boolean
 	Set ndoc = nuidoc.Document
 	If Not(ndoc.getItemValue(|Form|)(0) = |domiCredentials|) Then Error ERR_PARAMETER_INVALID, MSG_PARAMETER_INVALID & |UI Document is not a DOMI Credentials document.  |
 
+	If ndoc.hasitem(|service|) Then service$ = ndoc.getFirstItem(|service|).Text 
+	If (0 = StrCompare(|sametime|, service$, 5)) Then 
+		' Skip validation for Sametime and simply return a true 
+		result = True 
+		GoTo ExitPoint
+	End If
+	
+	
 	If ndoc.hasItem(DOMI_TOKEN_REFRESH) Then refreshToken$ = ndoc.getFirstItem(DOMI_TOKEN_REFRESH).Text 
 	If isBlankString(refreshToken$) Then 
 		MessageBox |Please | & MSG_USE_BUTTON, MB_ICONEXCLAMATION, |Refresh Token is blank.  |
