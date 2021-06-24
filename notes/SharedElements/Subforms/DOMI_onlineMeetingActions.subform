@@ -2,11 +2,11 @@
 <subform name='DOMI_onlineMeetingActions' alias='onlineMeetingActions' xmlns='http://www.lotus.com/dxl'
  version='12.0' replicaid='852586FD0077AA6C' publicaccess='true' designerversion='8.5.3'
  renderpassthrough='true'>
-<noteinfo noteid='2aa' unid='7879459AF296C17663442FBA59495A57' sequence='4'>
+<noteinfo noteid='2aa' unid='7879459AF296C17663442FBA59495A57' sequence='5'>
 <created><datetime>75220911T123314,79+0330</datetime></created>
-<modified><datetime dst='true'>20210624T104447,15-04</datetime></modified>
-<revised><datetime dst='true'>20210624T104447,14-04</datetime></revised>
-<lastaccessed><datetime dst='true'>20210624T104447,14-04</datetime></lastaccessed>
+<modified><datetime dst='true'>20210624T110257,12-04</datetime></modified>
+<revised><datetime dst='true'>20210624T110257,11-04</datetime></revised>
+<lastaccessed><datetime dst='true'>20210624T110257,11-04</datetime></lastaccessed>
 <addedtofile><datetime dst='true'>20210623T174807,50-04</datetime></addedtofile></noteinfo>
 <updatedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></updatedby>
 <wassignedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></wassignedby><code
@@ -25,7 +25,8 @@
 	@Prompt([Ok];"Not Configured"; "No update service is configured for " + meetingService)
 );
 
-@Command([RefreshHideFormulas])</formula></code><code event='hidewhen'><formula
+@Command([RefreshHideFormulas]);
+@Command([ViewRefreshFields])</formula></code><code event='hidewhen'><formula
 >tmpOwnerHW = "1" | meetingId = ""</formula></code><code event='label'><formula
 >@Trim("Update " + meetingServiceLabel + " Meeting")</formula></code></action>
 <action title='Delete Meeting' hide='preview previewedit'><code event='click'><formula
@@ -39,7 +40,8 @@
 	@Prompt([Ok];"Not Configured"; "No delete service is configured for " + meetingService)
 );
 
-@Command([RefreshHideFormulas])</formula></code><code event='hidewhen'><formula
+@Command([RefreshHideFormulas]);
+@Command([ViewRefreshFields])</formula></code><code event='hidewhen'><formula
 >tmpOwnerHW = "1" | meetingId = ""</formula></code><code event='label'><formula
 >@Trim("Delete " + meetingServiceLabel + " Meeting")</formula></code></action>
 <action title='Schedule Online Meeting...\Sametime' hide='preview previewedit'><code
