@@ -544,6 +544,8 @@ Function getNewSTTokens(curDoc As NotesDocument) As Boolean
 	Dim tokenTag As String, tokenVal As String, cookieVal As String, cookieTag As String
 	Dim rstr As String, errtxt As String, rvar As Variant, emptyvar As Variant, rdoc As NotesDocument, rbool As Boolean
 	
+	Dim result As Boolean 
+	
 	On Error GoTo errHandler
 
 	Set thisDb = s.Currentdatabase
@@ -576,14 +578,22 @@ Function getNewSTTokens(curDoc As NotesDocument) As Boolean
 		Call httpRequest.Setheaderfield(ListTag(h), h)
 	End ForAll
 	
-	rbool = ws.dialogBox("domiSTLoginDlg", True, True, False, False, False, False, "Sametime Login", curdoc, True, False, True)
-	If rbool = False Then Error 1000, ""
+	
+	If Not ws.dialogBox("domiSTLoginDlg", True, True, False, False, False, False, "Sametime Login", curdoc, True, False, True) Then 
+		' user cancelled dialog.
+		enhLogWarning LIB_PREFIX, |User cancelled.|
+		GoTo getOut 
+	End If
+	
+	If isBlankString(curdoc.getFirstItem(|loginEmail|).Text) Then Error ERR_PARAMETER_BLANK, MSG_PARAMETER_BLANK & |Login email|
+	If isBlankString(curdoc.getFirstItem(|stPassword|).Text) Then Error ERR_PARAMETER_BLANK, MSG_PARAMETER_BLANK & |Sametime password|
 
 	rvar = Evaluate(|@UrlEncode("Domino"; loginEmail)|, curdoc)
 	If IsArray(rvar) Then paramList("username") = rvar(0)
 	rvar = Evaluate(|@UrlEncode("Domino"; stPassword)|, curdoc)
 	If IsArray(rvar) Then paramList("password") = rvar(0)
 	If curdoc.hasItem("password") Then Call curdoc.removeItem("password")
+	If curdoc.hasItem("stPassword") Then Call curdoc.removeItem("stPassword")
 	
 	' set the payload stuff
 	rstr = ""
@@ -638,8 +648,10 @@ Function getNewSTTokens(curDoc As NotesDocument) As Boolean
 	Call curDoc.Replaceitemvalue("refreshToken", curDoc.getItemValue("stRefreshTokenFull")(0))
 	If curdoc.HasItem("stPassword") Then Call curDoc.RemoveItem("stPassword")
 	
-	getNewSTTokens = True
+	result = True
+	
 getOut:
+	getNewSTTokens = result
 	Exit Function
 
 errHandler:
