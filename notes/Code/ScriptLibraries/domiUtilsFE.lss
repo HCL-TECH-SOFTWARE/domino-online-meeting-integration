@@ -330,7 +330,7 @@ Function domiValidateOAuthToken() As Boolean
 	Set domi.Document = ndoc 
 
 	If domi.refreshAuthToken(False) Then 
-		Call nuidoc.Reload()
+		If nuidoc.EditMode Then Call nuidoc.Reload()
 		MessageBox |Your OAuth Token is Valid|, MB_ICONINFORMATION, |Success|
 		result = True 
 	Else
@@ -383,15 +383,15 @@ Function domiRevokeOAuthToken() As Boolean
 	Set domi.Document = ndoc 
 	
 	If domi.refreshAuthToken(False) Then
-		If domi.revokeAuthToken(False) Then
-			Call nuidoc.Reload()
+		If domi.revokeAuthToken(True) Then
+			Call nuidoc.Close()
 			MessageBox |Your OAUTH Token has been revoked|, MB_ICONINFORMATION, |Success|
 			result = True
 		Else
 			MessageBox |The token could not be revoked.|, MB_ICONEXCLAMATION, |Failed to Revoke your OAUTH Token.|
 		End If
 	Else 
-		MessageBox |The refresh token has already expired.|, MB_ICONEXCLAMATION, |OAUTH Token Already Expired.|
+		MessageBox |The refresh token has already expired or is invalid.|, MB_ICONEXCLAMATION, |OAUTH Token Not Valid.|
 	End If
 	
 	

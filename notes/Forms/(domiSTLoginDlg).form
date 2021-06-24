@@ -1,14 +1,14 @@
 <?xml version='1.0' encoding='utf-8'?>
 <form name='(domiSTLoginDlg)' alias='domiSTLoginDlg' xmlns='http://www.lotus.com/dxl'
- version='11.0' maintenanceversion='1.0' replicaid='852586DC005D7BD2' publicaccess='false'
+ version='11.0' maintenanceversion='1.0' replicaid='852586FD00509207' publicaccess='false'
  designerversion='8.5.3' comment='dialog for initial login into ST Meeting server'
  inherit='true' renderpassthrough='true'>
-<noteinfo noteid='282' unid='63B8F0957714380B8525868D0048A2B0' sequence='6'>
+<noteinfo noteid='282' unid='63B8F0957714380B8525868D0048A2B0' sequence='3'>
 <created><datetime>20210303T081322,40-05</datetime></created>
-<modified><datetime dst='true'>20210521T131034,01-04</datetime></modified>
-<revised><datetime dst='true'>20210521T131034,00-04</datetime></revised>
-<lastaccessed><datetime dst='true'>20210521T131034,00-04</datetime></lastaccessed>
-<addedtofile><datetime dst='true'>20210521T130116,43-04</datetime></addedtofile></noteinfo>
+<modified><datetime dst='true'>20210623T104200,35-04</datetime></modified>
+<revised><datetime dst='true'>20210623T104200,34-04</datetime></revised>
+<lastaccessed><datetime dst='true'>20210623T104200,34-04</datetime></lastaccessed>
+<addedtofile><datetime dst='true'>20210623T104013,12-04</datetime></addedtofile></noteinfo>
 <updatedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></updatedby>
 <wassignedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></wassignedby>
 <body><richtext>
