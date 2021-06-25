@@ -53,7 +53,7 @@ If the ID running the install is different to the signer of the mail template, i
 4. You will be taken to a browser to authenticate with the relevant meeting service. After authenticating, you will be redirected to a page with a refresh token. The format of the token will vary depending on the meeting provider. Click *Copy*.  
 <img src="{{'/assets/images/user_guide/copy_token_webex.png' | relative_url}}" style="height:300px" alt="Copy Token" />
 5. Return to the Notes Client and click the *Paste* button. Using the *Paste* button automatically saves and validates the token. If you use paste into the field manually, you will need to save and close to trigger the token validation. <br/>
-<img src="{{'/assets/images/user_guide/paste_token.png' | relative_url}}" style="height:250px" alt="Paste Token" />
+<img src="{{'/assets/images/user_guide/paste_token_webex.png' | relative_url}}" style="height:250px" alt="Paste Token" />
 6. The system will automatically validate and retrieve an access token. If successful, you will receive the following success message. You are now ready to create ad hoc meetings for this provider and can save and close the Online Meeting Credentials document.  
 <img src="{{'/assets/images/user_guide/success_token.png' | relative_url}}" style="height:100px" alt="Success Token" />
 
@@ -65,10 +65,8 @@ The *Schedule Online Meeting...* action button will only be available if you hav
 1. Create a Calendar Entry and complete as normal. Where services support that functionality, Subject, dates/times and agenda will be sent to the meeting provider for the ad hoc meeting. So it is recommended that you complete those details before scheduling the online meeting.  
 2. Click *Schedule Online Meeting...* and select the desired meeting provider.  
 <img src="{{'/assets/images/user_guide/schedule_online_meeting.png' | relative_url}}" style="height:250px" alt="Schedule Online Meeting" />
-3. If the access and refresh tokens are valid, you will be notified that the meeting has been generated, the details added to the Location field.  
-<img src="{{'/assets/images/user_guide/online_meeting_created.png' | relative_url}}" style="height:250px" alt="Online Meeting Created" />
-4. If the refresh token is no longer valid, you will be prompted to request a new token. To complete adding an ad hoc meeting for this provider, click "Yes".  
-<img src="{{'/assets/images/user_guide/request_new_token.png' | relative_url}}" style="height:120px" alt="Reqest New Token" />
-5. You will be taken to the Online Meeting Credentials form. Click the *Get OAuth Token* button (or *Get Sametime Token* button for Sametime) and continue through authentication. This is the same process outlined in the [Online Meeting Credentials]({{'/modules_user_guide/credentials/index.html' | relative_url}}) section.  
-6. Once complete, save and close the Online Meeting Credentials.
-7. Return to the calendar entry and click *Schedule Online Meeting...* and select the desired meeting provider. The online meeting should now be created successfully.
+1. If the access and refresh tokens are valid, you will be notified that the meeting has been generated, the details added to the Location field. 
+2. If the refresh token is no longer valid, you will be prompted to request a new token. To complete adding an ad hoc meeting for this provider, click "Yes".  
+3. You will be taken to the Online Meeting Credentials form. Click the *Get OAuth Token* button (or *Get Sametime Token* button for Sametime) and continue through authentication. This is the same process outlined in the [Online Meeting Credentials]({{'/modules_user_guide/credentials/index.html' | relative_url}}) section.  
+4. Once complete, save and close the Online Meeting Credentials.
+5. Return to the calendar entry and click *Schedule Online Meeting...* and select the desired meeting provider. The online meeting should now be created successfully.
