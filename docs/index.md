@@ -5,7 +5,7 @@ nav_order: 1
 description: "HCL Domino Online Meeting Integration"
 has_children: true
 permalink: /
-last_modified_date: 2021.03.02
+last_modified_date: 2021.06.25
 ---
 
 ### HCL Domino Online Meeting Integration
@@ -13,7 +13,7 @@ last_modified_date: 2021.03.02
 Version {{ site.version }}
 {: .fs-3 }
 
-Access the source code on [GitHub]({{ site.gh_edit_repository }}). If you're a Domino Administrator, you can download the <a href="{{ site.gh_edit_repository }}/tree/main/release" target="_new">Installation NTF here</a>.
+Access the source code on [GitHub]({{ site.gh_edit_repository }}). If you're a Domino Administrator, you can download the <a href="{{ site.gh_edit_repository }}/tree/main/release" target="_new">DOMI Installation database here</a>.
 {: .alert .alert-info}
 
 ## Goals

@@ -4,7 +4,7 @@ title: Managing Credentials
 parent: DOMI LotusScript Architecture
 nav_order: 2
 has_children: false
-last_modified_date: 2021.03.24
+last_modified_date: 2021.06.25
 ---
 
 ## Managing Credentials
