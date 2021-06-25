@@ -21,11 +21,11 @@ On the Environment tab, enter the following environment variables, with the rele
 The redirect URLs will be "http://localhost:8878/" +  
 - gtmCallback - GoToMeeting
 - teamsCallback - Microsoft Teams
-- webexCallback - Cisco Webex
+- webexCallback - Webex
 - zoomCallback - Zoom
 
 The URL to launch to trigger the OAuth dance is http://localhost:8878/" +  
 - dominoGTM/index.html - GoToMeeting
 - dominoTeams/index.html - Microsoft Teams
-- dominoWebex/index.html - Cisco Webex
+- dominoWebex/index.html - Webex
 - dominoZoom/index.html - Zoom

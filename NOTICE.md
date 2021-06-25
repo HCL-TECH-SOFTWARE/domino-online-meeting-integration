@@ -11,3 +11,8 @@ Copyright HCL Software 2020-2021
 Includes Enhanced Log, Apache 2.0 License
 https://openntf.org/main.nsf/project.xsp?r=project/Enhanced%20Log
 Copyright Devin Olson, 2002-2021
+
+### Web application includes:
+Bootstrap, https://getbootstrap.com, source code https://github.com/twbs/bootstrap, MIT License, Copyright (c) 2011-2021 Twitter, Inc., Copyright (c) 2011-2021 The Bootstrap Authors
+
+JQuery, https://jquery.com, source code https://github.com/jquery/jquery, MIT License, (c) JS Foundation and other contributors

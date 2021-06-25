@@ -3,10 +3,13 @@ layout: default
 title: HCL Domino Administrators
 nav_order: 2
 has_children: true
-last_modified_date: 2021.03.22
+last_modified_date: 2021.06.25
 ---
 
 ## Documentation for Domino Administrators
+
+If you liked DOMI, please take a moment to click the Star button on the [project]({{ site.gh_edit_repository }}).
+{: .alert .alert-info}
 
 The Domino Online Meeting Integration installation database copies specific design elements into your mail template and adds action buttons to the end of your Calendar entry form. The process is designed as a "light touch" integration that should work even if you have made design changes to the mail template.
 
@@ -44,10 +47,13 @@ Installation process runs quickest using a local replica of DOMI Installation da
 
 In the DOMI Installation database's landing page, click the *Install DOMI* action button. You will be prompted to select the mail template into which to deploy DOMI. Within seconds the process will complete and the design elements will have been copied into the mail template. The standard Domino design task can be used to propagate the changes to relevant users.
 
+If the ID running the install is different to the signer of the mail template, it is recommended to re-sign the mail template after installing DOMI.
+{: .alert .alert-warning}
+
 ### Uninstall
 
 If you need to uninstall DOMI, use the *Uninstall DOMI* action button. You will be prompted to select the mail template into which to deploy DOMI. Within seconds the process will complete and the design elements will have been removed from the mail template.
 
 ### Restricting Meeting Provider Options
 
-By default DOMI supports Zoom, WebEx, GoToMeeting and Microsoft Teams. If you wish to restrict these options, you will need to edit the Online Meeting Credentials form in the DOMI installation database before running the install. The list of service providers available to end users is held in the `serviceList` field. Removing an option will prevent users creating an Online Meeting Credentials profile for that service provider. Sametime is automatically removed if you have not set a Sametime Meetings server.
+By default DOMI supports Zoom, Webex, GoToMeeting and Microsoft Teams. If you wish to restrict these options, you will need to edit the Online Meeting Credentials form in the DOMI installation database before running the install. The list of service providers available to end users is held in the `serviceList` field. Removing an option will prevent users creating an Online Meeting Credentials profile for that service provider. Sametime is automatically removed if you have not set a Sametime Meetings server.

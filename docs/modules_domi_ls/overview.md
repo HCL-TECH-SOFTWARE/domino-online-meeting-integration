@@ -26,7 +26,7 @@ All interaction from action buttons is via Agents. All agents are hidden from Ac
 - Gtm: GoToMeeting  
 - ST: Sametime  
 - Teams: Microsoft Teams
-- Webex: WebEx  
+- Webex: Webex  
 - Zoom: Zoom
 
 ### Script Libraries
