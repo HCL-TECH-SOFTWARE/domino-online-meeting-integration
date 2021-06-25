@@ -44,6 +44,9 @@ Installation process runs quickest using a local replica of DOMI Installation da
 
 In the DOMI Installation database's landing page, click the *Install DOMI* action button. You will be prompted to select the mail template into which to deploy DOMI. Within seconds the process will complete and the design elements will have been copied into the mail template. The standard Domino design task can be used to propagate the changes to relevant users.
 
+If the ID running the install is different to the signer of the mail template, it is recommended to re-sign the mail template after installing DOMI.
+{: .alert .alert-warning}
+
 ### Uninstall
 
 If you need to uninstall DOMI, use the *Uninstall DOMI* action button. You will be prompted to select the mail template into which to deploy DOMI. Within seconds the process will complete and the design elements will have been removed from the mail template.

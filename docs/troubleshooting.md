@@ -12,6 +12,21 @@ last_modified_date: 2021.03.25
 
 Remember that to use DOMI the Notes Client will need to be HCL Notes 11.0.1 FP3 or higher. If not, users will receive a warning when opening the **Online Meeting Credentials** form. Retrieving an OAuth token and creating meetings may work. Updating and deleting is not expected to work. Logs will confirm the HCL Notes Client version, if other options are more difficult.
 
+### Proxy Servers
+
+NotesHTTPRequest uses libcurl to make HTTP requests. If access to the internet is via a proxy server, OS environment variables need setting. There is an [HCL technote](https://support.hcltechsw.com/csm?id=kb_article&sys_id=0157fae51b418c1483cb86e9cd4bcb96) covering this.
+
+### "No Signature" Warning When Creating Calendar Entry
+
+This appears to be caused by DXL export / import of Calendar Entry form during DOMI installation, if the ID running the install is different to the signer of the mail template. Re-signing the mail template should resolve the problem.
+
+### Notes Crashes After Get Sametime
+
+This can be caused by libcurl being unable to retrieve the SSL certificates for the Sametime server. To verify, add the Notes.ini variable `Debug_NotesHTTPRequest=1`, restart Notes Client, try again and check the console.log. You will get a line like this:
+```
+[1AB4:0002-1AB8] SSL certificate problem: unable to get local issuer certificate
+```
+
 ### Getting an OAuth Token - Notes Embedded Browser
 
 *Get OAuth Token* action button launches a browser. The Notes Client embedded browser has not been tested so if that preference is enabled, users may have to work around that.
@@ -19,7 +34,7 @@ Remember that to use DOMI the Notes Client will need to be HCL Notes 11.0.1 FP3 
 ### Get OAuth Token - Page Not Available
 
 Retrieving an OAuth token opens the web application. First verify the URL is correct. The URL will be built up of:  
-- `g_DOMI_ROOTURL_TOKEN` constant. This should be in the format `https://hcllabs.domi.live/`.
+- `g_DOMI_ROOTURL_TOKEN` constant. This should be in the format `https://integration-auth-token.hcltechsw.com/`.
 - Endpoint for service, e.g. `dominoZoom/index.html`.
 
 The server can be accessed by entering the root URL into a browser. If this is not returning a valid page, there may be a problem with the service.
