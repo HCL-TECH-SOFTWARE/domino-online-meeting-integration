@@ -86,8 +86,8 @@ public class MainVerticle extends AbstractVerticle {
     final JsonObject promMetricsConfig =
         MainVerticle.config.getJsonObject("prometheusMetrics", new JsonObject());
     final Integer port = MainVerticle.config.getInteger(DOMIConstants.CONFIG_METRICSPORT, 8890);
-    final HttpServerOptions serverOptions = new HttpServerOptions();
-    serverOptions.setPort(port);
+    final HttpServerOptions serverOptions =
+        DOMIUtils.getServerOptions(DOMIConstants.CONFIG_METRICSPORT, port, MainVerticle.config);
     MainVerticle.LOGGER.info(
         "Metrics is configured for port {} {}", port,
         serverOptions.isSsl() ? "with HTTPS" : "HTTP only");
@@ -273,8 +273,9 @@ public class MainVerticle extends AbstractVerticle {
     }
     MainVerticle.LOGGER.info("Starting up with hostname " + hostName);
 
-    final HttpServerOptions serverOptions = new HttpServerOptions()
-        .setPort(this.config().getInteger(DOMIConstants.CONFIG_PORT, 8880));
+    final Integer port = MainVerticle.config.getInteger(DOMIConstants.CONFIG_PORT, 8878);
+    final HttpServerOptions serverOptions =
+        DOMIUtils.getServerOptions(DOMIConstants.CONFIG_PORT, port, MainVerticle.config);
 
     // Get router
     this.router = Router.router(this.getVertx());

@@ -20,6 +20,9 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,8 +31,13 @@ import com.hcl.labs.domi.metrics.DOMIStatistics;
 import com.hcl.labs.domi.metrics.DOMIStatisticsHolder;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.Tag;
+import io.vertx.core.http.HttpServerOptions;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
+import io.vertx.core.net.JksOptions;
+import io.vertx.core.net.OpenSSLEngineOptions;
+import io.vertx.core.net.PemKeyCertOptions;
+import io.vertx.core.net.PfxOptions;
 
 /**
  * @author Paul Withers
@@ -38,6 +46,12 @@ import io.vertx.core.json.JsonObject;
 public class DOMIUtils {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(DOMIUtils.class);
+
+  static final String TLS_TYPE = "TLSType";
+  static final String TLS_TYPE_PFX = "pfx";
+  static final String TLS_TYPE_JKS = "jks";
+  static final String TLS_TYPE_PEM = "pem";
+  static final String TLS_TYPE_INVALID = "Invalid TLS security type (pft,jks,pem): {}";
 
   /**
    * Names all parameters that can be overwritten / defined by environment
@@ -119,5 +133,109 @@ public class DOMIUtils {
       counter = stats.getOrCreateCounter(counterName, metricsTags);
     }
     counter.increment(1.0);
+  }
+
+
+  /**
+   * Constructing options for HTTP server
+   *
+   * @param portType    which port constant to use to retrieve from config
+   * @param portDefault default port, if nothing in config
+   * @param config      config from which to retrieve the port
+   * @return HttpServerOptions to apply to server
+   */
+  public static HttpServerOptions getServerOptions(final String portType, final int portDefault,
+      final JsonObject config) {
+
+    final HttpServerOptions options = new HttpServerOptions();
+    final int port = config.getInteger(portType, portDefault);
+    final String tlsFile = config.getString(DOMIConstants.CONFIG_TLSFILE, "null");
+    final String tlsPassword = config.getString(DOMIConstants.CONFIG_TLSPASSWORD, "null");
+    final String pemCert = config.getString(DOMIConstants.CONFIG_PEMCERT, "null");
+    final boolean isHTTPS = !"null".equalsIgnoreCase(tlsFile) &&
+        (!"null".equalsIgnoreCase(tlsPassword) || !"null".equalsIgnoreCase(pemCert));
+
+    options.setSsl(isHTTPS);
+    options.setPort(port);
+
+    if (!isHTTPS) {
+      return options;
+    }
+
+    // Now configure TLS capabilities
+    options.setUseAlpn(true).setOpenSslEngineOptions(new OpenSSLEngineOptions());
+    DOMIUtils.addTlsKeysToServerOptions(options, tlsFile, tlsPassword, pemCert, config);
+
+    // Protocols add
+    DOMIUtils.getEnabledValuesFromConfig("enabledProtocols", config)
+        .forEach(options::addEnabledSecureTransportProtocol);
+
+    // Protocols remove
+    DOMIUtils.getEnabledValuesFromConfig("removeInsecureProtocols", config)
+        .forEach(options::removeEnabledSecureTransportProtocol);
+
+    // Ciphers
+    DOMIUtils.getEnabledValuesFromConfig("cipher", config).forEach(cipher -> {
+      try {
+        options.addEnabledCipherSuite(cipher);
+      } catch (final Exception e) {
+        DOMIUtils.LOGGER.warn("Invalid cipher: {} ({})", cipher, e);
+      }
+    });
+
+    return options;
+  }
+
+  /**
+   * Returns all keys where the value is "true" - used to switch on/off features
+   *
+   * @param key    - value to look for
+   * @param config
+   * @return Set of values that are enables
+   */
+  public static Set<String> getEnabledValuesFromConfig(final String key, final JsonObject config) {
+    return config.getJsonObject(key, new JsonObject()).stream()
+        .filter(candidate -> Boolean.parseBoolean(String.valueOf(candidate.getValue())))
+        .map(Map.Entry::getKey)
+        .collect(Collectors.toSet());
+  }
+
+  /**
+   * Configures TLS security from 3 available options pfx, jks, pem
+   *
+   * @param options     - HTTP Server options
+   * @param tlsFile     - file name of tls key
+   * @param tlsPassword - password to open the key
+   * @param pemCert     - File with PEM Server certificate
+   * @param config      - JsonObject from which to retrieve configurations
+   */
+  private static void addTlsKeysToServerOptions(final HttpServerOptions options,
+      final String tlsFile, final String tlsPassword, final String pemCert,
+      final JsonObject config) {
+    final String tlsType = config.getString(DOMIUtils.TLS_TYPE, DOMIUtils.TLS_TYPE_PFX);
+    switch (tlsType) {
+      case TLS_TYPE_PFX:
+        final PfxOptions pfx = new PfxOptions()
+            .setPath(tlsFile)
+            .setPassword(tlsPassword);
+        options.setPfxKeyCertOptions(pfx);
+        break;
+      case TLS_TYPE_JKS:
+        final JksOptions jksOptions = new JksOptions()
+            .setPath(tlsFile)
+            .setPassword(tlsPassword);
+        options.setKeyStoreOptions(jksOptions);
+        break;
+      case TLS_TYPE_PEM:
+        final PemKeyCertOptions pemOptions = new PemKeyCertOptions()
+            .setKeyPath(tlsFile)
+            .setCertPath(pemCert);
+        options.setPemKeyCertOptions(pemOptions);
+        break;
+
+      default /* none */ :
+        DOMIUtils.LOGGER.error(DOMIUtils.TLS_TYPE_INVALID, tlsType);
+    }
+
   }
 }
