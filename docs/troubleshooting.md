@@ -20,7 +20,7 @@ NotesHTTPRequest uses libcurl to make HTTP requests. If access to the internet i
 
 This appears to be caused by DXL export / import of Calendar Entry form during DOMI installation, if the ID running the install is different to the signer of the mail template. Re-signing the mail template should resolve the problem.
 
-### Notes Crashes After Get Sametime
+### Notes Crashes After Get Sametime Token
 
 This can be caused by libcurl being unable to retrieve the SSL certificates for the Sametime server. To verify, add the Notes.ini variable `Debug_NotesHTTPRequest=1`, restart Notes Client, try again and check the console.log. You will get a line like this:
 ```
