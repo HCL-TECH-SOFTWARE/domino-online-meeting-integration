@@ -20,7 +20,7 @@ The only scopes enabled are:
 - User.Read
 - OnlineMeetings.ReadWrite
 
-### Cisco Webex
+### Webex
 
 The only scopes enabled are:
 - Create, manage, or cancel your scheduled Webex meetings (meeting:schedules_write)

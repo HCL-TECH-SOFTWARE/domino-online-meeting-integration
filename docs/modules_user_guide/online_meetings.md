@@ -26,6 +26,6 @@ The *Schedule Online Meeting...* action button will only be available if you hav
 <div class="panel panel-info">
     <div class="panel-heading">Meeting Provider Differences</div>
     <div class="panel-body">
-Note the following differences in meeting providers:<ul><li>Microsoft teams does not provide an area to see scheduled meetings except in calendar entries.</li><li>WebEx will send a calendar entry with your host details.</li><li>Sametime Meetings applications do not display the date and time of the meeting.</li><li>Zoom also receives the agenda.</li><li>Zoom and WebEx create a password for the meeting.</li><li>WebEx create a SIP link for video phones and a phone / video password.</li>
+Note the following differences in meeting providers:<ul><li>Microsoft teams does not provide an area to see scheduled meetings except in calendar entries.</li><li>Webex will send a calendar entry with your host details.</li><li>Sametime Meetings applications do not display the date and time of the meeting.</li><li>Zoom also receives the agenda.</li><li>Zoom and Webex create a password for the meeting.</li><li>Webex create a SIP link for video phones and a phone / video password.</li>
     </div>
 </div>

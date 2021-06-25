@@ -23,6 +23,6 @@ By default the application will run on port 8878. This can be configured in the 
 - zoomCallback - Zoom
 - teamsCallback - Microsoft Teams  
 - gtmCallback - GoToMeeting  
-- webexCallback - Cisco Webex 
+- webexCallback - Webex 
 
 Alternatively, software like [ngrok](https://ngrok.com) can be used to provide public URLs for testing the web application. The public URL provided will replace "http://localhost:8878".

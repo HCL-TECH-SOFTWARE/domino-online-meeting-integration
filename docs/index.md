@@ -19,7 +19,7 @@ Domino Online Meeting Integration (DOMI) had the following goals:
 - Provide support to create, update and delete ad hoc meetings for:
    1. Zoom
    2. Microsoft Teams
-   3. Cisco Webex
+   3. Webex
    4. GoToMeeting
 -  Use modern APIs rather than talking to the vendors' desktop applications.
 -  Work via mail template modifications rather than HCL Notes Standard Client (Eclipse) plugins.

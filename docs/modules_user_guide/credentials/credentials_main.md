@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Zoom, Teams, WebEx, GoToMeeting
+title: Zoom, Teams, Webex, GoToMeeting
 parent: Online Meeting Credentials
 grand_parent: HCL Notes Users
 nav_order: 1
@@ -8,7 +8,7 @@ has_children: false
 last_modified_date: 2021.03.22
 ---
 
-## Zoom, Microsoft Teams, WebEx and GoToMeeting
+## Zoom, Microsoft Teams, Webex and GoToMeeting
 
 The options available may vary if your Domino Administrator has restricted the options available.
 {: .alert .alert-info}

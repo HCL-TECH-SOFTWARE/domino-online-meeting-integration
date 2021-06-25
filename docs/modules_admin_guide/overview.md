@@ -50,4 +50,4 @@ If you need to uninstall DOMI, use the *Uninstall DOMI* action button. You will 
 
 ### Restricting Meeting Provider Options
 
-By default DOMI supports Zoom, WebEx, GoToMeeting and Microsoft Teams. If you wish to restrict these options, you will need to edit the Online Meeting Credentials form in the DOMI installation database before running the install. The list of service providers available to end users is held in the `serviceList` field. Removing an option will prevent users creating an Online Meeting Credentials profile for that service provider. Sametime is automatically removed if you have not set a Sametime Meetings server.
+By default DOMI supports Zoom, Webex, GoToMeeting and Microsoft Teams. If you wish to restrict these options, you will need to edit the Online Meeting Credentials form in the DOMI installation database before running the install. The list of service providers available to end users is held in the `serviceList` field. Removing an option will prevent users creating an Online Meeting Credentials profile for that service provider. Sametime is automatically removed if you have not set a Sametime Meetings server.
