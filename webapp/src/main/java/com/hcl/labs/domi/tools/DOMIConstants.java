@@ -31,6 +31,7 @@ public class DOMIConstants {
 
   public static final String CONFIG_TLSFILE = "TLSFile";
   public static final String CONFIG_TLSPASSWORD = "TLSPassword";
+  public static final String CONFIG_PEMCERT = "PEMCert";
 
   public static final String CONFIG_PROPERTY_RESOURCENAME = "/domi.properties";
 
