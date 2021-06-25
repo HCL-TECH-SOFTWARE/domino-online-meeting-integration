@@ -8,6 +8,9 @@ last_modified_date: 2021.03.22
 
 ## Documentation for Domino Administrators
 
+If you liked DOMI, please take a moment to click the Star button on the [project]({{ site.gh_edit_repository }}).
+{: .alert .alert-info}
+
 The Domino Online Meeting Integration installation database copies specific design elements into your mail template and adds action buttons to the end of your Calendar entry form. The process is designed as a "light touch" integration that should work even if you have made design changes to the mail template.
 
 Installation of DOMI for Domino Administrators requires:  
