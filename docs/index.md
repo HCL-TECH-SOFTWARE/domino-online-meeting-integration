@@ -13,6 +13,9 @@ last_modified_date: 2021.03.02
 Version {{ site.version }}
 {: .fs-3 }
 
+Access the source code on [GitHub]({{ site.gh_edit_repository }}). If you're a Domino Administrator, you can download the <a href="{{ site.gh_edit_repository }}/tree/main/release" target="_new">Installation NTF here</a>.
+{: .alert .alert-info}
+
 ## Goals
 
 Domino Online Meeting Integration (DOMI) had the following goals:
@@ -26,10 +29,14 @@ Domino Online Meeting Integration (DOMI) had the following goals:
 -  Support Sametime Meetings ad hoc meetings.
 -  Support Verse.
 
-## Limitations
+## Pre-Requisites
+
+There is no limitation on Domino server version. However, to use DOMI there is a minimum Notes Client version - 11.0.1 FP3 or 12.0.0. A messagebox will warn if an earlier version of Notes is used.
 
 GoToMeeting requires a paid account. Free accounts do not have access to run GoToMeeting REST APIs and an HTTP status code 500 will be returned.
 {: .alert .alert-warning}
+
+## Limitations
 
 The phase 1 delivery has the following limitations:
 - No multi-lingual support.
