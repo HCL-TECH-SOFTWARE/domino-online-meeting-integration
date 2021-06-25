@@ -17,9 +17,11 @@ The process for getting an OAuth token just performs a `NotesUIWorkspace.URLOpen
 
 ### Validating an OAuth Token
 
-Pasting a token into the Online Meeting Credentials form triggers **(DOMI_validateOauthTokenFE)** agent, which calls `domiValidateOAuthToken()` in **domiUtilsFE** Script Library. This uses `DominoOnlineMeetingIntegrator.refreshAuthToken()` to make a request to the DOMI web application with the refresh token, which will return valid access refresh tokens.
+Using the "Paste" "button pastes the token from the clipboard into the Online Meeting Credentials form, saves it and triggers **(DOMI_validateOauthTokenFE)** agent, which calls `domiValidateOAuthToken()` in **domiUtilsFE** Script Library. This uses `DominoOnlineMeetingIntegrator.refreshAuthToken()` to make a request to the DOMI web application with the refresh token, which will return valid access refresh tokens.
 
-The *Validate OAuth Token* action button does the same.
+Any save triggers validation the OAuth token in the PostSave. 
+
+The *Validate OAuth Token* action button does the same but is only available in read mode.
 
 ### Revoking an OAuth Token
 
