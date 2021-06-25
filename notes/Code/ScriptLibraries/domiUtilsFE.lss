@@ -309,6 +309,7 @@ Function domiValidateOAuthToken() As Boolean
 	Dim domi As DominoOnlineMeetingIntegrator
 	
 	Dim refreshToken$
+	Dim service$
 	
 	Dim result As Boolean 
 	
@@ -319,6 +320,14 @@ Function domiValidateOAuthToken() As Boolean
 	Set ndoc = nuidoc.Document
 	If Not(ndoc.getItemValue(|Form|)(0) = |domiCredentials|) Then Error ERR_PARAMETER_INVALID, MSG_PARAMETER_INVALID & |UI Document is not a DOMI Credentials document.  |
 
+	If ndoc.hasitem(|service|) Then service$ = ndoc.getFirstItem(|service|).Text 
+	If (0 = StrCompare(|sametime|, service$, 5)) Then 
+		' Skip validation for Sametime and simply return a true 
+		result = True 
+		GoTo ExitPoint
+	End If
+	
+	
 	If ndoc.hasItem(DOMI_TOKEN_REFRESH) Then refreshToken$ = ndoc.getFirstItem(DOMI_TOKEN_REFRESH).Text 
 	If isBlankString(refreshToken$) Then 
 		MessageBox |Please | & MSG_USE_BUTTON, MB_ICONEXCLAMATION, |Refresh Token is blank.  |
@@ -534,15 +543,43 @@ End Function
 	Description: This function is used to update the refresh token on the provided Credentials doc
 %END REM
 Function getNewSTTokens(curDoc As NotesDocument) As Boolean 
-	Dim s As New NotesSession, ws As New NotesUIWorkspace
-	Dim thisDb As NotesDatabase, thisAgent As NotesAgent
-	Dim urlBase As String, urlRefresh As String, urlLogin As String
-	Dim httpRequest As NotesHTTPRequest, payload As NotesAgent_JsonHTTPHelper
-	Dim jsonNav As NotesJSONNavigator, jsonStr As String
-	Dim paramList List As Variant, hdrList List As String, retList List As Variant
-	Dim resp As String, token As String, meeting As String, pretag As String, tag As String
-	Dim tokenTag As String, tokenVal As String, cookieVal As String, cookieTag As String
-	Dim rstr As String, errtxt As String, rvar As Variant, emptyvar As Variant, rdoc As NotesDocument, rbool As Boolean
+	Dim s As New NotesSession()
+	Dim ws As New NotesUIWorkspace()
+	
+	Dim thisDb As NotesDatabase
+	Dim thisAgent As NotesAgent
+	Dim rdoc As NotesDocument
+	Dim httpRequest As NotesHTTPRequest
+'	Dim jsonNav As NotesJSONNavigator
+
+	Dim payload As NotesAgent_JsonHTTPHelper
+	
+	Dim paramList List As Variant
+
+	Dim hdrList List As String
+	Dim retList List As Variant
+
+	Dim rvar As Variant
+	Dim emptyvar As Variant
+
+	Dim urlBase As String
+	Dim urlRefresh As String
+	Dim urlLogin As String
+
+	Dim resp As String
+	Dim pretag As String
+	Dim tag As String
+	Dim tokenVal As String
+	Dim cookieVal As String
+	Dim rstr As String
+	
+	Dim rint As Integer
+
+	Dim rbool As Boolean
+	Dim result As Boolean 
+
+
+
 	
 	On Error GoTo errHandler
 
@@ -576,14 +613,22 @@ Function getNewSTTokens(curDoc As NotesDocument) As Boolean
 		Call httpRequest.Setheaderfield(ListTag(h), h)
 	End ForAll
 	
-	rbool = ws.dialogBox("domiSTLoginDlg", True, True, False, False, False, False, "Sametime Login", curdoc, True, False, True)
-	If rbool = False Then Error 1000, ""
+	
+	If Not ws.dialogBox("domiSTLoginDlg", True, True, False, False, False, False, "Sametime Login", curdoc, True, False, True) Then 
+		' user cancelled dialog.
+		enhLogWarning LIB_PREFIX, |User cancelled.|
+		GoTo getOut 
+	End If
+	
+	If isBlankString(curdoc.getFirstItem(|loginEmail|).Text) Then Error ERR_PARAMETER_BLANK, MSG_PARAMETER_BLANK & |Login email|
+	If isBlankString(curdoc.getFirstItem(|stPassword|).Text) Then Error ERR_PARAMETER_BLANK, MSG_PARAMETER_BLANK & |Sametime password|
 
 	rvar = Evaluate(|@UrlEncode("Domino"; loginEmail)|, curdoc)
 	If IsArray(rvar) Then paramList("username") = rvar(0)
 	rvar = Evaluate(|@UrlEncode("Domino"; stPassword)|, curdoc)
 	If IsArray(rvar) Then paramList("password") = rvar(0)
 	If curdoc.hasItem("password") Then Call curdoc.removeItem("password")
+	If curdoc.hasItem("stPassword") Then Call curdoc.removeItem("stPassword")
 	
 	' set the payload stuff
 	rstr = ""
@@ -598,48 +643,63 @@ Function getNewSTTokens(curDoc As NotesDocument) As Boolean
 	' retrieve the tokens
 
 	resp = httpRequest.Post(urlLogin, rstr)
-	If InStr(httpRequest.Responsecode, "200") = 0 Then
-		Set rdoc = thisDb.Createdocument()
-		Set payload = New NotesAgent_JsonHTTPHelper(rdoc)
-		Call payload.loadJson(s, resp)
-		rbool = payload.findStringByPointer("/error/message", rstr)
-		If rbool Then
-			Error 1002, "Unable to retrieve Sametime tokens (ERROR: " & rstr & ")"
-		Else
-			Error 1005, "Unable to retrieve Sametime tokens (ERROR: unknown)"
-		End If
-	End If
+	rint = nrcParseResponseCode(httpRequest.Responsecode) 
+	Select Case rint 
+		Case 200: 
+			' Success! 
+			rvar = emptyVar
+			rvar = httpRequest.Getresponseheaders()
+			If IsArray(rvar) Then
+				retList("sametimeJwt=") = ""
+				retList("LtpaToken=") = ""
+				retList("sametimeRefresh=") = ""
+				pretag = "Set-Cookie: "
+				ForAll z In rvar
+					ForAll c In retList
+						tag = pretag & ListTag(c)
+						If LCase(Left(z, Len(tag))) = LCase(tag) Then
+							rstr = StrRight(z, tag, 5)
+							c = rstr
+						End If
+					End ForAll
+				End ForAll
+			Else
+				Error 1002, "Error retrieving ST Token"
+			End If
+			
+			' now set them into the doc
+			Call curDoc.Replaceitemvalue("messagingJSON", rvar)
+			Call curDoc.Replaceitemvalue("stJWTTokenFull", retList("sametimeJwt="))
+			Call curDoc.Replaceitemvalue("stRefreshTokenFull", retList("sametimeRefresh="))
+			Call curDoc.Replaceitemvalue("stLTPATokenFull", retList("LtpaToken="))
+			Call curDoc.Replaceitemvalue("refreshToken", curDoc.getItemValue("stRefreshTokenFull")(0))
+			If curdoc.HasItem("stPassword") Then Call curDoc.RemoveItem("stPassword")
+			
+			result = True
+			
+			
+		Case 400, 401:
+			' Credentials failure
+			Error ERR_INVALID_CREDENTIALS, MSG_INVALID_CREDENTIALS 
+			
+		Case Else: 
+			' Generic Failure
+			Set rdoc = thisDb.Createdocument()
+			Set payload = New NotesAgent_JsonHTTPHelper(rdoc)
+			Call payload.loadJson(s, resp)
+			rbool = payload.findStringByPointer("/error/message", rstr)
+			If rbool Then
+				Error 1002, "Unable to retrieve Sametime tokens (ERROR: " & rstr & ")"
+			Else
+				Error 1005, "Unable to retrieve Sametime tokens (ERROR: unknown)"
+			End If		
+				
+	End Select
 	
-	rvar = emptyVar
-	rvar = httpRequest.Getresponseheaders()
-	If IsArray(rvar) Then
-		retList("sametimeJwt=") = ""
-		retList("LtpaToken=") = ""
-		retList("sametimeRefresh=") = ""
-		pretag = "Set-Cookie: "
-		ForAll z In rvar
-			ForAll c In retList
-				tag = pretag & ListTag(c)
-				If LCase(Left(z, Len(tag))) = LCase(tag) Then
-					rstr = StrRight(z, tag, 5)
-					c = rstr
-				End If
-			End ForAll
-		End ForAll
-	Else
-		Error 1002, "Error retrieving ST Token"
-	End If
-	
-	' now set them into the doc
-	Call curDoc.Replaceitemvalue("messagingJSON", rvar)
-	Call curDoc.Replaceitemvalue("stJWTTokenFull", retList("sametimeJwt="))
-	Call curDoc.Replaceitemvalue("stRefreshTokenFull", retList("sametimeRefresh="))
-	Call curDoc.Replaceitemvalue("stLTPATokenFull", retList("LtpaToken="))
-	Call curDoc.Replaceitemvalue("refreshToken", curDoc.getItemValue("stRefreshTokenFull")(0))
-	If curdoc.HasItem("stPassword") Then Call curDoc.RemoveItem("stPassword")
-	
-	getNewSTTokens = True
+
+
 getOut:
+	getNewSTTokens = result
 	Exit Function
 
 errHandler:

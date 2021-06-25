@@ -43,9 +43,9 @@ Private Const LIB_PREFIX 		= |Library: domiConstantsBE.|
  ************************************************************************************
 %END REM *********************************************************************  
 Private Const g_DOMI_ROOTURL_TOKEN_HCL 			= |https://integration-auth-token.hcltechsw.com| ' HCL's default site
-Private Const g_DOMI_VERSION 					= |1.01|
-Private Const g_DOMI_BUILD 						= |1.FBE|
-Private Const g_DOMI_RELEASE_DATE 				= |17 JUN 2021|
+Private Const g_DOMI_VERSION 					= |1.02|
+Private Const g_DOMI_BUILD 						= |1.1062|
+Private Const g_DOMI_RELEASE_DATE 				= |25 JUN 2021|
 
 
 %REM ***************************************************************************
@@ -160,6 +160,8 @@ Const MSG_PARENT_METHOD_NOT_ALLOWED = |Method must be overridden in child class.
 Const ERR_PARAMETER_INVALID = 1195
 Const MSG_PARAMETER_INVALID = |A passed parameter is invalid.  |
 
+
+
 Const ERR_PARAMETER_BLANK = 1199
 Const MSG_PARAMETER_BLANK = |A required parameter is blank or missing.  |
 
@@ -168,16 +170,19 @@ Const MSG_PARAMETER_BLANK = |A required parameter is blank or missing.  |
 Const ERR_MISSING_DATABASE =  1201
 Const MSG_MISSING_DATABASE = |The specified database cannot be found.  |
 
-Const ERR_MISSING_ITEM =  1226
-Const MSG_MISSING_ITEM =  |The specified item is missing.  |
-
 Const ERR_OBJECT_CREATE_FAILED = 1208
 Const MSG_OBJECT_CREATE_FAILED = |Failed to create an Object.  |
+
+Const ERR_MISSING_ITEM =  1226
+Const MSG_MISSING_ITEM =  |The specified item is missing.  |
 
 Const ERR_DOC_NOT_SAVED = 1257 
 Const MSG_DOC_NOT_SAVED = |The document could not be saved.  |
 
 
+
+Const ERR_INVALID_CREDENTIALS = 1306
+Const MSG_INVALID_CREDENTIALS = |The provided credentials are invalid. |
 
 Const ERR_FORMULA_INVALID = 1336
 Const MSG_FORMULA_INVALID = |The Formula syntax is invalid.  |

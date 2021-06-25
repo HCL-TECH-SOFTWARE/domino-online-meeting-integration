@@ -170,7 +170,7 @@ Function getDOMIserviceLabel(meetingservice$) As String
 
 	Const DOMI_SERVICEPAIR_GTM = 	"Go to Meeting|gtm"
 	Const DOMI_SERVICEPAIR_TEAMS = 	"Teams|teams" 
-	Const DOMI_SERVICEPAIR_WEBEX = 	"WebEx|webex" 
+	Const DOMI_SERVICEPAIR_WEBEX = 	"Webex|webex" 
 	Const DOMI_SERVICEPAIR_ZOOM = 	"Zoom|zoom"
 
 	Dim result$
@@ -184,7 +184,7 @@ Function getDOMIserviceLabel(meetingservice$) As String
 			result$ = |Teams|
 			
 		Case DOMI_SERVICE_WEBEX: 
-			result$ = |WebEx|
+			result$ = |Webex|
 			
 		Case DOMI_SERVICE_ZOOM: 
 			result$ = |Zoom|
