@@ -1,0 +1,176 @@
+body {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.h1 {
+    font-size: 40px;
+    line-height: 1.3;
+}
+
+h4,
+.h4,
+.btn.btn-style-1,
+.btn.btn-style-2,
+.btn.btn-style-3,
+.btn.btn-style-8,
+.btn.btn-style-9,
+.btn.btn-style-blue-1,
+.btn.btn-style-blue-2,
+.btn.btn-style-blue-3,
+.btn.btn-style-blue-4,
+.btn.btn-style-blue-5,
+.btn.btn-style-blue-6,
+.btn.btn-style-light-blue,
+.main-header .menu-list li .link,
+.master-header .master-menu-list li .link,
+.schedule-demo-dialog .demo-list,
+.accordion .panel .panel-heading a,
+.accordion .panel .panel-body {
+    font-size: 16px;
+    line-height: 1.75;
+}
+
+.header-container {
+    max-width: none;
+}
+
+.header-container:before {
+    display: table;
+    content: " ";
+}
+
+.banner-section.pnp-ui-banner {
+    background: rgb(5, 4, 4);
+    padding-top: 180px;
+    padding-bottom: 120px;
+    background-image: url('images/200119_Illustration_circuit-board_1920x500.jpg');
+    background-size: cover;
+}
+
+.open-intro {
+    font-size: 12pt;
+    color: #fff;
+}
+
+.open-title {
+    font-weight: 500;
+    font-size: 48px;
+    color: #47DECF;
+}
+
+.open-body {
+    font-size: 14pt;
+    color: #fff;
+}
+
+.header-topbar {
+    border-bottom: 1px solid #4b4b4b;
+    height: 32px;
+    transition-duration: 0.4s;
+}
+
+.master-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 99;
+}
+
+.master-header .container {
+    width: auto;
+    padding: 0 32px;
+}
+
+.dark-master {
+    background: #000000;
+}
+
+.logo-brand {
+    float: left;
+    padding-right: 35px;
+    margin-right: 35px;
+    position: relative;
+    overflow: hidden;
+    height: 48px;
+}
+
+.logo-brand:before {
+    content: '';
+    width: 1px;
+    height: 18px;
+    background: #4b4b4b;
+    position: absolute;
+    top: 15px;
+    right: 0;
+}
+
+.logo-brand a img {
+    max-width: 150px;
+    margin-top: -5px;
+}
+
+.logo-hcl-tech,
+.logo-hcl-tech:hover,
+.logo-hcl-tech:focus {
+    text-transform: uppercase;
+    font-size: 12px;
+    line-height: 31px;
+    font-weight: 700;
+    color: white;
+}
+
+.banner-section {
+    position: relative;
+    padding: 100px 0 50px;
+    text-align: left;
+}
+
+.img-responsive {
+    display: inline-block;
+    max-width: 100%;
+}
+
+.btn-copy {
+    font-size: 13px;
+    margin-right: 8px;
+    color: #5C5C5C;
+    border: #ADADAD 1px solid;
+    border-radius: 25px;
+}
+
+.label {
+    font-weight: 400;
+    font-size: 24px;
+    color: #01539B;
+}
+
+.code {
+    font-size: 18px;
+    background-color: #ffffff;
+    border: #ADADAD 1px solid;
+    padding: 5px;
+    overflow-wrap: break-word;
+}
+
+.row {
+    margin-bottom: 10px;
+}
+
+@media (max-width: 1200px) {
+    .master-header {
+        top: 30px !important;
+    }
+}
+
+@media (max-width: 991px) {
+    #navbar {
+        top: 110px;
+        height: calc(100% - 110px);
+    }
+
+    .sticky #navbar {
+        top: 78px;
+        height: calc(100% - 78px);
+    }
+}

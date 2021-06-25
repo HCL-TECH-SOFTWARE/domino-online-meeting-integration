@@ -282,7 +282,7 @@ public class MainVerticle extends AbstractVerticle {
 
     // Add static and error routes
     this.router
-        .get("/")
+        .get("/*")
         .handler(StaticHandler.create().setIndexPage("index.html"));
     this.router.errorHandler(404, ErrorHandler.create(this.vertx, "notfound.html", false));
     this.router.errorHandler(500, ErrorHandler.create(this.vertx, "error.html", true));
