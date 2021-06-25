@@ -66,8 +66,10 @@
 		<launcher.class>io.vertx.core.Launcher</launcher.class>
 		
 		<!-- Properties for HTML variables -->
-		<dominoImage>img/HCL_Domino_White.svg</dominoImage>
-		<dominoBannerImage>img/Banner-new.jpg</dominoBannerImage>
+		<hclLogo>https://www.hcltechsw.com/hclf/img/hcl-symbol.png</hclLogo>
+		<hclLogo2>https://www.hcltechsw.com/hclf/img/hcl-m.png</hclLogo2>
+		<dominoImage>https://www.hcltechsw.com/wps/wcm/connect/717a1d5f-6f68-4da8-9f00-5d6a33243513/Banner-new.jpg?MOD=AJPERES&amp;CACHEID=ROOTWORKSPACE-717a1d5f-6f68-4da8-9f00-5d6a33243513-nDDiGHJ</dominoImage>
+		<dominoBannerImage>https://hcltechsw.com/wps/wcm/connect/de479e1c-ba2e-4f77-90d1-d91ec640eafb/HCL_Domino_White.svg?MOD=AJPERES&amp;CACHEID=ROOTWORKSPACE-de479e1c-ba2e-4f77-90d1-d91ec640eafb-nr.ulQd</dominoBannerImage>
 		<dominoHeading>The World is Powered by HCL Domino</dominoHeading>
 		<dominoTagLine>Domino powers the apps that run your business. Domino v12 is a major milestone that enriches the app-development ecosystem for business users and professional IT developers - while always providing essential business value and low TCO.</dominoTagLine>
 	</properties>
