@@ -1,0 +1,39 @@
+Running DOMI as standalone application ("FAT" jar )
+
+The pom.xml uses the Maven shade plugin to assemble the application and all it's dependencies into a single "fat" jar.
+
+To build a "fat jar"
+
+    mvn package
+
+To run the fat jar:
+
+    java -jar target/java -jar com.hcl.labs.domi-1.0.3-fat.jar
+    
+You can also run the fat jar with maven:
+
+    mvn package exec:exec@run-app    
+    
+Now point your browser at http://localhost:8878    
+
+You can take that jar and run it anywhere there is a Java 8+ JDK. It contains all the dependencies it needs so you
+don't need to install Vert.x on the target machine.
+
+create domiconfig.d in the same location where you have copied the ...fat.jar to
+change into domiconfig.d and create a config.json file
+
+On Linux, export OAUTH_HOSTNAME and any other environment variables ( for ZOOM, it looks like this )
+
+export ZOOM_CLIENT_ID=1234567890
+export ZOOM_CLIENT_SECRET=1234567890
+export OAUTH_HOSTNAME=http://localhost
+
+You can now start DOMI as a standalone application
+
+java -jar <YourJarLocation>/java -jar com.hcl.labs.domi-1.0.3-fat.jar
+
+By now, this has only be tested on CentOS Linux, but it should work on Windows as well
+
+    
+    
+
