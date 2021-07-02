@@ -64,15 +64,21 @@
 
 		<main.verticle>com.hcl.labs.domi.MainVerticle</main.verticle>
 		<launcher.class>io.vertx.core.Launcher</launcher.class>
-		
+
 		<!-- Properties for HTML variables -->
 		<hclLogo>https://www.hcltechsw.com/hclf/img/hcl-symbol.png</hclLogo>
 		<hclLogo2>https://www.hcltechsw.com/hclf/img/hcl-m.png</hclLogo2>
-		
+
 		<dominoBannerImage>https://www.hcltechsw.com/wps/wcm/connect/717a1d5f-6f68-4da8-9f00-5d6a33243513/Banner-new.jpg?MOD=AJPERES&amp;CACHEID=ROOTWORKSPACE-717a1d5f-6f68-4da8-9f00-5d6a33243513-nDDiGHJ</dominoBannerImage>
 		<dominoImage>https://hcltechsw.com/wps/wcm/connect/de479e1c-ba2e-4f77-90d1-d91ec640eafb/HCL_Domino_White.svg?MOD=AJPERES&amp;CACHEID=ROOTWORKSPACE-de479e1c-ba2e-4f77-90d1-d91ec640eafb-nr.ulQd</dominoImage>
 		<dominoHeading>The World is Powered by HCL Domino</dominoHeading>
-		<dominoTagLine>Domino powers the apps that run your business. Domino v12 is a major milestone that enriches the app-development ecosystem for business users and professional IT developers - while always providing essential business value and low TCO.</dominoTagLine>
+		<dominoTagLine>Domino powers the apps that run your business. Domino
+			v12 is a major milestone that enriches the app-development ecosystem
+			for business users and professional IT developers - while always
+			providing essential business value and low TCO.</dominoTagLine>
+
+		<!-- the main class -->
+		<exec.mainClass>com.hcl.labs.domi.MainVerticle</exec.mainClass>
 	</properties>
 
 	<dependencyManagement>
@@ -237,7 +243,7 @@
 					<artifactId>spotbugs-maven-plugin</artifactId>
 					<version>${maven.spotbugs.plugin}</version>
 				</plugin>
-				
+
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-resources-plugin</artifactId>
@@ -245,14 +251,14 @@
 				</plugin>
 			</plugins>
 		</pluginManagement>
-		
+
 		<resources>
 			<resource>
 				<directory>src/main/resources</directory>
 				<filtering>true</filtering>
 			</resource>
 		</resources>
-		
+
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -317,7 +323,7 @@
 					</container>
 				</configuration>
 			</plugin>
-			
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-resources-plugin</artifactId>
@@ -340,8 +346,75 @@
 					</execution>
 				</executions>
 			</plugin>
+
+			<!-- You only need the part below if you want to build your application 
+				into a fat executable jar. This is a jar that contains all the dependencies 
+				required to run it, so you can just run it with java -jar -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<version>2.3</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+						<configuration>
+							<transformers>
+								<transformer
+									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+									<manifestEntries>
+										<Main-Class>${exec.mainClass}</Main-Class>
+									</manifestEntries>
+								</transformer>
+								<transformer
+									implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
+							</transformers>
+							<artifactSet>
+							</artifactSet>
+							<outputFile>${project.build.directory}/${project.artifactId}-${project.version}-fat.jar</outputFile>
+						</configuration>
+					</execution>
+				</executions>
+				<!-- FAT JAR END -->
+			</plugin>
+
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>1.4.0</version>
+				<executions>
+					<execution>
+						<!-- run the application using the fat jar -->
+						<id>run-app</id>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+						<configuration>
+							<executable>java</executable>
+							<arguments>
+								<argument>-jar</argument>
+								<argument>target/${project.artifactId}-${project.version}-fat.jar</argument>
+							</arguments>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
+
+	<profiles>
+		<profile>
+			<id>staging</id>
+			<repositories>
+				<repository>
+					<id>staging</id>
+					<url>https://oss.sonatype.org/content/repositories/iovertx-3905/</url>
+				</repository>
+			</repositories>
+		</profile>
+	</profiles>
 
 	<reporting>
 		<plugins>
