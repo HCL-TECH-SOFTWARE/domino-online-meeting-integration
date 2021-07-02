@@ -94,6 +94,14 @@
 	</dependencyManagement>
 
 	<dependencies>
+		<!-- https://github.com/HCL-TECH-SOFTWARE/domino-online-meeting-integration/issues/62 -->
+		<dependency>
+			<groupId>io.netty</groupId>
+			<artifactId>netty-tcnative-boringssl-static</artifactId>
+			<version>2.0.34.Final</version>
+			<scope></scope>
+		</dependency>
+			
 		<dependency>
 			<groupId>io.vertx</groupId>
 			<artifactId>vertx-web</artifactId>
