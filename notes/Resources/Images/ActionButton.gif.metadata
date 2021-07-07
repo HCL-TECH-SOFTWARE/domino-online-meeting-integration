@@ -1,12 +1,11 @@
-<?xml version="1.0" encoding="utf-8" standalone="no"?><imageresource xmlns="http://www.lotus.com/dxl" across="2" alias="ActionButton.gif" browsercompatible="true" designerversion="6" language="en" maintenanceversion="1.0" name="ActionButton.gif" publicaccess="false" replicaid="8525867000756EB9" version="11.0">
-<noteinfo noteid="1bfa" sequence="2" unid="82747B950CBF8A8480258696005CB17F">
+<?xml version="1.0" encoding="utf-8" standalone="no"?><imageresource xmlns="http://www.lotus.com/dxl" across="2" alias="ActionButton.gif" browsercompatible="true" designerversion="8.5.3" language="en" name="ActionButton.gif" publicaccess="false" replicaid="852586FE00669899" version="12.0">
+<noteinfo noteid="2a2" sequence="4" unid="82747B950CBF8A8480258696005CB17F">
 <created><datetime>20210312T165227,51+00</datetime></created>
-<modified><datetime dst="true">20210329T124640,87+01</datetime></modified>
-<revised><datetime>20210312T165630,51+00</datetime></revised>
-<lastaccessed><datetime dst="true">20210329T124640,86+01</datetime></lastaccessed>
-<addedtofile><datetime dst="true">20210329T124640,86+01</datetime></addedtofile></noteinfo>
-<updatedby><name>CN=Domino Template Development/O=Domino</name><name>CN=Paul Withers/OU=UK/O=PNPHCL</name></updatedby>
-<wassignedby><name>CN=Paul Withers/OU=UK/O=PNPHCL</name></wassignedby>
-
-<item name="$MimeType" sign="true"><text>image/gif</text></item>
-<item name="$FileModDT" sign="true"><datetime>20210312T165609,85+00</datetime></item></imageresource>
+<modified><datetime dst="true">20210707T142213,59-04</datetime></modified>
+<revised><datetime dst="true">20210707T142213,58-04</datetime></revised>
+<lastaccessed><datetime dst="true">20210707T142213,58-04</datetime></lastaccessed>
+<addedtofile><datetime dst="true">20210624T144059,52-04</datetime></addedtofile></noteinfo>
+<updatedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></updatedby>
+<wassignedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></wassignedby>
+<item name="$FileModDT" sign="true"><datetime>20210312T165609,85+00</datetime></item>
+</imageresource>
