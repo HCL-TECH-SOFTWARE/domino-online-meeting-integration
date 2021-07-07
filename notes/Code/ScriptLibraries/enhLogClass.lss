@@ -9,9 +9,9 @@
 
 	Author: Devin S. Olson  (devin.olson@azlighthouse.com)
 	http://www.devinolson.net
-	Version 2021.05.20
+	Version 2021.07.07
 
-	Last updated: 05/2021
+	Last updated: 07/2021
 
  ************************************************************************************
 %END REM *********************************************************************
@@ -900,10 +900,10 @@ Public Class EnhancedLog
 		If (singleton Is Nothing) Then Set singleton = New LogSingleton(programname$)
 		singletonExists = Not (singleton Is Nothing)
 		
-ExitPoint:
+	ExitPoint:
 		If (errcode% <> 0) Then Error errcode%, errmsg$
 		Exit Sub
-ErrorTrap:
+	ErrorTrap:
 		On Error GoTo 0
 		errcode% = Err()
 		errmsg$ = Error()
@@ -911,6 +911,7 @@ ErrorTrap:
 		Resume ExitPoint		
 	End Sub 
 End Class 	
+
 
 
 
@@ -1120,7 +1121,7 @@ Private Class LogSingleton 	' Declaring as Private allows for Singleton function
 
 		Me.exists = True
 
-ExitPoint:
+	ExitPoint:
 		Exit Sub
 	End Sub 
 	
@@ -1194,9 +1195,9 @@ ExitPoint:
 		' If here then no error occurred
 		result = True
 
-ExitPoint:
+	ExitPoint:
 		Exit Function
-ErrorTrap:
+	ErrorTrap:
 		On Error GoTo 0
 		result = False
 		Call Me.LogException(Err(), Error() & Chr(10), Erl(), GetThreadInfo(LIB_LSI_THREAD_CALLPROC), ||)
@@ -1251,9 +1252,9 @@ ErrorTrap:
 		Me.countActions& = Me.countActions& + 1
 		If Me.LocalEcho Then Print |LogAction: | & description$
 
-ExitPoint:
+	ExitPoint:
 		Exit Sub
-ErrorTrap:
+	ErrorTrap:
 		On Error GoTo 0
 		Call Me.LogException(Err(), Error() & Chr(10) & description$, Erl(), GetThreadInfo(LIB_LSI_THREAD_CALLPROC), ||)
 		Resume ExitPoint		
@@ -1275,9 +1276,9 @@ ErrorTrap:
 
 		Call Me.LogAction(description$)
 
-ExitPoint:
+	ExitPoint:
 		Exit Sub
-ErrorTrap:
+	ErrorTrap:
 		On Error GoTo 0
 		Call Me.LogException(Err(), Error() & Chr(10) & description$, Erl(), GetThreadInfo(LIB_LSI_THREAD_CALLPROC), ||)
 		Resume ExitPoint		
@@ -1355,9 +1356,9 @@ ErrorTrap:
 		
 		Call Me.nLog.LogEvent(message$, queuename$, eventType%, severity%)
 		
-ExitPoint:
+	ExitPoint:
 		Exit Sub
-ErrorTrap:
+	ErrorTrap:
 		On Error GoTo 0
 		enhLogException CLASS_PREFIX, |("| & 	message$ & |", "| & queuename$ & _ 
 		|", "| & CStr(eventType%) & |, | & CStr(severity%) & |)|
@@ -1457,9 +1458,9 @@ ErrorTrap:
 			If (extendedMsg$ <> ||) Then Print |LogException (extended): | & extendedMsg$
 		End If 
 		
-ExitPoint:
+	ExitPoint:
 		Exit Sub
-ErrorTrap:
+	ErrorTrap:
 		On Error GoTo 0
 		Me.LogStackExceptions = False
 		If Me.resumeInternalError(Error(), Err(), Erl()) Then Resume ExitPoint
@@ -1481,10 +1482,10 @@ ErrorTrap:
 		
 		Call Me.LogException(code%, errMsg$, errline&, methodname$, extendedMsg$)
 		
-ExitPoint:
+	ExitPoint:
 		Me.myHasLinkInfo = False
 		Exit Sub
-ErrorTrap:
+	ErrorTrap:
 		On Error GoTo 0
 		Me.LogStackExceptions = False
 		If Me.resumeInternalError(Error(), Err(), Erl()) Then Resume ExitPoint
@@ -1545,9 +1546,9 @@ ErrorTrap:
 			Print |LogExtendedContent: | & content$
 		End If 
 
-ExitPoint:
+	ExitPoint:
 		Exit Sub
-ErrorTrap:
+	ErrorTrap:
 		On Error GoTo 0
 		Call Me.LogException(Err(), Error() & Chr(10) & description$, Erl(), GetThreadInfo(LIB_LSI_THREAD_CALLPROC), ||)
 		Resume ExitPoint		
@@ -1569,9 +1570,9 @@ ErrorTrap:
 
 		Call Me.LogExtendedContent(description$, content$)
 
-ExitPoint:
+	ExitPoint:
 		Exit Sub
-ErrorTrap:
+	ErrorTrap:
 		On Error GoTo 0
 		Call Me.LogException(Err(), Error() & Chr(10) & description$, Erl(), GetThreadInfo(LIB_LSI_THREAD_CALLPROC), ||)
 		Resume ExitPoint		
@@ -1620,9 +1621,9 @@ ErrorTrap:
 		If Me.LocalEcho Then Print |LogMethodResult: | & description$
 		Me.countActions& = Me.countActions& + 1
 
-ExitPoint:
+	ExitPoint:
 		Exit Sub
-ErrorTrap:
+	ErrorTrap:
 		On Error GoTo 0
 		Call Me.LogException(Err(), Error() & Chr(10) & description$, Erl(), GetThreadInfo(LIB_LSI_THREAD_CALLPROC), ||)
 		Resume ExitPoint		
@@ -1645,9 +1646,9 @@ ErrorTrap:
 
 		Call Me.LogMethodResult(description$)
 
-ExitPoint:
+	ExitPoint:
 		Exit Sub
-ErrorTrap:
+	ErrorTrap:
 		On Error GoTo 0
 		Call Me.LogException(Err(), Error() & Chr(10) & description$, Erl(), GetThreadInfo(LIB_LSI_THREAD_CALLPROC), ||)
 		Resume ExitPoint		
@@ -1750,9 +1751,9 @@ ErrorTrap:
 		Me.countWarnings& = Me.countWarnings& + 1
 		If Me.LocalEcho Then Print |LogWarning: | & description$
 
-ExitPoint:
+	ExitPoint:
 		Exit Sub
-ErrorTrap:
+	ErrorTrap:
 		On Error GoTo 0
 		Call Me.LogException(Err(), Error() & Chr(10) & description$, Erl(), GetThreadInfo(LIB_LSI_THREAD_CALLPROC), ||)
 		Resume ExitPoint		
@@ -1773,9 +1774,9 @@ ErrorTrap:
 
 		Call Me.LogWarning(description$)
 
-ExitPoint:
+	ExitPoint:
 		Exit Sub
-ErrorTrap:
+	ErrorTrap:
 		On Error GoTo 0
 		Call Me.LogException(Err(), Error() & Chr(10) & description$, Erl(), GetThreadInfo(LIB_LSI_THREAD_CALLPROC), ||)
 		Resume ExitPoint				
@@ -1802,12 +1803,12 @@ ErrorTrap:
 		
 		result = Me.ChangeLogType(LOGTYPE_FILE, ||, path$)
 		
-ExitPoint:
+	ExitPoint:
 		OpenFileLog = result
 		On Error GoTo 0
 		If (g_errCode% = ERR_PARAMETER_BLANK) Then Error ERR_PARAMETER_BLANK, MSG_PARAMETER_BLANK
 		Exit Function
-ErrorTrap:
+	ErrorTrap:
 		On Error GoTo 0
 		enhLogException CLASS_PREFIX, ||
 		g_errCode%  = Err()
@@ -1835,10 +1836,10 @@ ErrorTrap:
 			Me.varSendTo = recipients
 		End If 
 		
-ExitPoint:
+	ExitPoint:
 		OpenMailLog = result
 		Exit Function
-ErrorTrap:
+	ErrorTrap:
 		enhLogException LIB_PREFIX, extendedInfo$
 		Resume ExitPoint	
 	End Function 
@@ -1859,16 +1860,16 @@ ErrorTrap:
 		' success!	
 		result = True
 		
-ExitPoint:		
+	ExitPoint:		
 		OpenNotesLog = result	
 		Exit Function
-ErrorTrap:
+	ErrorTrap:
 		On Error GoTo CriticalError
 		result = False
 		If (Me.myTargetDb Is Nothing) Then Set Me.myTargetDb = getCurrentDb()
 		enhLogException CLASS_PREFIX, extendedInfo$
 		Resume ExitPoint
-CriticalError:
+	CriticalError:
 		result = False
 		On Error GoTo 0
 		If Me.resumeInternalError(Error(), Err(), Erl()) Then Resume ExitPoint
@@ -1904,11 +1905,11 @@ CriticalError:
 				result = Me.ndoc.Save(force, createResponse)
 		End Select 
 		
-ExitPoint:
+	ExitPoint:
 		If isRecursive Then singletonSaveRecursions% = singletonSaveRecursions% - 1
 		Save = result
 		Exit Function
-ErrorTrap:
+	ErrorTrap:
 		On Error GoTo 0
 		result = False
 		Me.LogStackExceptions = False
@@ -2094,10 +2095,10 @@ ErrorTrap:
 		
 		If (Me.myTargetDb Is Nothing) Then Error ERR_MISSING_DATABASE, MSG_MISSING_DATABASE
 		
-ExitPoint:
+	ExitPoint:
 		Set TargetDatabase = Me.myTargetDb
 		Exit Property
-ErrorTrap:
+	ErrorTrap:
 		On Error GoTo 0
 		Set Me.myTargetDb = getCurrentDb()
 		enhLogException CLASS_PREFIX, ||
@@ -2266,10 +2267,10 @@ ErrorTrap:
 		End If 
 		Me.nrti.AppendText | |
 		
-ExitPoint:
+	ExitPoint:
 		Me.myHasLinkInfo = False
 		Exit Sub
-ErrorTrap:
+	ErrorTrap:
 		On Error GoTo 0
 		enhLogException CLASS_PREFIX, ||
 		If Me.ResumeOnLoggingFailure Then Resume ExitPoint
@@ -2340,8 +2341,10 @@ ErrorTrap:
 		If Me.HasEntries Then 
 			enhLogAction CLASS_PREFIX, |Changing from  | & _ 
 			lstrLogTypes(Me.logType) & | to | & lstrLogTypes(newLogType) & |.|
-			
-			enhLogAction CLASS_PREFIX, |Closing | & lstrLogTypes(Me.logType) & |: | & Me.TargetDatabase.Server & |!!| & Me.TargetDatabase.Filepath  
+
+			server$ = Me.TargetDatabase.Server 
+			If isBlankString(server$) Then server$ = |[LocalCliient]| 
+			enhLogAction CLASS_PREFIX, |Closing | & lstrLogTypes(Me.logType) & |: | & server$ & |!!| & Me.TargetDatabase.Filepath  
 		End If 
 		
 		Select Case Me.LogType
@@ -2396,7 +2399,9 @@ ErrorTrap:
 					Set Me.myTargetDb = ndbNew
 					Call Me.CreateLogDoc()
 					
-					enhLogAction CLASS_PREFIX, |Opened NotesLog | & Me.TargetDatabase.Server & |!!| & Me.TargetDatabase.Filepath
+					server$ = Me.TargetDatabase.Server 
+					If isBlankString(server$) Then server$ = |[LocalCliient]| 
+					enhLogAction CLASS_PREFIX, |Opened NotesLog | & server$ & |!!| & Me.TargetDatabase.Filepath
 					
 					Set Me.ndtStartTime = New NotesDateTime(Now)
 					
@@ -2409,13 +2414,12 @@ ErrorTrap:
 		Me.logType = newLogType
 		result = True
 		
-ExitPoint:
+	ExitPoint:
 		ChangeLogType = result
 		Exit Function
-ErrorTrap:
+	ErrorTrap:
 		%REM
-	Explicity change to LOGTYPE_NOTES to ensure that this exception is logged for 
-	later analysis.
+			Explicity change to LOGTYPE_NOTES to ensure that this exception is logged for later analysis.
 		%END REM
 		On Error GoTo CriticalError
 		result = False
@@ -2425,7 +2429,7 @@ ErrorTrap:
 		Me.ndoc.Form = enhLogGetNotesLogForm()
 		enhLogException CLASS_PREFIX, |Forced Log Type change to | & lstrLogTypes(LOGTYPE_NOTES) & |.|
 		Resume ExitPoint
-CriticalError:
+	CriticalError:
 		result = False
 		On Error GoTo 0
 		If Me.resumeInternalError(Error(), Err(), Erl()) Then Resume ExitPoint		
@@ -2448,9 +2452,9 @@ CriticalError:
 		Me.countWarnings& = 0		
 		If Me.AutoSave Then enhLogAction CLASS_PREFIX, |Created Log Doc (AutoSave: True)|
 		
-ExitPoint:
+	ExitPoint:
 		Exit Sub
-ErrorTrap:
+	ErrorTrap:
 		On Error GoTo 0
 		If Me.resumeInternalError(Error(), Err(), Erl()) Then Resume ExitPoint		
 	End Sub 
@@ -2559,12 +2563,12 @@ ErrorTrap:
 		Me.Subject = Me.mySubject$
 		Me.ndoc.Send False, Me.varSendTo
 		
-ExitPoint:
+	ExitPoint:
 		Exit Sub
-ErrorTrap:
+	ErrorTrap:
 		%REM
-	Explicity change (instead of calling ChangeLogType methodname) to LOGTYPE_NOTES 
-	to ensure that this exception is logged for later analysis.
+			Explicity change (instead of calling ChangeLogType methodname) to LOGTYPE_NOTES 
+			to ensure that this exception is logged for later analysis.
 		%END REM
 		On Error GoTo CriticalError
 		Me.logType = LOGTYPE_NOTES 	' Change to NotesLog 
@@ -2573,7 +2577,7 @@ ErrorTrap:
 		|Forced Log Type change to | & lstrLogTypes(LOGTYPE_NOTES) & |.|
 		enhLogException CLASS_PREFIX, extendedContent$
 		Resume ExitPoint
-CriticalError:
+	CriticalError:
 		On Error GoTo 0
 		If Me.resumeInternalError(Error(), Err(), Erl()) Then Resume ExitPoint
 	End Sub 
@@ -2640,14 +2644,14 @@ CriticalError:
 		Me.nrti.AppendStyle Me.nrtStyleTableHeader
 		Me.nrti.AppendText Me.dbRepID$
 		Me.nrti.AddNewLine 1
- 
+		
 		Me.nrti.AppendStyle Me.nrtstyleTableHeaderLabel
 		Me.nrti.AppendText |Version: |
 		Me.nrti.AddTab 2
 		Me.nrti.AppendStyle Me.nrtStyleTableHeader
 		Me.nrti.AppendText Me.myNotesVersion$
 		Me.nrti.AddNewLine 1
- 
+		
 		Me.nrti.AppendStyle Me.nrtstyleTableHeaderLabel
 		Me.nrti.AppendText |ACL Level: |
 		Me.nrti.AddTab 2
@@ -2830,10 +2834,10 @@ CriticalError:
 			MessageBox msg$, 16, TITLE	
 		End If 
 
-ExitPoint:		
+	ExitPoint:		
 		resumeInternalError = result
 		Exit Function
-ErrorTrap:
+	ErrorTrap:
 		On Error GoTo 0
 		Me.ResumeOnLoggingFailure = False
 		result = False
@@ -2842,7 +2846,6 @@ ErrorTrap:
 	End Function 
 	
 End Class 	
-
 '++LotusScript Development Environment:2:2:Initialize:2:10
 
 Sub Initialize
@@ -3466,7 +3469,14 @@ Public Property Set enhLogOutputToNotesLog As Boolean
 
 	If Not enhLogExists Then Call InstantiateLog(||)
 	
-	enhLog.OpenNotesLog getCurrentDb().Server, |log.nsf|	
+	' enhLog.OpenNotesLog getCurrentDb().Server, |log.nsf|	
+	' **********
+	' DSO - 20210707 
+	' Above line of code replaced to satisify correct default of logging to the server (or client) that the code is RUNNING ON, 
+	' rather than the server (or client) that the NSF exists on. 
+	' **********
+
+	enhLog.OpenNotesLog ||, |log.nsf|	
 End Property
 
 '++LotusScript Development Environment:2:1:enhLogExceptionWithLink:19:8
@@ -6151,6 +6161,8 @@ ErrorTrap:
 	result = False
 	Resume ExitPoint
 End Function 
+
+
 
 
 
