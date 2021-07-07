@@ -1,12 +1,11 @@
-<?xml version="1.0" encoding="utf-8" standalone="no"?><imageresource xmlns="http://www.lotus.com/dxl" designerversion="8.5.3" maintenanceversion="1.0" name="action bar flat.png" noquery="true" publicaccess="false" replicaid="8525867000756EB9" version="11.0">
-<noteinfo noteid="1bf6" sequence="2" unid="4795FE29FE6D568180258696005CB17E">
+<?xml version="1.0" encoding="utf-8" standalone="no"?><imageresource xmlns="http://www.lotus.com/dxl" designerversion="8.5.3" name="action bar flat.png" publicaccess="false" replicaid="852586FE00669899" version="12.0">
+<noteinfo noteid="2a6" sequence="4" unid="4795FE29FE6D568180258696005CB17E">
 <created><datetime>20210312T165227,50+00</datetime></created>
-<modified><datetime dst="true">20210329T124640,86+01</datetime></modified>
-<revised><datetime>20210312T165711,38+00</datetime></revised>
-<lastaccessed><datetime dst="true">20210329T124640,85+01</datetime></lastaccessed>
-<addedtofile><datetime dst="true">20210329T124640,85+01</datetime></addedtofile></noteinfo>
-<updatedby><name>CN=Domino Template Development/O=Domino</name><name>CN=Paul Withers/OU=UK/O=PNPHCL</name></updatedby>
-<wassignedby><name>CN=Paul Withers/OU=UK/O=PNPHCL</name></wassignedby>
-
-<item name="$MimeType" sign="true"><text>image/png</text></item>
-<item name="$FileModDT" sign="true"><datetime>20210312T165659,37+00</datetime></item></imageresource>
+<modified><datetime dst="true">20210707T142213,63-04</datetime></modified>
+<revised><datetime dst="true">20210707T142213,62-04</datetime></revised>
+<lastaccessed><datetime dst="true">20210707T142213,62-04</datetime></lastaccessed>
+<addedtofile><datetime dst="true">20210624T144059,64-04</datetime></addedtofile></noteinfo>
+<updatedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></updatedby>
+<wassignedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></wassignedby>
+<item name="$FileModDT" sign="true"><datetime>20210312T165659,37+00</datetime></item>
+</imageresource>

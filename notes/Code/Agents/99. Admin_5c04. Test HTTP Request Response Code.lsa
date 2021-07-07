@@ -1,0 +1,78 @@
+<?xml version='1.0' encoding='utf-8'?>
+<agent name='99. Admin\04. Test HTTP Request Response Code' alias='HTTPRequest_ResponseCode_Test'
+ xmlns='http://www.lotus.com/dxl' version='12.0' replicaid='852586FE00669899'
+ hide='v3' publicaccess='false' designerversion='8.5.3' comment='Used to test the five request methods of the NotesHTTPRequest class'>
+<noteinfo noteid='2e2' unid='317E1089974206448525870B005FA772' sequence='6'>
+<created><datetime dst='true'>20210707T132447,86-04</datetime></created>
+<modified><datetime dst='true'>20210707T141409,51-04</datetime></modified>
+<revised><datetime dst='true'>20210707T141409,50-04</datetime></revised>
+<lastaccessed><datetime dst='true'>20210707T141409,50-04</datetime></lastaccessed>
+<addedtofile><datetime dst='true'>20210707T132447,91-04</datetime></addedtofile></noteinfo>
+<updatedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></updatedby>
+<wassignedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></wassignedby>
+<designchange><datetime dst='true'>20210707T141409,47-04</datetime></designchange>
+<trigger type='actionsmenu'/>
+<documentset type='runonce'/><code event='options'><lotusscript>%REM
+	Agent HTTPRequest_ResponseCode_Test
+	Created Jan 15, 2021 by Rocky Oliver/USA/PNPHCL
+	Description: This is a simple agent that uses httpstat.us to return the desired response code so that the NotesHTTPRequest.ResponseCode 
+	property can be properly tested. The agent will prompt the user for the desired response code, and then will display the value of the 
+	ResponseCode property after all five of the submission methods are called. In order to ensure each one is independent, five different
+	HTTPResponse objects are used, one for each method.
+%END REM
+Option Public
+Option Declare
+
+
+
+</lotusscript></code><code event='initialize'><lotusscript>Sub Initialize
+	Dim s As New NotesSession
+	Dim res As String, url As String, urlCode As String, code As String
+	Dim rcodeGet As String, rcodePut As String, rcodePost As String, rcodePatch As String, rcodeDel As String
+	Dim hReqGet As NotesHTTPRequest, hReqPost As NotesHTTPRequest, hReqPut As NotesHTTPRequest, hReqPatch As NotesHTTPRequest, hReqDel As NotesHTTPRequest
+	
+	Set hReqGet = s.Createhttprequest()
+	hReqGet.Preferstrings = True
+	
+	Set hReqPost = s.Createhttprequest()
+	hReqPost.Preferstrings = True
+	
+	Set hReqPut = s.Createhttprequest()
+	hReqPut.Preferstrings = True
+	
+	Set hReqPatch = s.Createhttprequest()
+	hReqPatch.Preferstrings = True
+	
+	Set hReqDel = s.Createhttprequest()
+	hReqDel.Preferstrings = True
+	
+	code = Inputbox$("Enter the desired response code", "Response Code", "200")
+	If code = "" Then code = "200"
+	urlCode = code
+	
+	url = "https://httpstat.us/" &amp; urlCode
+	
+	Print "testing " &amp; url
+	res = hReqGet.get(url)
+	Print "made get request"
+	rcodeGet = "GET: " &amp; hReqGet.Responsecode
+	
+	res = hReqPost.post(url, "")
+	rcodePost = "POST: " &amp; hReqPost.Responsecode
+	
+	res = hReqPut.put(url, "")
+	rcodePut = "PUT: " &amp; hReqPut.Responsecode
+	
+	res = hReqPatch.patch(url, "")
+	rcodePatch = "PATCH: " &amp; hReqPatch.Responsecode
+	
+	res = hReqDel.deleteResource(url)
+	rcodeDel = "DEL: " &amp; hReqDel.Responsecode
+	
+	res = rcodeGet &amp; Chr(10) &amp; rcodePost &amp; Chr(10) &amp; rcodePut &amp; Chr(10) &amp; rcodePatch &amp; Chr(10) &amp; rcodeDel
+	
+	Msgbox res,, "TEST CODE: " &amp; urlCode
+End Sub</lotusscript></code>
+<rundata processeddocs='0' exitcode='0'>
+<agentmodified><datetime dst='true'>20210326T173133,95+01</datetime></agentmodified></rundata></agent>
+

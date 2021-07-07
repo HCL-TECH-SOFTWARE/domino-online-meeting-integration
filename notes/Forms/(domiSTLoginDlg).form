@@ -1,14 +1,14 @@
 <?xml version='1.0' encoding='utf-8'?>
 <form name='(domiSTLoginDlg)' alias='domiSTLoginDlg' xmlns='http://www.lotus.com/dxl'
- version='12.0' replicaid='852586FE005EC7A6' publicaccess='false' designerversion='8.5.3'
+ version='12.0' replicaid='852586FE00669899' publicaccess='false' designerversion='8.5.3'
  comment='dialog for initial login into ST Meeting server' bgcolor='#efefef'
  inherit='true' renderpassthrough='true'>
-<noteinfo noteid='2de' unid='033E925FC342F5E4852586FE00600ABD' sequence='2'>
+<noteinfo noteid='282' unid='033E925FC342F5E4852586FE00600ABD' sequence='8'>
 <created><datetime dst='true'>20210624T132902,05-04</datetime></created>
-<modified><datetime dst='true'>20210624T132927,20-04</datetime></modified>
-<revised><datetime dst='true'>20210624T132927,19-04</datetime></revised>
-<lastaccessed><datetime dst='true'>20210624T132927,19-04</datetime></lastaccessed>
-<addedtofile><datetime dst='true'>20210624T132902,05-04</datetime></addedtofile></noteinfo>
+<modified><datetime dst='true'>20210707T142213,20-04</datetime></modified>
+<revised><datetime dst='true'>20210707T142213,19-04</datetime></revised>
+<lastaccessed><datetime dst='true'>20210707T142213,19-04</datetime></lastaccessed>
+<addedtofile><datetime dst='true'>20210624T144058,77-04</datetime></addedtofile></noteinfo>
 <updatedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></updatedby>
 <wassignedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></wassignedby><code
  event='windowtitle'><formula>"Sametime Credentials"</formula></code>
@@ -30,11 +30,11 @@
 ><font size='9pt' style='bold' color='red'/>NOT</run><run><font size='9pt'/> be saved</run></par></tablecell></tablerow>
 <tablerow>
 <tablecell borderwidth='1px 0px' bgcolor='#efefef'>
-<pardef id='4' keepwithnext='true' keeptogether='true'/>
-<par def='4'><run><font size='9pt'/>Login Email</run></par></tablecell>
-<tablecell borderwidth='1px 0px' bgcolor='white'>
 <pardef id='6' keepwithnext='true' keeptogether='true'/>
-<par def='6'><run><font size='9pt'/></run><run><font size='9pt'/><field usenotesstyle='false'
+<par def='6'><run><font size='9pt'/>Login Email</run></par></tablecell>
+<tablecell borderwidth='1px 0px' bgcolor='white'>
+<pardef id='7' keepwithnext='true' keeptogether='true'/>
+<par def='7'><run><font size='9pt'/></run><run><font size='9pt'/><field usenotesstyle='false'
  height='0.2500in' width='2.7000in' borderstyle='none' type='text' kind='editable'
  name='loginEmail'><code event='defaultvalue'><formula>loginEmail</formula></code><code
  event='inputtranslation'><formula>@Trim(@ThisValue)</formula></code><code
@@ -42,15 +42,15 @@
 ><font size='9pt'/></run></par></tablecell></tablerow>
 <tablerow>
 <tablecell borderwidth='1px 0px' bgcolor='#efefef'>
-<par def='4'><run><font size='9pt'/>Login Password (not saved)</run></par></tablecell>
+<par def='6'><run><font size='9pt'/>Login Password (not saved)</run></par></tablecell>
 <tablecell borderwidth='1px 0px' bgcolor='white'>
-<par def='6'><run><font size='9pt'/></run><run><font size='9pt'/><field type='password'
+<par def='7'><run><font size='9pt'/></run><run><font size='9pt'/><field type='password'
  usenotesstyle='false' height='0.2500in' width='2.7000in' multiline='true'
  borderstyle='none' kind='editable' seal='true' name='stPassword'><code event='defaultvalue'><formula
 >""</formula></code><code event='inputtranslation'><formula>@Trim(@ThisValue)</formula></code><code
  event='inputvalidation'><formula>@If("" = @ThisValue; @Failure("Login Password is required."); @Success)</formula></code></field></run><run
 ><font size='9pt'/></run></par></tablecell></tablerow></table>
-<pardef id='7' hide='read edit print notes web'/>
-<par def='7'><run><font size='8pt'/></run></par></richtext></body>
+<pardef id='8' hide='read edit print notes web'/>
+<par def='8'><run><font size='8pt'/></run></par></richtext></body>
 <item name='$$ScriptName' summary='false' sign='true'><text>domiSTLoginDlg</text></item></form>
 
