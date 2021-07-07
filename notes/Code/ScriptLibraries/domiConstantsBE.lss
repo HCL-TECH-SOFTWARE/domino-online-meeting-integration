@@ -44,8 +44,8 @@ Private Const LIB_PREFIX 		= |Library: domiConstantsBE.|
 %END REM *********************************************************************  
 Private Const g_DOMI_ROOTURL_TOKEN_HCL 			= |https://integration-auth-token.hcltechsw.com| ' HCL's default site
 Private Const g_DOMI_VERSION 					= |1.0.2|
-Private Const g_DOMI_BUILD 						= |1.1074|
-Private Const g_DOMI_RELEASE_DATE 				= |25 JUN 2021|
+Private Const g_DOMI_BUILD 						= |1.1198|
+Private Const g_DOMI_RELEASE_DATE 				= |07 JUL 2021|
 
 
 %REM ***************************************************************************
