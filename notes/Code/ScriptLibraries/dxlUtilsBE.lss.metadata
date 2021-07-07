@@ -1,11 +1,11 @@
-<?xml version="1.0" encoding="utf-8" standalone="no"?><note xmlns="http://www.lotus.com/dxl" class="filter" maintenanceversion="1.0" replicaid="8525867000756EB9" version="11.0">
-<noteinfo noteid="1d16" sequence="111" unid="55104961C3AAB1468525867000758FD4">
+<?xml version="1.0" encoding="utf-8" standalone="no"?><note xmlns="http://www.lotus.com/dxl" class="filter" replicaid="852586FE00669899" version="12.0">
+<noteinfo noteid="27a" sequence="5" unid="55104961C3AAB1468525867000758FD4">
 <created><datetime>20210202T162405,32-05</datetime></created>
-<modified><datetime dst="true">20210329T124641,33+01</datetime></modified>
-<revised><datetime>20210319T125147,34-05</datetime></revised>
-<lastaccessed><datetime dst="true">20210329T124641,32+01</datetime></lastaccessed>
-<addedtofile><datetime dst="true">20210329T124641,32+01</datetime></addedtofile></noteinfo>
-<updatedby><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name><name>CN=Devin Olson/OU=USA/O=PNPHCL</name><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name><name>CN=Devin Olson/OU=USA/O=PNPHCL</name><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name><name>CN=Devin Olson/OU=USA/O=PNPHCL</name><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name><name>CN=Devin Olson/OU=USA/O=PNPHCL</name><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></updatedby>
+<modified><datetime dst="true">20210707T141407,56-04</datetime></modified>
+<revised><datetime dst="true">20210707T141407,55-04</datetime></revised>
+<lastaccessed><datetime dst="true">20210707T141407,55-04</datetime></lastaccessed>
+<addedtofile><datetime dst="true">20210624T144058,32-04</datetime></addedtofile></noteinfo>
+<updatedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></updatedby>
 <wassignedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></wassignedby>
 <item name="$PublicAccess" sign="true"><text>1</text></item>
 <item name="$Flags"><text>s34Q</text></item>

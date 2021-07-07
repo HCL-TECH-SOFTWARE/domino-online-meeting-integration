@@ -1,21 +1,21 @@
 <?xml version='1.0' encoding='utf-8'?>
 <view name='02. Design Element Profiles\01. All by Type' alias='uiDesignElementsByType'
- xmlns='http://www.lotus.com/dxl' version='11.0' maintenanceversion='1.0'
- replicaid='852586DC005D7BD2' showinmenu='false' defaultdesign='true' publicaccess='false'
- designerversion='8.5.3' comment='Design Element Profiles (for users - can be modified)'
- unreadmarks='none' onopengoto='lastopened' onrefresh='displayindicator' headers='simple'
- opencollapsed='false' showresponsehierarchy='true' showmargin='true' shrinkrows='true'
- extendlastcolumn='true' showhierarchies='false' unreadcolor='black' rowlinecount='9'
- headerlinecount='1' rowspacing='1.25' bgcolor='white' altrowcolor='#e6e6e6'
- totalscolor='black' headerbgcolor='#f2f2f2' boldunreadrows='false' evaluateactions='false'
- allownewdocuments='false' allowcustomizations='false' hidemarginborder='false'
- marginwidth='0px' marginbgcolor='white' uniquekeys='false'>
-<noteinfo noteid='2b6' unid='67EE24BBC02B84FE85258677005A0A41' sequence='6'>
+ xmlns='http://www.lotus.com/dxl' version='12.0' replicaid='852586FE00669899'
+ showinmenu='false' defaultdesign='true' publicaccess='false' designerversion='8.5.3'
+ comment='Design Element Profiles (for users - can be modified)' unreadmarks='none'
+ onopengoto='lastopened' onrefresh='displayindicator' headers='simple' opencollapsed='false'
+ showresponsehierarchy='true' showmargin='true' shrinkrows='true' extendlastcolumn='true'
+ showhierarchies='false' unreadcolor='black' rowlinecount='9' headerlinecount='1'
+ rowspacing='1.25' bgcolor='white' altrowcolor='#e6e6e6' totalscolor='black'
+ headerbgcolor='#f2f2f2' boldunreadrows='false' evaluateactions='false' allownewdocuments='false'
+ allowcustomizations='false' hidemarginborder='false' marginwidth='0px' marginbgcolor='white'
+ uniquekeys='false'>
+<noteinfo noteid='2b6' unid='67EE24BBC02B84FE85258677005A0A41' sequence='3'>
 <created><datetime>20210209T112328,65-05</datetime></created>
-<modified><datetime dst='true'>20210521T131034,54-04</datetime></modified>
-<revised><datetime dst='true'>20210521T131034,53-04</datetime></revised>
-<lastaccessed><datetime dst='true'>20210521T131034,53-04</datetime></lastaccessed>
-<addedtofile><datetime dst='true'>20210521T130117,69-04</datetime></addedtofile></noteinfo>
+<modified><datetime dst='true'>20210707T141410,06-04</datetime></modified>
+<revised><datetime dst='true'>20210707T141410,05-04</datetime></revised>
+<lastaccessed><datetime dst='true'>20210707T141410,05-04</datetime></lastaccessed>
+<addedtofile><datetime dst='true'>20210624T144059,93-04</datetime></addedtofile></noteinfo>
 <updatedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></updatedby>
 <wassignedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></wassignedby><code
  event='selection'><formula>SELECT Form = "desElement"</formula></code>

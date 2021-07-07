@@ -1,16 +1,16 @@
 <?xml version='1.0' encoding='utf-8'?>
 <agent name='99. Admin\01. Generate Design Element Profiles' xmlns='http://www.lotus.com/dxl'
- version='12.0' replicaid='8525867000756EB9' hide='v3' publicaccess='false'
+ version='12.0' replicaid='852586FE00669899' hide='v3' publicaccess='false'
  designerversion='8.5.3'>
-<noteinfo noteid='1d5e' unid='A2A62F256284950885258677004ABB0D' sequence='76'>
+<noteinfo noteid='232' unid='A2A62F256284950885258677004ABB0D' sequence='3'>
 <created><datetime>20210209T083615,49-05</datetime></created>
-<modified><datetime dst='true'>20210603T131956,09-04</datetime></modified>
-<revised><datetime dst='true'>20210603T131956,08-04</datetime></revised>
-<lastaccessed><datetime dst='true'>20210603T131956,08-04</datetime></lastaccessed>
-<addedtofile><datetime dst='true'>20210519T141917,48-04</datetime></addedtofile></noteinfo>
-<updatedby><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name></updatedby>
-<wassignedby><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name></wassignedby>
-<designchange><datetime dst='true'>20210603T131956,05-04</datetime></designchange>
+<modified><datetime dst='true'>20210707T141409,34-04</datetime></modified>
+<revised><datetime dst='true'>20210707T141409,33-04</datetime></revised>
+<lastaccessed><datetime dst='true'>20210707T141409,33-04</datetime></lastaccessed>
+<addedtofile><datetime dst='true'>20210624T144055,88-04</datetime></addedtofile></noteinfo>
+<updatedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></updatedby>
+<wassignedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></wassignedby>
+<designchange><datetime dst='true'>20210707T141409,28-04</datetime></designchange>
 <trigger type='actionsmenu'/>
 <documentset type='runonce'/><code event='options'><lotusscript>%REM
 	Agent Generate Design Element Profiles
@@ -96,7 +96,5 @@ errHandler:
 	End Select
 	Resume getOut
 End Sub</lotusscript></code>
-<rundata processeddocs='0' exitcode='0'>
-<agentmodified><datetime dst='true'>20210603T131955,94-04</datetime></agentmodified></rundata>
 <item name='$POID'><datetime dst='true'>20210521T131033,81-04</datetime></item></agent>
 

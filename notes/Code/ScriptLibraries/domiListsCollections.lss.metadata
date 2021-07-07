@@ -1,11 +1,11 @@
-<?xml version="1.0" encoding="utf-8" standalone="no"?><note xmlns="http://www.lotus.com/dxl" class="filter" maintenanceversion="1.0" replicaid="8525867000756EB9" version="11.0">
-<noteinfo noteid="1d32" sequence="1" unid="671D7D851FE634AE3D012A1F9159B248">
+<?xml version="1.0" encoding="utf-8" standalone="no"?><note xmlns="http://www.lotus.com/dxl" class="filter" replicaid="852586FE00669899" version="12.0">
+<noteinfo noteid="26a" sequence="5" unid="671D7D851FE634AE3D012A1F9159B248">
 <created><datetime/></created>
-<modified><datetime dst="true">20210329T124641,40+01</datetime></modified>
-<revised><datetime>20210326T081923,86-05</datetime></revised>
-<lastaccessed><datetime dst="true">20210329T124641,39+01</datetime></lastaccessed>
-<addedtofile><datetime dst="true">20210329T124641,39+01</datetime></addedtofile></noteinfo>
-<updatedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name><name>CN=Devin Olson/OU=USA/O=PNPHCL</name><name>CN=Devin Olson/O=HCLTechSW</name><name>CN=Devin Olson/OU=USA/O=PNPHCL</name><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name><name>CN=Devin Olson/OU=USA/O=PNPHCL</name><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name><name>CN=Devin Olson/OU=USA/O=PNPHCL</name><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name><name>CN=Devin Olson/OU=USA/O=PNPHCL</name><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name><name>CN=Devin Olson/OU=USA/O=PNPHCL</name><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name><name>CN=Devin Olson/OU=USA/O=PNPHCL</name><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name><name>CN=Devin Olson/OU=USA/O=PNPHCL</name><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name><name>CN=Devin Olson/OU=USA/O=PNPHCL</name><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name><name>CN=Michael Alexander/OU=USA/O=PNPHCL</name><name>CN=Rocky Oliver/OU=USA/O=PNPHCL</name></updatedby>
+<modified><datetime dst="true">20210707T141406,95-04</datetime></modified>
+<revised><datetime dst="true">20210707T141406,94-04</datetime></revised>
+<lastaccessed><datetime dst="true">20210707T141406,94-04</datetime></lastaccessed>
+<addedtofile><datetime dst="true">20210624T144057,62-04</datetime></addedtofile></noteinfo>
+<updatedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></updatedby>
 <wassignedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></wassignedby>
 <item name="$Flags"><text>s34Q</text></item>
 <item name="$PublicAccess" sign="true"><text>1</text></item>

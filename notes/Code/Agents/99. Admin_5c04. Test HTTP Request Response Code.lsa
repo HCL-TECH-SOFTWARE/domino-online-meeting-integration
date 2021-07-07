@@ -2,15 +2,15 @@
 <agent name='99. Admin\04. Test HTTP Request Response Code' alias='HTTPRequest_ResponseCode_Test'
  xmlns='http://www.lotus.com/dxl' version='12.0' replicaid='852586FE00669899'
  hide='v3' publicaccess='false' designerversion='8.5.3' comment='Used to test the five request methods of the NotesHTTPRequest class'>
-<noteinfo noteid='2e2' unid='317E1089974206448525870B005FA772' sequence='5'>
+<noteinfo noteid='2e2' unid='317E1089974206448525870B005FA772' sequence='6'>
 <created><datetime dst='true'>20210707T132447,86-04</datetime></created>
-<modified><datetime dst='true'>20210707T132617,22-04</datetime></modified>
-<revised><datetime dst='true'>20210707T132617,21-04</datetime></revised>
-<lastaccessed><datetime dst='true'>20210707T132617,21-04</datetime></lastaccessed>
+<modified><datetime dst='true'>20210707T141409,51-04</datetime></modified>
+<revised><datetime dst='true'>20210707T141409,50-04</datetime></revised>
+<lastaccessed><datetime dst='true'>20210707T141409,50-04</datetime></lastaccessed>
 <addedtofile><datetime dst='true'>20210707T132447,91-04</datetime></addedtofile></noteinfo>
 <updatedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></updatedby>
 <wassignedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></wassignedby>
-<designchange><datetime dst='true'>20210707T132617,13-04</datetime></designchange>
+<designchange><datetime dst='true'>20210707T141409,47-04</datetime></designchange>
 <trigger type='actionsmenu'/>
 <documentset type='runonce'/><code event='options'><lotusscript>%REM
 	Agent HTTPRequest_ResponseCode_Test
