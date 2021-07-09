@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?><note xmlns="http://www.lotus.com/dxl" class="filter" replicaid="852586FE00669899" version="12.0">
-<noteinfo noteid="25a" sequence="6" unid="7E5B9242B1B684D466EBA5CEC08B3573">
+<noteinfo noteid="25a" sequence="8" unid="7E5B9242B1B684D466EBA5CEC08B3573">
 <created><datetime/></created>
-<modified><datetime dst="true">20210707T142212,25-04</datetime></modified>
-<revised><datetime dst="true">20210707T142212,24-04</datetime></revised>
-<lastaccessed><datetime dst="true">20210707T142212,24-04</datetime></lastaccessed>
+<modified><datetime dst="true">20210708T192817,60-04</datetime></modified>
+<revised><datetime dst="true">20210708T192817,59-04</datetime></revised>
+<lastaccessed><datetime dst="true">20210708T192817,59-04</datetime></lastaccessed>
 <addedtofile><datetime dst="true">20210624T144056,95-04</datetime></addedtofile></noteinfo>
 <updatedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></updatedby>
 <wassignedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></wassignedby>
@@ -11,6 +11,6 @@
 <item name="$TITLE" sign="true"><text>NotesRESTconsumer</text></item>
 <item name="$DesignerVersion" sign="true"><text>8.5.3</text></item>
 <item name="$Flags"><text>s34Q</text></item>
-<item name="$Comment" sign="true"><text>Tools for interacting REST APIs and consuming content</text></item>
 
-</note>
+
+<item name="$Comment"><text>Tools for interacting REST APIs and consuming content</text></item></note>

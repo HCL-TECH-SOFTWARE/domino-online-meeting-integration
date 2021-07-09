@@ -418,6 +418,13 @@ Class NotesRESTconsumer
 			Call bodyargs.logJSONExtended(me.m_excludeNodes, ||, ||, |Body JSON|)
 			enhLogExtendedContent ||, ||, ||
 		End If 
+		
+		
+		If Not isBlankString(strippedResponse$) Then 
+			enhLogExtendedContent CLASS_PREFIX, ||, |Response JSON|
+			enhLogExtendedContent ||, ||, strippedResponse$
+			enhLogExtendedContent ||, ||, ||		 
+		End If 
 
 		Exit Function 
 	Error4844:
@@ -717,6 +724,7 @@ ErrorTrap:
 	enhLogException LIB_PREFIX, |Method Code: | & CStr(method%) 
 	Resume ExitPoint
 End Function
+
 
 
 
