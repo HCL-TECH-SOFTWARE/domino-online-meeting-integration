@@ -859,6 +859,10 @@ Class DominoOnlineMeetingIntegrator
 		Dim errcode%
 
 		Dim element As NotesJSONElement 
+		Dim arySource As NotesJSONArray
+		Dim aryTarget As NotesJSONArray
+		Dim objSource As NotesJSONObject
+		Dim objTarget As NotesJSONObject
 
 		Dim headers As New StringList() 
 		
@@ -931,7 +935,13 @@ Class DominoOnlineMeetingIntegrator
 		If hasError Then Error ERR_HTTP_REQUEST_FAILURE, MSG_HTTP_REQUEST_FAILURE
 
 		If Not (Me.CopyNodes Is Nothing) Then 
+			' **********************
 			' Add service specific nodes to the target NotesJSONNavigator
+			' IMPORTANT NOTE
+			' Only Scalar nodes can be copied.  
+			' Object and Array nodes will not be copied
+			' **********************
+				
 			ForAll nodename In Me.CopyNodes.content 
 				tag$ = ListTag(nodename) 
 				extendedinfo(|Tag|) = tag$ 
@@ -948,8 +958,24 @@ Class DominoOnlineMeetingIntegrator
 							extendedinfo(|JSON Element Type|) = CStr(elementtype%) 
 							extendedinfo(|JSON Element Type Name|) = || ' clear the element in case an exception is thrown 
 							elementtypename$ = getJSONelementTypeName(elementtype%)
-							extendedinfo(|JSON Element Type Name|) = elementtypename$ 
-							target.AppendElement element.Value, tag$ 
+							extendedinfo(|JSON Element Type Name|) = elementtypename$  
+							
+							Select Case elementtype%
+								Case Jsonelem_type_array, Jsonelem_type_object: 
+									enhLogWarning CLASS_PREFIX, |Copying JSON Nodes of type | & elementtypename$ & | is not supported. |
+									enhLogExtendedContent ||, ||, |Tag: | & tag$
+									enhLogExtendedContent ||, ||, |Node Name: | & nodename 
+									enhLogExtendedContent ||, ||, ||
+									
+								Case Jsonelem_type_boolean, Jsonelem_type_number, Jsonelem_type_string: 
+									Call target.AppendElement(element.Value, tag$)
+									
+								Case Jsonelem_type_empty: 
+									' Nothing to append 
+									
+								Case Else 
+									Error ERR_PARAMETER_INVALID, MSG_PARAMETER_INVALID & |Unsupported JSON Element Type.  |
+							End Select
 						End If
 					End If 
 				End If				
@@ -2309,6 +2335,10 @@ ErrorTrap:
 	enhLogException LIB_PREFIX, ||
 	Resume ExitPoint
 End Function
+
+
+
+
 
 
 
