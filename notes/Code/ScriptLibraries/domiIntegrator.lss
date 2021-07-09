@@ -1396,7 +1396,7 @@ Class DominoOnlineMeetingIntegrator
 		
 ExitPoint:
 		If (0 <> errcode%) Then Error errcode%, errmsg$ ' bubble up errors 
-		If result Then enhLogMethodResult ||, |Created meeting | & meetingid$ 
+		If result Then enhLogMethodResult CLASS_PREFIX, |Created meeting | & meetingid$ 
 		
 		createMeeting = result
 		Exit Function 
@@ -1510,7 +1510,7 @@ ErrorTrap:
 	ExitPoint:
 		If (0 <> errcode%) Then Error errcode%, errmsg$ ' bubble up errors 
 		If result Then 
-			enhLogMethodResult ||, |Updated meeting | & meetingid_New$
+			enhLogMethodResult CLASS_PREFIX, |Updated meeting | & meetingid_New$
 			If (0 <> StrComp(meetingid_Old$, meetingid_New$, 5)) Then enhLogExtendedContent ||, ||, |Old meeting id: | & meetingid_Old$
 		End If  
 
@@ -1625,17 +1625,24 @@ ErrorTrap:
 		Erase keys 
 		Select Case me.MeetingService
 			Case DOMI_SERVICE_WEBEX:
-				keys(|Attendee Link|) = |meetingURL|
-				keys(|Password|) = |meetingPassword|
-				keys(|SIP Link|) = |meetingSipAddress|
-				keys(|Phone/Video Password|) = |meetingPhoneVideoPassword|
+				keys(|Attendee Link|) = 		|meetingURL|
+				keys(|Password|) = 				|meetingPassword|
+				keys(|SIP Link|) = 				|meetingSipAddress|
+				keys(|Phone/Video Password|) = 	|meetingPhoneVideoPassword|
 				
-			Case DOMI_SERVICE_ZOOM
-				keys(|Attendee Link|) = |meetingURL|
-				keys(|Password|) = |meetingPassword|
+			Case DOMI_SERVICE_ZOOM:
+				keys(|Attendee Link|) = 		|meetingURL|
+				keys(|Password|) = 				|meetingPassword|
+				
+			Case DOMI_SERVICE_TEAMS:
+				keys(|Attendee Link|) = 		|meetingURL|
+				keys(|Toll Number|) = 			|tollNumber| 
+				keys(|Toll Free Number|) = 		|tollFreeNumber| 
+				keys(|Conference Id|) = 		|ConferenceId| 
+				keys(|Dial in URL|) = 			|dialinUrl| 
 				
 			Case Else: 
-				keys(|Attendee Link|) = |meetingURL|
+				keys(|Attendee Link|) = 		|meetingURL|
 
 		End Select
 
@@ -1758,7 +1765,7 @@ ErrorTrap:
 				' do nothing
 		End Select 
 
-		If result Then enhLogMethodResult ||, |Deleted meeting | & meetingid$ 
+		If result Then enhLogMethodResult CLASS_PREFIX, |Deleted meeting | & meetingid$ 
 		deleteMeeting = result
 		Exit Function 
 	ErrorTrap:
@@ -1881,7 +1888,7 @@ ErrorTrap:
 				' do nothing
 		End Select 
 		
-		If result Then enhLogMethodResult ||, |Retrieved meeting | & meetingid$ 
+		If result Then enhLogMethodResult CLASS_PREFIX, |Retrieved meeting | & meetingid$ 
 		getMeeting = result
 		Exit Function 
 	ErrorTrap:
@@ -2302,6 +2309,8 @@ ErrorTrap:
 	enhLogException LIB_PREFIX, ||
 	Resume ExitPoint
 End Function
+
+
 
 
 
