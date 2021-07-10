@@ -691,17 +691,13 @@ Class DominoOnlineMeetingIntegrator
 		
 		@param source 		NotesDatabase containing the Domino Online Meeting Integration Credentials documents.
 		
-		@param tags			Tags and Node names used to parse the response JSON and add nodes when processing DOMI JSON 
-								k = Node name used to add the retrieved value to the resulting JSON content.
-								v = Properly formatted JSON tag this will be used to retrieve a value from the JSON content.
-			 
 		@param service$ 	Meeting Service used for the object. 
 		
 		@throws ERR_PARAMETER_BLANK if the source Database is Nothing. 
 		@throws ERR_DATABASE_NOTOPEN is the source Database cannot be opened.
 		@throws ERR_PARAMETER_INVALID if Meeting Service not currently supported. 
 	%END REM 
-	Sub New(source As NotesDatabase, tags As StringList, service$) 
+	Sub New(source As NotesDatabase, service$) 
 		On Error GoTo ErrorTrap
 		
 		Dim nnam As NotesName 
@@ -732,7 +728,8 @@ Class DominoOnlineMeetingIntegrator
 		End If  
 		
 		Set me.m_database = source 
-		Set me.CopyNodes = tags 
+'		Set me.CopyNodes = tags 
+		Set me.CopyNodes = getDOMInodeNamesToCopy(service$)
 		me.m_meetingservice = service$
 
 	ExitPoint: 
@@ -2341,6 +2338,8 @@ ErrorTrap:
 	enhLogException LIB_PREFIX, ||
 	Resume ExitPoint
 End Function
+
+
 
 
 
