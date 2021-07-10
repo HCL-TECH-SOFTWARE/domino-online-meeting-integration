@@ -40,12 +40,16 @@ Declare Property Get DOMI_JSON_NODES_EXCLUDE_FROM_LOG As BooleanList
 Declare Function getDOMIendpointURL(meetingservice$, operation$, replacements As StringList) As String 
 Declare Function domiValidateCalendarEntry(context As NotesDocument, ndtStart As NotesDateTime, ndtEnd As NotesDateTime) As Integer
 Declare Function atUniqueID() As String
+Declare Function getDOMInodeNamesToCopy(meetingservice$) As StringList 
 
 '++LotusScript Development Environment:2:5:(Declarations):0:10
 
 Private Const LIB_PREFIX = |Library: domiUtilsBE.|
 
-Private Const SC_ProperCase = 3
+Private Const SC_ProperCase = 3  
+
+
+
 
 '++LotusScript Development Environment:2:1:getDOMIdesignElements:18:8
 
@@ -1115,4 +1119,96 @@ errHandler:
 
 	Error Err, errtxt
 	Resume getOut
+End Function
+
+'++LotusScript Development Environment:2:1:getDOMInodeNamesToCopy:12:8
+%REM
+	Function getDOMInodeNamesToCopy
+	Gets the Tags and Node names to be copied when processing DOMI JSON 
+	
+	@param meetingservice$ The specific meeting service for which to retrive the appropriate node names. 
+	
+	@return Tags and Node names used to parse the response JSON and add nodes when processing DOMI JSON 
+		k = Node name used to add the retrieved value to the resulting JSON content.
+		v = Properly formatted JSON tag this will be used to retrieve a value from the JSON content.
+	
+%END REM
+Function getDOMInodeNamesToCopy(meetingservice$) As StringList 
+	On Error GoTo ErrorTrap
+	
+	' exception variables
+	Dim extendedinfo List As String 
+	Dim msg$
+	
+	
+	Dim result As New StringList()
+	
+	' BEGIN CODE 
+	extendedinfo(|Meeting Service|) = meetingservice$ 
+	Select Case meetingservice$ 
+		Case DOMI_SERVICE_GTM:
+			result.content(|meetingID|) = 		|meetingid| 
+			result.content(|meetingTitle|) = 	|subject| 
+			result.content(|meetingURL|) = 		|joinURL| 
+			result.content(|ApptUNIDURL|) =	 	|joinURL| 		
+			
+		Case DOMI_SERVICE_TEAMS: 
+			result.content(|meetingID|) = 			|id| 
+			result.content(|meetingTitle|) = 		|subject| 
+			result.content(|meetingURL|) = 			|joinWebUrl| 
+			result.content(|ApptUNIDURL|) =	 		|joinWebUrl| 
+			result.content(|meetingStartStr|) = 	|startDateTime| 
+			result.content(|meetingEndStr|) = 		|endDateTime| 
+			result.content(|tollNumber|) = 			|audioConferencing/tollNumber| 
+			result.content(|tollFreeNumber|) = 		|audioConferencing/tollFreeNumber| 
+			result.content(|ConferenceId|) = 		|audioConferencing/ConferenceId| 
+			result.content(|dialinUrl|) = 			|audioConferencing/sdialinUrl| 	
+						
+		Case DOMI_SERVICE_WEBEX: 
+			result.content(|meetingID|) = 	   				|id| 
+			result.content(|meetingTitle|) = 				|title| 
+			result.content(|meetingURL|) = 					|webLink| 
+			result.content(|ApptUNIDURL|) =	 				|webLink| 
+			result.content(|meetingStartStr|) = 			|start| 
+			result.content(|meetingEndStr|) = 				|end| 
+			result.content(|meetingPassword|) =				|password|
+			result.content(|meetingPhoneVideoPassword|) = 	|phoneAndVideoSystemPassword|
+			result.content(|meetingSipAddress|) = 			|sipAddress|
+			
+		Case DOMI_SERVICE_ZOOM:
+			result.content(|meetingID|) = 	   		|id| 
+			result.content(|meetingType|) = 	   	|type|
+			result.content(|meetingTitle|) = 		|topic| 
+			result.content(|meetingAgenda|) = 		|agenda| 
+			result.content(|meetingChairURL|) = 	|start_url| 
+			result.content(|meetingURL|) = 			|join_url| 
+			result.content(|ApptUNIDURL|) =	 		|join_url| 
+			result.content(|meetingStartStr|) = 	|start_time| 
+			result.content(|meetingDuration|) = 	|duration| 
+			result.content(|meetingPassword|) = 	|password|
+			
+		Case DOMI_SERVICE_SAMETIME:
+			' Do Nothing - Sametime uses different logic
+		
+		Case Else:
+				Error ERR_PARAMETER_INVALID, MSG_PARAMETER_INVALID & |Unsupported Meeting Service.  |
+	End Select
+	
+
+	
+	
+ExitPoint: 
+	Set getDOMInodeNamesToCopy = result
+	Exit Function 
+ErrorTrap:
+	On Error GoTo 0
+	ForAll s In extendedinfo
+		If isBlankString(msg$) Then 
+			msg$ = ListTag(s) & |: | & s
+		Else 
+			msg$ = msg$ & |, | & Chr(10) & ListTag(s) & |: | & s
+		End If
+	End ForAll
+	enhLogException LIB_PREFIX, msg$
+	Resume ExitPoint
 End Function
