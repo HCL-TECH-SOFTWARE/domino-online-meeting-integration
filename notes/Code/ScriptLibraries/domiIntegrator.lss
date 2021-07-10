@@ -1677,7 +1677,13 @@ ErrorTrap:
 			ForAll key In keys 
 				If mv.hasTag(key) Then 
 					rstr$ = mv.getScalarStringValue(key) 
-					If Not isBlankString(rstr$) Then bodyMsg$ = bodyMsg$ & LF & ListTag(key) & |: | & rstr$
+					If Not isBlankString(rstr$) Then
+						If isBlankString(bodyMsg$) Then 
+							bodyMsg$ = ListTag(key) & |: | & rstr$
+						Else
+							bodyMsg$ = bodyMsg$ & LF & ListTag(key) & |: | & rstr$
+						End If 
+					End If 
 				End If 
 			End ForAll			
 		End If
@@ -2335,6 +2341,7 @@ ErrorTrap:
 	enhLogException LIB_PREFIX, ||
 	Resume ExitPoint
 End Function
+
 
 
 
