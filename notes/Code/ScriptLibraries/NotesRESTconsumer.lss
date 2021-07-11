@@ -307,14 +307,7 @@ Class NotesRESTconsumer
 		
 		
 		Const PREFIX_DOCTYPE = |<!DOCTYPE html>|
-		
-		Const TAG_SPLIT = |"audioConferencing":null|
-		
-		Const TAG_JOIN = |"audioConferencing": {| & _
-|"tollNumber":"+12525634478",| & _
-|"tollFreeNumber":"+18666390588",| & _
-|"ConferenceId":"2425999",| & _
-|"dialinUrl":"https://dialin.teams.microsoft.com/22f12fa0-499f-435b-bc69-b8de580ba330?id=2425999"}|
+
 		
 		Dim helper As NotesAgent_JsonHTTPHelper
 		Dim jsonarray As NotesJSONArray 
@@ -322,17 +315,12 @@ Class NotesRESTconsumer
 		Dim jsonobject As NotesJSONObject 
 		
 		Dim jsonvalues As VariantList  
-		
-		Dim value As Variant 
-		
-		Dim temparray As Variant  
-		
+
 		' exception variables
 		Dim extendedinfo List As String 
 		Dim msg$
 		Dim errmsg$ 
 		Dim errcode% 
-
 
 		Dim methodname$
 		Dim responsejson$
@@ -340,7 +328,6 @@ Class NotesRESTconsumer
 
 		Dim firstchar$
 		Dim lastchar$ 
-		
 		Dim result$
 
 
@@ -362,9 +349,7 @@ Class NotesRESTconsumer
 		' get the response code 
 		result$ = me.m_request.ResponseCode 
 		extendedinfo(|responseCode|) = result$
-		
 		enhLogExtendedContent CLASS_PREFIX, ||, |Response Code: | & result$
-		'		enhLogExtendedContent ||, ||, strippedResponse$ 
 		
 		firstchar$ = Left$(strippedResponse$, 1) 
 		lastchar$ = Right$(strippedResponse$, 1)
@@ -412,12 +397,6 @@ Class NotesRESTconsumer
 		End If
 
 		If (strippedResponse$ Like |<!DOCTYPE html>*|) Then Error ERR_PARAMETER_INVALID, MSG_PARAMETER_INVALID & |Service returned HTML instead of JSON.  | 
-		
-		If (InStr(strippedResponse$, TAG_SPLIT) > 0) Then 
-			temparray = Split(strippedResponse$, TAG_SPLIT)
-			strippedResponse$ = Join(temparray, TAG_JOIN)
-		End If
-		
 		
 		Set target = getCurrentSession().createJSONNavigator(strippedResponse$) 
 		
@@ -734,6 +713,7 @@ ErrorTrap:
 	enhLogException LIB_PREFIX, |Method Code: | & CStr(method%) 
 	Resume ExitPoint
 End Function
+
 
 
 
