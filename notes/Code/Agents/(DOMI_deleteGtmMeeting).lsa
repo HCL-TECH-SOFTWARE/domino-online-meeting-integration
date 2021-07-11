@@ -2,17 +2,19 @@
 <agent name='(DOMI_deleteGtmMeeting)' alias='DOMI_deleteGtmMeeting' xmlns='http://www.lotus.com/dxl'
  version='12.0' replicaid='852586FE00669899' hide='v3' publicaccess='false'
  designerversion='8.5.3'>
-<noteinfo noteid='17a' unid='F589A539C1C268098DFFC6B73FAE505A' sequence='4'>
+<noteinfo noteid='17a' unid='F589A539C1C268098DFFC6B73FAE505A' sequence='8'>
 <created><datetime dst='true'>411820317T034444,42-12</datetime></created>
-<modified><datetime dst='true'>20210707T142210,83-04</datetime></modified>
-<revised><datetime dst='true'>20210707T142210,82-04</datetime></revised>
-<lastaccessed><datetime dst='true'>20210707T142210,82-04</datetime></lastaccessed>
+<modified><datetime dst='true'>20210711T174252,58-04</datetime></modified>
+<revised><datetime dst='true'>20210711T174252,57-04</datetime></revised>
+<lastaccessed><datetime dst='true'>20210711T174252,57-04</datetime></lastaccessed>
 <addedtofile><datetime dst='true'>20210624T144044,31-04</datetime></addedtofile></noteinfo>
 <updatedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></updatedby>
 <wassignedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></wassignedby>
-<designchange><datetime dst='true'>20210707T142210,82-04</datetime></designchange>
+<designchange><datetime dst='true'>20210711T174252,51-04</datetime></designchange>
 <trigger type='actionsmenu'/>
-<documentset type='runonce'/><code event='options'><lotusscript>%REM
+<documentset type='runonce'/><code event='options'><lotusscript>
+
+%REM
 	Agent (DOMI_deleteGtmMeeting)
 
 	Created Mar 2021 by Devin Olson/USA/PNPHCL, Rocky Oliver/USA/PNPHCL, Paul Withers/USA/PNPHCL 
@@ -44,7 +46,6 @@ Sub Initialize
 	
 	' BEGIN CODE 
 	Call instantiateDOMIlog() ' Instantiate Logging and set options for DOMI operations
-
 	Call domiDeleteMeeting(DOMI_SERVICE_GTM) 
 	
 ExitPoint:
@@ -54,5 +55,7 @@ ErrorTrap:
 	enhLogAction ||, || 
 	Resume ExitPoint 		
 End Sub</lotusscript></code>
+<rundata processeddocs='0' exitcode='0'>
+<agentmodified><datetime dst='true'>20210711T174252,40-04</datetime></agentmodified></rundata>
 <item name='$POID'><datetime dst='true'>20210521T131032,26-04</datetime></item></agent>
 
