@@ -2,15 +2,15 @@
 <agent name='(DOMI_scheduleTeamsMeeting)' alias='DOMI_scheduleTeamsMeeting'
  xmlns='http://www.lotus.com/dxl' version='12.0' replicaid='852586FE00669899'
  hide='v3' publicaccess='false' designerversion='8.5.3'>
-<noteinfo noteid='1ca' unid='5066793D3BC3202D24AB13397D062665' sequence='20'>
+<noteinfo noteid='1ca' unid='5066793D3BC3202D24AB13397D062665' sequence='22'>
 <created><datetime>259840227T140230,45-0430</datetime></created>
-<modified><datetime dst='true'>20210710T124832,95-04</datetime></modified>
-<revised><datetime dst='true'>20210710T124832,94-04</datetime></revised>
-<lastaccessed><datetime dst='true'>20210710T124832,94-04</datetime></lastaccessed>
+<modified><datetime dst='true'>20210711T174449,26-04</datetime></modified>
+<revised><datetime dst='true'>20210711T174449,25-04</datetime></revised>
+<lastaccessed><datetime dst='true'>20210711T174449,25-04</datetime></lastaccessed>
 <addedtofile><datetime dst='true'>20210624T144045,12-04</datetime></addedtofile></noteinfo>
 <updatedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></updatedby>
 <wassignedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></wassignedby>
-<designchange><datetime dst='true'>20210710T124832,89-04</datetime></designchange>
+<designchange><datetime dst='true'>20210711T174449,19-04</datetime></designchange>
 <trigger type='actionsmenu'/>
 <documentset type='runonce'/><code event='options'><lotusscript>%REM
 	Agent (DOMI_scheduleTeamsMeeting)
@@ -42,26 +42,9 @@ Use "domiUtilsFE" 	' Domino Online Meeting Integration Front End UI Utilities
 Sub Initialize
 	On Error Goto ErrorTrap
 
-	Dim nodesToCopy As New StringList() 
-	
-	
 	' BEGIN CODE 
 	Call instantiateDOMIlog() ' Instantiate Logging and set options for DOMI operations
-
-	nodesToCopy.content(|meetingID|) = 			|id| 
-	nodesToCopy.content(|meetingTitle|) = 		|subject| 
-	nodesToCopy.content(|meetingURL|) = 		|joinWebUrl| 
-	nodesToCopy.content(|ApptUNIDURL|) =	 	|joinWebUrl| 
-	nodesToCopy.content(|meetingStartStr|) = 	|startDateTime| 
-	nodesToCopy.content(|meetingEndStr|) = 		|endDateTime| 
-	
-'	nodesToCopy.content(|domiAudioConferencing|) = 	|audioConferencing| 
-	nodesToCopy.content(|tollNumber|) = 			|audioConferencing/tollNumber| 
-	nodesToCopy.content(|tollFreeNumber|) = 		|audioConferencing/tollFreeNumber| 
-	nodesToCopy.content(|ConferenceId|) = 			|audioConferencing/ConferenceId| 
-	nodesToCopy.content(|dialinUrl|) = 				|audioConferencing/sdialinUrl| 
-	
-	Call domiCreateMeeting(nodesToCopy, DOMI_SERVICE_TEAMS) 
+	Call domiCreateMeeting(DOMI_SERVICE_TEAMS) 
 	
 ExitPoint:
 	Exit Sub		
@@ -71,6 +54,6 @@ ErrorTrap:
 	Resume ExitPoint 		
 End Sub</lotusscript></code>
 <rundata processeddocs='0' exitcode='0'>
-<agentmodified><datetime dst='true'>20210710T124832,82-04</datetime></agentmodified></rundata>
+<agentmodified><datetime dst='true'>20210711T174449,10-04</datetime></agentmodified></rundata>
 <item name='$POID'><datetime dst='true'>20210521T131033,01-04</datetime></item></agent>
 
