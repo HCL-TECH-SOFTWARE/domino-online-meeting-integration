@@ -2,15 +2,15 @@
 <agent name='99. Admin\03. Re-sync Design Element Profiles' xmlns='http://www.lotus.com/dxl'
  version='12.0' replicaid='852586FE00669899' hide='v3' publicaccess='false'
  designerversion='8.5.3'>
-<noteinfo noteid='242' unid='A20EAF321D278DA28525869500515160' sequence='4'>
+<noteinfo noteid='242' unid='A20EAF321D278DA28525869500515160' sequence='7'>
 <created><datetime>20210311T094812,48-05</datetime></created>
-<modified><datetime dst='true'>20210707T142212,05-04</datetime></modified>
-<revised><datetime dst='true'>20210707T142212,04-04</datetime></revised>
-<lastaccessed><datetime dst='true'>20210707T142212,04-04</datetime></lastaccessed>
+<modified><datetime dst='true'>20210711T181502,44-04</datetime></modified>
+<revised><datetime dst='true'>20210711T181502,43-04</datetime></revised>
+<lastaccessed><datetime dst='true'>20210711T181502,43-04</datetime></lastaccessed>
 <addedtofile><datetime dst='true'>20210624T144056,05-04</datetime></addedtofile></noteinfo>
 <updatedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></updatedby>
 <wassignedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></wassignedby>
-<designchange><datetime dst='true'>20210707T142212,04-04</datetime></designchange>
+<designchange><datetime dst='true'>20210711T181500,08-04</datetime></designchange>
 <trigger type='actionsmenu'/>
 <documentset type='runonce'/><code event='options'><lotusscript>%REM
 	Agent Install OMI in Target Mail Db

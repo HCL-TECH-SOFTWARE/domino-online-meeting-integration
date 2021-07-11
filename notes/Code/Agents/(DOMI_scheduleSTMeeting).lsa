@@ -2,15 +2,15 @@
 <agent name='(DOMI_scheduleSTMeeting)' alias='DOMI_scheduleSTMeeting' xmlns='http://www.lotus.com/dxl'
  version='12.0' replicaid='852586FE00669899' hide='v3' publicaccess='false'
  designerversion='8.5.3'>
-<noteinfo noteid='1c2' unid='6AEF4FBD8C852F0462E1CE28C62B9A66' sequence='4'>
+<noteinfo noteid='1c2' unid='6AEF4FBD8C852F0462E1CE28C62B9A66' sequence='7'>
 <created><datetime/></created>
-<modified><datetime dst='true'>20210707T142211,30-04</datetime></modified>
-<revised><datetime dst='true'>20210707T142211,29-04</datetime></revised>
-<lastaccessed><datetime dst='true'>20210707T142211,29-04</datetime></lastaccessed>
+<modified><datetime dst='true'>20210711T181501,70-04</datetime></modified>
+<revised><datetime dst='true'>20210711T181501,69-04</datetime></revised>
+<lastaccessed><datetime dst='true'>20210711T181501,69-04</datetime></lastaccessed>
 <addedtofile><datetime dst='true'>20210624T144045,05-04</datetime></addedtofile></noteinfo>
 <updatedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></updatedby>
 <wassignedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></wassignedby>
-<designchange><datetime dst='true'>20210707T142211,29-04</datetime></designchange>
+<designchange><datetime dst='true'>20210711T181501,64-04</datetime></designchange>
 <trigger type='actionsmenu'/>
 <documentset type='runonce'/><code event='options'><lotusscript>%REM
 	Agent (DOMI_scheduleSTMeeting)
@@ -171,7 +171,6 @@ errHandler:
 	enhLogException ||, ||
 	
 	Resume getOut
-End Sub
-</lotusscript></code>
+End Sub</lotusscript></code>
 <item name='$POID'><datetime dst='true'>20210521T131032,94-04</datetime></item></agent>
 
