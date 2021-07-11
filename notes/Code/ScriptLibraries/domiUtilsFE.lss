@@ -23,13 +23,13 @@ Use "domiIntegrator"
 Use "domiSTUtilsBE"
 
 '++LotusScript Development Environment:2:5:(Forward):0:1
-Declare Function domiGetMeeting(nodesToCopy As StringList, meetingservice$) As Boolean  
+Declare Function domiGetMeeting(meetingservice$) As Boolean  
 Declare Private Sub domiNotifyResult(ws As NotesUIWorkspace, uidoc As NotesUIDocument, domi As DominoOnlineMeetingIntegrator, prefix$, success As Boolean) 
 Declare Function domiDeleteMeeting(meetingservice$) As Boolean  
 Declare Function domiValidateOAuthToken() As Boolean  
 Declare Function domiRevokeOAuthToken() As Boolean  
-Declare Function domiCreateMeeting(nodesToCopy As StringList, meetingservice$) As Boolean  
-Declare Function domiUpdateMeeting(nodesToCopy As StringList, meetingservice$) As Boolean  
+Declare Function domiCreateMeeting(meetingservice$) As Boolean  
+Declare Function domiUpdateMeeting(meetingservice$) As Boolean  
 Declare Function getNewSTTokens(curDoc As NotesDocument) As Boolean 
 Declare Function getOAuthToken() As Boolean 
 Declare Function domiUIvalidateCalendarEntry(context As NotesDocument, ndtStart As NotesDateTime, ndtEnd As NotesDateTime) As Integer
@@ -105,7 +105,7 @@ Private Const IDNO = 7                  ' No button pressed
 	@throws ERR_PARAMETER_INVALID if the current NotesUIdocument is not a Calendar Entry (form = Appointment). 
 	@throws ERR_PARAMETER_INVALID if Meeting Service not currently supported. 
 %END REM
-Function domiGetMeeting(nodesToCopy As StringList, meetingservice$) As Boolean  
+Function domiGetMeeting(meetingservice$) As Boolean  
 	On Error GoTo ErrorTrap
 
 	Dim ws As New NotesUIWorkspace()
@@ -435,7 +435,7 @@ End Function
 	@throws ERR_PARAMETER_INVALID if the current NotesUIdocument is not a Calendar Entry (form = Appointment). 
 	@throws ERR_PARAMETER_INVALID if Meeting Service not currently supported. 
 %END REM
-Function domiCreateMeeting(nodesToCopy As StringList, meetingservice$) As Boolean  
+Function domiCreateMeeting(meetingservice$) As Boolean  
 	On Error GoTo ErrorTrap
 	
 	Dim ws As New NotesUIWorkspace()
@@ -490,7 +490,7 @@ End Function
 	@throws ERR_PARAMETER_INVALID if the current NotesUIdocument is not a Calendar Entry (form = Appointment). 
 	@throws ERR_PARAMETER_INVALID if Meeting Service not currently supported. 
 %END REM
-Function domiUpdateMeeting(nodesToCopy As StringList, meetingservice$) As Boolean  
+Function domiUpdateMeeting(meetingservice$) As Boolean  
 	On Error GoTo ErrorTrap
 
 	Dim ws As New NotesUIWorkspace()
@@ -541,8 +541,6 @@ Function getNewSTTokens(curDoc As NotesDocument) As Boolean
 	Dim thisAgent As NotesAgent
 	Dim rdoc As NotesDocument
 	Dim httpRequest As NotesHTTPRequest
-'	Dim jsonNav As NotesJSONNavigator
-
 	Dim payload As NotesAgent_JsonHTTPHelper
 	
 	Dim paramList List As Variant
