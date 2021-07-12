@@ -5,7 +5,7 @@ parent: OAuth Meeting Code
 grand_parent: DOMI LotusScript Architecture
 nav_order: 2
 has_children: false
-last_modified_date: 2021.03.24
+last_modified_date: 2021.07.12
 ---
 
 ## Updating Meetings (OAuth Providers)
@@ -15,18 +15,18 @@ Sametime functionality is different, so this page only refers to other meeting p
 
 ### Agent
 
-Creating meetings goes via the **(DOMI_updateXXXXMeeting)** agents. Each agent has different entries in the `nodesToCopy` StringList. This list contains a **key** (the field to set on the Calendar Entry) and a **value** (the node to extract from the REST API response). The fields set will vary depending on what information is available from the REST API. It is normal that the same JSON element is put into multiple fields.
+Updating meetings goes via the **(DOMI_updateXXXXMeeting)** agents. `domiUpdateMeeting() is called passing the relevant service type as a string constant.
 
-We will use GoToMeeting as an example:
-
-```
-nodesToCopy.content(|meetingId|) =        |meetingid|
-nodesToCopy.content(|meetingTitle|) =     |subject|
-nodesToCopy.content(|meetingURL|) =       |joinURL|
-nodesToCopy.content(|ApptUNIDURL|) =      |joinURL|
-```
-
-`domiUpdateMeeting()` is then called, passing the `nodesToCopy` StringList and the service type as a string constant.
+<div class="panel panel-warning">
+    <div class="panel-heading">Deprecated Functionality - 1.0.2 and Lower</div>
+    <div class="panel-body">
+<b>Prior to version 1.0.3</b> each agent had different entries in the `nodesToCopy` StringList. This list contained a <b>key</b> (the field to set on the Calendar Entry) and a <b>value</b> (the node to extract from the REST API response). The fields set vary depending on what information is available from the REST API.
+<br/><br/>
+`domiUpdateMeeting()` was then called, passing the `nodesToCopy` StringList and the service type as a string constant.
+<br/><br/>
+This has now been moved to domiUtilsBE Script Library and getDOMInodeNamesToCopy function.
+    </div>
+</div>
 
 ### domiUpdateMeeting
 

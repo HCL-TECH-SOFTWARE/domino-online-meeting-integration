@@ -5,10 +5,19 @@ parent: OAuth Meeting Code
 grand_parent: DOMI LotusScript Architecture
 nav_order: 4
 has_children: false
-last_modified_date: 2021.03.24
+last_modified_date: 2021.07.12
 ---
 
 ## Core Code
+
+### dominoOnlineMeetingIntegrator New()
+
+The DominoOnlineMeetingIntegrator is initialized with the service type. The service type is also used to initialize the `nodesToCopy` array.  This list contains:
+
+- <b>key</b> - the field to set on the Calendar Entry.
+- <b>value</b> - the path to a node that contains the single value to extract from the REST API response. 
+
+The fields set vary depending on what information is available from the REST API. It is correct that some nodes may be mapped to multiple fields, e.g. for Teams `joinWebUrl` is mapped to `meetingURL` and `ApptUNIDURL` fields.
 
 ### dominoOnlineMeetingIntegrator.pushMeeting()
 
