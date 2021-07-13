@@ -23,13 +23,13 @@ Use "domiIntegrator"
 Use "domiSTUtilsBE"
 
 '++LotusScript Development Environment:2:5:(Forward):0:1
-Declare Function domiGetMeeting(nodesToCopy As StringList, meetingservice$) As Boolean  
+Declare Function domiGetMeeting(meetingservice$) As Boolean  
 Declare Private Sub domiNotifyResult(ws As NotesUIWorkspace, uidoc As NotesUIDocument, domi As DominoOnlineMeetingIntegrator, prefix$, success As Boolean) 
 Declare Function domiDeleteMeeting(meetingservice$) As Boolean  
 Declare Function domiValidateOAuthToken() As Boolean  
 Declare Function domiRevokeOAuthToken() As Boolean  
-Declare Function domiCreateMeeting(nodesToCopy As StringList, meetingservice$) As Boolean  
-Declare Function domiUpdateMeeting(nodesToCopy As StringList, meetingservice$) As Boolean  
+Declare Function domiCreateMeeting(meetingservice$) As Boolean  
+Declare Function domiUpdateMeeting(meetingservice$) As Boolean  
 Declare Function getNewSTTokens(curDoc As NotesDocument) As Boolean 
 Declare Function getOAuthToken() As Boolean 
 Declare Function domiUIvalidateCalendarEntry(context As NotesDocument, ndtStart As NotesDateTime, ndtEnd As NotesDateTime) As Integer
@@ -87,7 +87,7 @@ Private Const IDNO = 7                  ' No button pressed
 
 
 
-'++LotusScript Development Environment:2:1:domiGetMeeting:22:8
+'++LotusScript Development Environment:2:1:domiGetMeeting:18:8
 
 
 
@@ -97,10 +97,6 @@ Private Const IDNO = 7                  ' No button pressed
 	
 	Gets an online meeting for the current Calendar Entry (Opened in the UI Workspace) and meeting service. 
 	
-	@param nodesToCopy		Tags and Node names used to parse the response JSON and add nodes when processing DOMI JSON 
-								k = Node name used to add the retrieved value to the resulting JSON content.
-								v = Properly formatted JSON tag this will be used to retrieve a value from the JSON content.
-
 	@param service$ 		Meeting Service used for the object. 
 	
 	@return Flag indicating if the Meeting was successfully getd.
@@ -109,7 +105,7 @@ Private Const IDNO = 7                  ' No button pressed
 	@throws ERR_PARAMETER_INVALID if the current NotesUIdocument is not a Calendar Entry (form = Appointment). 
 	@throws ERR_PARAMETER_INVALID if Meeting Service not currently supported. 
 %END REM
-Function domiGetMeeting(nodesToCopy As StringList, meetingservice$) As Boolean  
+Function domiGetMeeting(meetingservice$) As Boolean  
 	On Error GoTo ErrorTrap
 
 	Dim ws As New NotesUIWorkspace()
@@ -132,7 +128,7 @@ Function domiGetMeeting(nodesToCopy As StringList, meetingservice$) As Boolean
 	Set curDoc = curUIDoc.Document
 	If Not(curDoc.getItemValue(|Form|)(0) = |Appointment|) Then Error ERR_PARAMETER_INVALID, MSG_PARAMETER_INVALID & |UI Document is not a Calendar Entry.  |
 	
-	Set domi = New DominoOnlineMeetingIntegrator(getCurrentDb(), nodesToCopy, meetingservice$) 
+	Set domi = New DominoOnlineMeetingIntegrator(getCurrentDb(), meetingservice$) 
 	result = domi.getMeeting(curDoc)
 	Call domiNotifyResult(ws, curUIDoc, domi, |Retrieved|, result)		
 
@@ -273,7 +269,8 @@ Function domiDeleteMeeting(meetingservice$) As Boolean
 	Set curDoc = curUIDoc.Document
 	If Not(curDoc.getItemValue(|Form|)(0) = |Appointment|) Then Error ERR_PARAMETER_INVALID, MSG_PARAMETER_INVALID & |UI Document is not a Calendar Entry.  |
 
-	Set domi = New DominoOnlineMeetingIntegrator(getCurrentDb(), Nothing, meetingservice$) 
+	Set domi = New DominoOnlineMeetingIntegrator(getCurrentDb(), meetingservice$) 
+	Set domi.CopyNodes = Nothing 
 	result = domi.deleteMeeting(curDoc)
 	Call domiNotifyResult(ws, curUIDoc, domi, |Deleted|, result)
 	
@@ -335,7 +332,8 @@ Function domiValidateOAuthToken() As Boolean
 	End If
 
 
-	Set domi = New DominoOnlineMeetingIntegrator(ndoc.ParentDatabase, Nothing, ||) 
+	Set domi = New DominoOnlineMeetingIntegrator(ndoc.ParentDatabase, ||) 
+	Set domi.CopyNodes = Nothing
 	Set domi.Document = ndoc 
 
 	If domi.refreshAuthToken(False) Then 
@@ -388,7 +386,8 @@ Function domiRevokeOAuthToken() As Boolean
 	Set ndoc = nuidoc.Document
 	If Not(LCase(ndoc.getItemValue(|Form|)(0)) = |domicredentials|) Then Error ERR_PARAMETER_INVALID, MSG_PARAMETER_INVALID & |UI Document is not a DOMI Credentials document.  |
 
-	Set domi = New DominoOnlineMeetingIntegrator(ndoc.ParentDatabase, Nothing, ||) 
+	Set domi = New DominoOnlineMeetingIntegrator(ndoc.ParentDatabase, ||)
+	Set domi.CopyNodes = Nothing 
 	Set domi.Document = ndoc 
 	
 	If domi.refreshAuthToken(False) Then
@@ -414,7 +413,7 @@ ErrorTrap:
 	Resume ExitPoint 
 End Function
 
-'++LotusScript Development Environment:2:1:domiCreateMeeting:26:8
+'++LotusScript Development Environment:2:1:domiCreateMeeting:22:8
 
 
 
@@ -428,11 +427,7 @@ End Function
 	
 	Creates an online meeting for the current Calendar Entry (Opened in the UI Workspace) and meeting service. 
 	
-	@param nodesToCopy		Tags and Node names used to parse the response JSON and add nodes when processing DOMI JSON 
-								k = Node name used to add the retrieved value to the resulting JSON content.
-								v = Properly formatted JSON tag this will be used to retrieve a value from the JSON content.
-
-	@param service$ 		Meeting Service used for the object. 
+	@param meetingservice$ 		Meeting Service used for the object. 
 	
 	@return Flag indicating if the Meeting was successfully created.
 	
@@ -440,7 +435,7 @@ End Function
 	@throws ERR_PARAMETER_INVALID if the current NotesUIdocument is not a Calendar Entry (form = Appointment). 
 	@throws ERR_PARAMETER_INVALID if Meeting Service not currently supported. 
 %END REM
-Function domiCreateMeeting(nodesToCopy As StringList, meetingservice$) As Boolean  
+Function domiCreateMeeting(meetingservice$) As Boolean  
 	On Error GoTo ErrorTrap
 	
 	Dim ws As New NotesUIWorkspace()
@@ -463,7 +458,7 @@ Function domiCreateMeeting(nodesToCopy As StringList, meetingservice$) As Boolea
 
 	bodyTxt = curUIDoc.Fieldgettext("Body")
 	
-	Set domi = New DominoOnlineMeetingIntegrator(getCurrentDb(), nodesToCopy, meetingservice$) 
+	Set domi = New DominoOnlineMeetingIntegrator(getCurrentDb(), meetingservice$) 
 	result = domi.createMeeting(curDoc, bodyTxt)
 	Call domiNotifyResult(ws, curUIDoc, domi, |Created|, result)
 	
@@ -477,7 +472,7 @@ ErrorTrap:
 	Resume ExitPoint 
 End Function
 
-'++LotusScript Development Environment:2:1:domiUpdateMeeting:22:8
+'++LotusScript Development Environment:2:1:domiUpdateMeeting:18:8
 
 
 
@@ -487,10 +482,6 @@ End Function
 	
 	Updates an online meeting for the current Calendar Entry (Opened in the UI Workspace) and meeting service. 
 	
-	@param nodesToCopy		Tags and Node names used to parse the response JSON and add nodes when processing DOMI JSON 
-								k = Node name used to add the retrieved value to the resulting JSON content.
-								v = Properly formatted JSON tag this will be used to retrieve a value from the JSON content.
-
 	@param service$ 		Meeting Service used for the object. 
 	
 	@return Flag indicating if the Meeting was successfully updated.
@@ -499,7 +490,7 @@ End Function
 	@throws ERR_PARAMETER_INVALID if the current NotesUIdocument is not a Calendar Entry (form = Appointment). 
 	@throws ERR_PARAMETER_INVALID if Meeting Service not currently supported. 
 %END REM
-Function domiUpdateMeeting(nodesToCopy As StringList, meetingservice$) As Boolean  
+Function domiUpdateMeeting(meetingservice$) As Boolean  
 	On Error GoTo ErrorTrap
 
 	Dim ws As New NotesUIWorkspace()
@@ -523,7 +514,7 @@ Function domiUpdateMeeting(nodesToCopy As StringList, meetingservice$) As Boolea
 
 	bodyTxt = curUIDoc.Fieldgettext("Body")
 	
-	Set domi = New DominoOnlineMeetingIntegrator(getCurrentDb(), nodesToCopy, meetingservice$) 
+	Set domi = New DominoOnlineMeetingIntegrator(getCurrentDb(), meetingservice$) 
 	result = domi.updateMeeting(curDoc, bodyTxt)
 	Call domiNotifyResult(ws, curUIDoc, domi, |Updated|, result)		
 		
@@ -550,8 +541,6 @@ Function getNewSTTokens(curDoc As NotesDocument) As Boolean
 	Dim thisAgent As NotesAgent
 	Dim rdoc As NotesDocument
 	Dim httpRequest As NotesHTTPRequest
-'	Dim jsonNav As NotesJSONNavigator
-
 	Dim payload As NotesAgent_JsonHTTPHelper
 	
 	Dim paramList List As Variant

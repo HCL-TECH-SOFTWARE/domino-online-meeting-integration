@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?><note xmlns="http://www.lotus.com/dxl" class="filter" replicaid="852586FE00669899" version="12.0">
-<noteinfo noteid="276" sequence="12" unid="8CC9886E1968BA5FB73AE54DA632A321">
+<noteinfo noteid="276" sequence="18" unid="8CC9886E1968BA5FB73AE54DA632A321">
 <created><datetime/></created>
-<modified><datetime dst="true">20210707T142212,83-04</datetime></modified>
-<revised><datetime dst="true">20210707T142212,82-04</datetime></revised>
-<lastaccessed><datetime dst="true">20210707T142212,82-04</datetime></lastaccessed>
+<modified><datetime dst="true">20210710T141412,25-04</datetime></modified>
+<revised><datetime dst="true">20210710T141412,24-04</datetime></revised>
+<lastaccessed><datetime dst="true">20210710T141412,24-04</datetime></lastaccessed>
 <addedtofile><datetime dst="true">20210624T144058,12-04</datetime></addedtofile></noteinfo>
 <updatedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></updatedby>
 <wassignedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></wassignedby>
@@ -11,6 +11,6 @@
 <item name="$Flags"><text>s34Q</text></item>
 <item name="$PublicAccess" sign="true"><text>1</text></item>
 <item name="$DesignerVersion" sign="true"><text>8.5.3</text></item>
-<item name="$Comment" sign="true"><text>Domino Online Meeting Integration Front End UI Utilities</text></item>
 
-</note>
+
+<item name="$Comment"><text>Domino Online Meeting Integration Front End UI Utilities</text></item></note>

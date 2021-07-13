@@ -691,17 +691,13 @@ Class DominoOnlineMeetingIntegrator
 		
 		@param source 		NotesDatabase containing the Domino Online Meeting Integration Credentials documents.
 		
-		@param tags			Tags and Node names used to parse the response JSON and add nodes when processing DOMI JSON 
-								k = Node name used to add the retrieved value to the resulting JSON content.
-								v = Properly formatted JSON tag this will be used to retrieve a value from the JSON content.
-			 
 		@param service$ 	Meeting Service used for the object. 
 		
 		@throws ERR_PARAMETER_BLANK if the source Database is Nothing. 
 		@throws ERR_DATABASE_NOTOPEN is the source Database cannot be opened.
 		@throws ERR_PARAMETER_INVALID if Meeting Service not currently supported. 
 	%END REM 
-	Sub New(source As NotesDatabase, tags As StringList, service$) 
+	Sub New(source As NotesDatabase, service$) 
 		On Error GoTo ErrorTrap
 		
 		Dim nnam As NotesName 
@@ -732,7 +728,8 @@ Class DominoOnlineMeetingIntegrator
 		End If  
 		
 		Set me.m_database = source 
-		Set me.CopyNodes = tags 
+'		Set me.CopyNodes = tags 
+		Set me.CopyNodes = getDOMInodeNamesToCopy(service$)
 		me.m_meetingservice = service$
 
 	ExitPoint: 
@@ -859,6 +856,10 @@ Class DominoOnlineMeetingIntegrator
 		Dim errcode%
 
 		Dim element As NotesJSONElement 
+		Dim arySource As NotesJSONArray
+		Dim aryTarget As NotesJSONArray
+		Dim objSource As NotesJSONObject
+		Dim objTarget As NotesJSONObject
 
 		Dim headers As New StringList() 
 		
@@ -931,7 +932,13 @@ Class DominoOnlineMeetingIntegrator
 		If hasError Then Error ERR_HTTP_REQUEST_FAILURE, MSG_HTTP_REQUEST_FAILURE
 
 		If Not (Me.CopyNodes Is Nothing) Then 
+			' **********************
 			' Add service specific nodes to the target NotesJSONNavigator
+			' IMPORTANT NOTE
+			' Only Scalar nodes can be copied.  
+			' Object and Array nodes will not be copied
+			' **********************
+				
 			ForAll nodename In Me.CopyNodes.content 
 				tag$ = ListTag(nodename) 
 				extendedinfo(|Tag|) = tag$ 
@@ -948,8 +955,24 @@ Class DominoOnlineMeetingIntegrator
 							extendedinfo(|JSON Element Type|) = CStr(elementtype%) 
 							extendedinfo(|JSON Element Type Name|) = || ' clear the element in case an exception is thrown 
 							elementtypename$ = getJSONelementTypeName(elementtype%)
-							extendedinfo(|JSON Element Type Name|) = elementtypename$ 
-							target.AppendElement element.Value, tag$ 
+							extendedinfo(|JSON Element Type Name|) = elementtypename$  
+							
+							Select Case elementtype%
+								Case Jsonelem_type_array, Jsonelem_type_object: 
+									enhLogWarning CLASS_PREFIX, |Copying JSON Nodes of type | & elementtypename$ & | is not supported. |
+									enhLogExtendedContent ||, ||, |Tag: | & tag$
+									enhLogExtendedContent ||, ||, |Node Name: | & nodename 
+									enhLogExtendedContent ||, ||, ||
+									
+								Case Jsonelem_type_boolean, Jsonelem_type_number, Jsonelem_type_string: 
+									Call target.AppendElement(element.Value, tag$)
+									
+								Case Jsonelem_type_empty: 
+									' Nothing to append 
+									
+								Case Else 
+									Error ERR_PARAMETER_INVALID, MSG_PARAMETER_INVALID & |Unsupported JSON Element Type.  |
+							End Select
 						End If
 					End If 
 				End If				
@@ -1396,7 +1419,7 @@ Class DominoOnlineMeetingIntegrator
 		
 ExitPoint:
 		If (0 <> errcode%) Then Error errcode%, errmsg$ ' bubble up errors 
-		If result Then enhLogMethodResult ||, |Created meeting | & meetingid$ 
+		If result Then enhLogMethodResult CLASS_PREFIX, |Created meeting | & meetingid$ 
 		
 		createMeeting = result
 		Exit Function 
@@ -1510,7 +1533,7 @@ ErrorTrap:
 	ExitPoint:
 		If (0 <> errcode%) Then Error errcode%, errmsg$ ' bubble up errors 
 		If result Then 
-			enhLogMethodResult ||, |Updated meeting | & meetingid_New$
+			enhLogMethodResult CLASS_PREFIX, |Updated meeting | & meetingid_New$
 			If (0 <> StrComp(meetingid_Old$, meetingid_New$, 5)) Then enhLogExtendedContent ||, ||, |Old meeting id: | & meetingid_Old$
 		End If  
 
@@ -1625,17 +1648,24 @@ ErrorTrap:
 		Erase keys 
 		Select Case me.MeetingService
 			Case DOMI_SERVICE_WEBEX:
-				keys(|Attendee Link|) = |meetingURL|
-				keys(|Password|) = |meetingPassword|
-				keys(|SIP Link|) = |meetingSipAddress|
-				keys(|Phone/Video Password|) = |meetingPhoneVideoPassword|
+				keys(|Attendee Link|) = 		|meetingURL|
+				keys(|Password|) = 				|meetingPassword|
+				keys(|SIP Link|) = 				|meetingSipAddress|
+				keys(|Phone/Video Password|) = 	|meetingPhoneVideoPassword|
 				
-			Case DOMI_SERVICE_ZOOM
-				keys(|Attendee Link|) = |meetingURL|
-				keys(|Password|) = |meetingPassword|
+			Case DOMI_SERVICE_ZOOM:
+				keys(|Attendee Link|) = 		|meetingURL|
+				keys(|Password|) = 				|meetingPassword|
+				
+			Case DOMI_SERVICE_TEAMS:
+				keys(|Attendee Link|) = 		|meetingURL|
+				keys(|Toll Number|) = 			|tollNumber| 
+				keys(|Toll Free Number|) = 		|tollFreeNumber| 
+				keys(|Conference Id|) = 		|ConferenceId| 
+				keys(|Dial in URL|) = 			|dialinUrl| 
 				
 			Case Else: 
-				keys(|Attendee Link|) = |meetingURL|
+				keys(|Attendee Link|) = 		|meetingURL|
 
 		End Select
 
@@ -1644,7 +1674,13 @@ ErrorTrap:
 			ForAll key In keys 
 				If mv.hasTag(key) Then 
 					rstr$ = mv.getScalarStringValue(key) 
-					If Not isBlankString(rstr$) Then bodyMsg$ = bodyMsg$ & LF & ListTag(key) & |: | & rstr$
+					If Not isBlankString(rstr$) Then
+						If isBlankString(bodyMsg$) Then 
+							bodyMsg$ = ListTag(key) & |: | & rstr$
+						Else
+							bodyMsg$ = bodyMsg$ & LF & ListTag(key) & |: | & rstr$
+						End If 
+					End If 
 				End If 
 			End ForAll			
 		End If
@@ -1758,7 +1794,7 @@ ErrorTrap:
 				' do nothing
 		End Select 
 
-		If result Then enhLogMethodResult ||, |Deleted meeting | & meetingid$ 
+		If result Then enhLogMethodResult CLASS_PREFIX, |Deleted meeting | & meetingid$ 
 		deleteMeeting = result
 		Exit Function 
 	ErrorTrap:
@@ -1881,7 +1917,7 @@ ErrorTrap:
 				' do nothing
 		End Select 
 		
-		If result Then enhLogMethodResult ||, |Retrieved meeting | & meetingid$ 
+		If result Then enhLogMethodResult CLASS_PREFIX, |Retrieved meeting | & meetingid$ 
 		getMeeting = result
 		Exit Function 
 	ErrorTrap:
@@ -2302,6 +2338,15 @@ ErrorTrap:
 	enhLogException LIB_PREFIX, ||
 	Resume ExitPoint
 End Function
+
+
+
+
+
+
+
+
+
 
 
 

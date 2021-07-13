@@ -307,6 +307,7 @@ Class NotesRESTconsumer
 		
 		
 		Const PREFIX_DOCTYPE = |<!DOCTYPE html>|
+
 		
 		Dim helper As NotesAgent_JsonHTTPHelper
 		Dim jsonarray As NotesJSONArray 
@@ -314,15 +315,12 @@ Class NotesRESTconsumer
 		Dim jsonobject As NotesJSONObject 
 		
 		Dim jsonvalues As VariantList  
-		 
-		Dim value As Variant 
-		
+
 		' exception variables
 		Dim extendedinfo List As String 
 		Dim msg$
 		Dim errmsg$ 
 		Dim errcode% 
-
 
 		Dim methodname$
 		Dim responsejson$
@@ -330,7 +328,6 @@ Class NotesRESTconsumer
 
 		Dim firstchar$
 		Dim lastchar$ 
-		
 		Dim result$
 
 
@@ -352,9 +349,7 @@ Class NotesRESTconsumer
 		' get the response code 
 		result$ = me.m_request.ResponseCode 
 		extendedinfo(|responseCode|) = result$
-		
 		enhLogExtendedContent CLASS_PREFIX, ||, |Response Code: | & result$
-'		enhLogExtendedContent ||, ||, strippedResponse$ 
 		
 		firstchar$ = Left$(strippedResponse$, 1) 
 		lastchar$ = Right$(strippedResponse$, 1)
@@ -368,65 +363,66 @@ Class NotesRESTconsumer
 			Set helper = spawnJsonHttpHelper(Nothing, False, True) 
 			Call helper.loadJson(getCurrentSession(), strippedResponse$)
 			If Not helper.findJsonArrayByPointer(|strippedresponse|, jsonarray) Then Error ERR_OPERATION_FAILED, MSG_OPERATION_FAILED
-				
+			
 			Set jsonelement = jsonarray.getFirstElement()
 			Do While Not (jsonelement Is Nothing) 
 				Select Case jsonelement.Type 
-					Case TYPE_JSONOBJECT:
-						Set jsonobject = jsonelement.Value 
-						Set jsonelement = jsonobject.getFirstElement() 
-						Set jsonvalues = New VariantList() 
-						Do While Not (jsonelement Is Nothing) 
-							jsonvalues.content(jsonelement.Name) = jsonelement.Value 
-							Set jsonelement = jsonobject.getNextElement() 
-						Loop
-						
-						If jsonvalues.hasContent Then 
-							strippedResponse$ = jsonvalues.json 
-							enhLogExtendedContent CLASS_PREFIX, |JSON|, strippedResponse$
-							If Not isBlankString(strippedResponse$) Then Exit Do 
-							
-						End If
-						
-					Case TYPE_JSONSTRING: 
-						strippedResponse$ = stripCRLF(CStr(jsonelement.Value))
+				Case TYPE_JSONOBJECT:
+					Set jsonobject = jsonelement.Value 
+					Set jsonelement = jsonobject.getFirstElement() 
+					Set jsonvalues = New VariantList() 
+					Do While Not (jsonelement Is Nothing) 
+						jsonvalues.content(jsonelement.Name) = jsonelement.Value 
+						Set jsonelement = jsonobject.getNextElement() 
+					Loop
+					
+					If jsonvalues.hasContent Then 
+						strippedResponse$ = jsonvalues.json 
 						enhLogExtendedContent CLASS_PREFIX, |JSON|, strippedResponse$
 						If Not isBlankString(strippedResponse$) Then Exit Do 
-										
-					Case Else: 
-						enhLogWarning CLASS_PREFIX, |Unable to process | & getJSONtypeName(jsonelement.Type) 
-				End Select 
+						
+					End If
+					
+				Case TYPE_JSONSTRING: 
+					strippedResponse$ = stripCRLF(CStr(jsonelement.Value))
+					enhLogExtendedContent CLASS_PREFIX, |JSON|, strippedResponse$
+					If Not isBlankString(strippedResponse$) Then Exit Do 
+					
+				Case Else: 
+					enhLogWarning CLASS_PREFIX, |Unable to process | & getJSONtypeName(jsonelement.Type) 
+			End Select 
 				
 				Set jsonelement = jsonarray.getNextElement() 
 			Loop
 		End If
 
 		If (strippedResponse$ Like |<!DOCTYPE html>*|) Then Error ERR_PARAMETER_INVALID, MSG_PARAMETER_INVALID & |Service returned HTML instead of JSON.  | 
+		
 		Set target = getCurrentSession().createJSONNavigator(strippedResponse$) 
 		
-	ExitPoint: 
+ExitPoint: 
 		If (0 <> errcode%) Then Error errcode%, errmsg$ 
 		processRequest = result$
 		enhLogMethodResult CLASS_PREFIX, getDOMIhttpMethodName(method%) & |:  | & result$ 
 		
 		If Not (headers Is Nothing) Then 
-			Call headers.logJSONExtended(me.m_excludeNodes, ||, ||, |Headers JSON|)
+			Call headers.logJSONExtended(me.m_excludeNodes, ||, ||, methodname$ & | Headers JSON|)
 			enhLogExtendedContent ||, ||, ||
 		End If 
 		
 		If Not (bodyargs Is Nothing) Then 
-			Call bodyargs.logJSONExtended(me.m_excludeNodes, ||, ||, |Body JSON|)
+			Call bodyargs.logJSONExtended(me.m_excludeNodes, ||, ||, methodname$ & | Body JSON|)
 			enhLogExtendedContent ||, ||, ||
 		End If 
 
 		Exit Function 
-	Error4844:
-		 ' Error 4844 = Unable To establish connection to remote server, bubble up to calling code. 
-		 On Error GoTo 0
-		 errcode% = Err() 
-		 errmsg$ = Error$()
-		 Resume ExitPoint 
-	ErrorTrap:
+Error4844:
+		' Error 4844 = Unable To establish connection to remote server, bubble up to calling code. 
+		On Error GoTo 0
+		errcode% = Err() 
+		errmsg$ = Error$()
+		Resume ExitPoint 
+ErrorTrap:
 		On Error GoTo 0
 		enhLogException CLASS_PREFIX, methodname$ & | | & url & LF & result$
 
@@ -436,16 +432,16 @@ Class NotesRESTconsumer
 		enhLogExtendedContent ||, ||, ||
 		
 		If Not (headers Is Nothing) Then 
-			Call headers.logJSONExtended(me.m_excludeNodes, ||, ||, |Headers JSON|)
+			Call headers.logJSONExtended(me.m_excludeNodes, ||, ||, methodname$ & | Headers JSON|)
 			enhLogExtendedContent ||, ||, ||
 		End If 
 		
 		If Not (bodyargs Is Nothing) Then 
-			Call bodyargs.logJSONExtended(me.m_excludeNodes, ||, ||, |Body JSON|)
+			Call bodyargs.logJSONExtended(me.m_excludeNodes, ||, ||, methodname$ & | Body JSON|)
 			enhLogExtendedContent ||, ||, ||
 		End If 
-			
-	
+		
+		
 		Resume ExitPoint
 	End Function
 	
@@ -717,6 +713,9 @@ ErrorTrap:
 	enhLogException LIB_PREFIX, |Method Code: | & CStr(method%) 
 	Resume ExitPoint
 End Function
+
+
+
 
 
 
