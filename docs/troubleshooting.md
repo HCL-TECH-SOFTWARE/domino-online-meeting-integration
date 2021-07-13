@@ -70,6 +70,14 @@ By default only errors are logged. To increase logging, see [Notes.ini Variables
 
 The notes.ini setting `Debug_NotesHTTPRequest=1` is a pre-existing options to give full output of cURL integration from the NotesHTTPRequest class. If you add this, you can see all steps in the cURL process, including request and response headers and body, in the console.log file (<NotesData>\IBM_TECHNICAL_SUPPORT). **Note** this will also log the access and refresh tokens.
 
+### Validating HTTP Issues
+
+A generic agent called "99. Admin\04. Test HTTP Request Response Code" has been added to the installation database. This makes GET, POST, PUT, PATCH and DELETE calls to https://httpstat.us. This is a service which echoes the HTTP status passed. For example, if you enter the desired response code 418, all five HTTP methods should return "HTTP/1.1 418 I'm a teapot". If not, something is wrong with the integration with libcurl from the LotusScript NotesHttpRequest classes. 
+
+If you add the notes.ini setting `Debug_NotesHTTPRequest=1`, you can see all steps in the cURL process, including request and response headers and body, in the console.log file (<NotesData>\IBM_TECHNICAL_SUPPORT).
+
+If you do not get the same response code for all five HTTP methods, the Notes Client does not have the fix that was added in Notes 11.0.1 FP3 and Notes 12.
+
 ### Delegated Access
 
 See the [Delegated Access]({{'/modules_user_guide/delegated_access' | relative_url}}) page.
