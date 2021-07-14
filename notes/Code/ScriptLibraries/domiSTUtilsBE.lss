@@ -25,10 +25,10 @@ Use "domiUtilsBE"
 
 '++LotusScript Development Environment:2:5:(Forward):0:1
 Declare Sub Initialize
-Declare Function cleanupSTMeetingName(subj As String) As String
-Declare Function getSTHeaderTokens(urlBase As String, cookieVal As String, tokenVal As String) As Variant
-Declare Function getSTTempTokens(urlBase As String, cookieVal As String, tokenVal As String) As Boolean
 Declare Sub updateSTCalendarEntry(curDoc As NotesDocument, updateList As VariantList)
+Declare Function getSTHeaderTokens(urlBase As String, cookieVal As String, tokenVal As String) As Variant
+Declare Function cleanupSTMeetingName(subj As String) As String
+Declare Function getSTTempTokens(urlBase As String, cookieVal As String, tokenVal As String) As Boolean
 
 '++LotusScript Development Environment:2:5:(Declarations):0:2
 
@@ -38,60 +38,66 @@ Sub Initialize
 End Sub
 
 
-'++LotusScript Development Environment:2:1:cleanupSTMeetingName:7:8
+'++LotusScript Development Environment:2:2:updateSTCalendarEntry:5:8
 %REM
-	Function cleanupSTMeetingName
-	Description: ST Meetings has a strict requirement for characters allowed in their meeting names. Since the meeting name 
-	is used as the ID of the meeting as well and is used in the URL for the meeting, we need to make sure it also 
-	works as a part of a URL - so we need to replace spaces with underscores
+	Function updateSTCalendarEntry
+	Description: Updates the calendar entry for ST Meetings
 %END REM
-Function cleanupSTMeetingName(subj As String) As String
-	Dim badList List As String, cleansubj As String
+Sub updateSTCalendarEntry(curDoc As NotesDocument, updateList As VariantList)
+	Dim s As New NotesSession
+	Dim payload As NotesAgent_JsonHTTPHelper
+	Dim jsonNav As NotesJSONNavigator
+	Dim fldList List As Variant
+	Dim mtgName As String, mtgURL As String, mtgKey As String, pw As String, urlBase As String
+	Dim bodyMsg As String
+	Dim rstr As String, rlng As Long, rdbl As Double, rbool As Boolean, rdoc As NotesDocument, rint As Integer, rvar As Variant, emptyvar As Variant
+	Dim errtxt As String
+	Set payload = spawnJSONHttpHelper(Nothing, False, True)  ' in NotesHTTPJsonRequestHelper
+	Call payload.loadJson(s, CStr(updateList.content("meetingJSON")))
 	
-	' ? &* : ‘ % # ( ) ! @ $ ^ * + = [ ] / \ ; , .
-	badList("?") = ""
-	badList("&") = ""
-	badList("*") = ""
-	badList(":") = ""
-	badList("'") = ""
-	badList("%") = ""
-	badList("#") = ""
-	badList("(") = "-"
-	badList(")") = "-"
-	badList("!") = ""
-	badList("@") = ""
-	badList("$") = ""
-	badList("^") = ""
-	badList("+") = ""
-	badList("=") = ""
-	badList("[") = "-"
-	badList("]") = "-"
-	badList(|/|) = ""
-	badList(|\|) = ""
-	badList(";") = ""
-	badList(",") = ""
-	badList(".") = ""
-	badList(" ") = "_"
+	rbool = payload.findStringByPointer("/password", pw)
+	rbool = payload.findStringByPointer("/name", mtgName)
+	urlBase = DOMI_ROOTURL_SAMETIMEMEETINGS
+	If rbool Then
+		mtgURL = urlBase & "/meeting/" & mtgName
+	Else
+		Error 1000, "Meeting Name not returned from Sametime Meetings"
+	End If
 
-	ForAll b In badList
-		cleansubj = Replace(subj, ListTag(b), b)
+	fldList("meetingService") = "sametime"
+	fldList("meetingServiceLabel") = "Sametime"
+	fldList("meetingId") = mtgName
+	fldList("meetingPassword") = pw
+	fldList("meetingTitle") = mtgName
+	fldList("meetingAgenda") = updateList.content("meetingAgenda")
+	fldList("meetingURL") = mtgURL
+	fldList("meetingStartStr") = updateList.content("meetingStartStr")
+	fldList("meetingEndStr") = updateList.content("meetingEndStr")
+	fldList("meetingDuration") = updateList.content("meetingDuration")
+	fldList("meetingJSON") = updateList.content("meetingJSON")
+	' these fields give us the "Join Online" link below the Location on the Calendar Entry
+	fldList("OnlineMeeting") = "1"
+	fldList("ApptUNIDURL") = fldList("meetingURL")
+	fldList("SametimeType") = "0"
+	' this puts the link and PW into the Location field of the Calendar Entry
+	bodyMsg = bodyMsg & "Attendee Link: " & fldList("meetingURL")
+	If Not(fldList("meetingPassword") = "") Then bodyMsg = Chr(10) & bodyMsg & "Password: " & fldList("meetingPassword")
+	fldList("meetingInfoInsert") = bodyMsg
+	fldList("Location") = bodyMsg
+	' now that we have all of our field values, update the Calendar Entry doc
+	ForAll f In fldList
+		Call curDoc.Replaceitemvalue(ListTag(f), f)
 	End ForAll
 	
-	cleanupSTMeetingName = cleansubj
-	
 getOut:
-	Exit Function
-
+	Exit Sub
 errHandler:
-	cleanupSTMeetingName = ""
-
+	errtxt = Error$ & " [in: " & GetThreadInfo(1) & "; err: " & Err & "; line: " & Erl & "]"
 	On Error GoTo 0
-	Error Err, Error$ & " [in " & GetThreadInfo(1) & "]"
+
+	Error Err, errtxt
 	Resume getOut
-End Function
-
-
-
+End Sub
 
 '++LotusScript Development Environment:2:1:getSTHeaderTokens:15:8
 %REM
@@ -195,6 +201,65 @@ errHandler:
 End Function
 
 
+'++LotusScript Development Environment:2:1:cleanupSTMeetingName:7:8
+%REM
+	Function cleanupSTMeetingName
+	Description: ST Meetings has a strict requirement for characters allowed in their meeting names. Since the meeting name 
+	is used as the ID of the meeting as well and is used in the URL for the meeting, we need to make sure it also 
+	works as a part of a URL - so we need to replace spaces with underscores
+%END REM
+Function cleanupSTMeetingName(subj As String) As String
+	Dim badList List As String, cleansubj As String, tag As String
+	
+	' ? &* : ‘ % # ( ) ! @ $ ^ * + = [ ] / \ ; , .
+	badList("?") = ""
+	badList("&") = ""
+	badList("*") = ""
+	badList(":") = ""
+	badList("'") = ""
+	badList("%") = ""
+	badList("#") = ""
+	badList("(") = "-"
+	badList(")") = "-"
+	badList("!") = ""
+	badList("@") = ""
+	badList("$") = ""
+	badList("^") = ""
+	badList("+") = ""
+	badList("=") = ""
+	badList("[") = "-"
+	badList("]") = "-"
+	badList(|/|) = ""
+	badList(|\|) = ""
+	badList(";") = ""
+	badList(",") = ""
+	badList(".") = ""
+	badlist("<") = ""
+	badlist(">") = ""
+	badList(" ") = "_"  ' make sure this one is always last :)
+	
+	cleansubj = subj
+	ForAll b In badList
+		tag = ListTag(b)
+		cleansubj = Replace(cleansubj, tag, b)
+	End ForAll
+	
+	cleanupSTMeetingName = cleansubj
+	
+getOut:
+	Exit Function
+
+errHandler:
+	cleanupSTMeetingName = ""
+
+	On Error GoTo 0
+	Error Err, Error$ & " [in " & GetThreadInfo(1) & "]"
+	Resume getOut
+End Function
+
+
+
+
 '++LotusScript Development Environment:2:1:getSTTempTokens:15:8
 %REM
 	Function getSTTempTokens(urlBase As String, cookieVal As String, tokenVal As String) As Boolean
@@ -255,65 +320,3 @@ errHandler:
 	Error Err, errtxt
 	Resume getOut
 End Function
-
-
-'++LotusScript Development Environment:2:2:updateSTCalendarEntry:5:8
-%REM
-	Function updateSTCalendarEntry
-	Description: Updates the calendar entry for ST Meetings
-%END REM
-Sub updateSTCalendarEntry(curDoc As NotesDocument, updateList As VariantList)
-	Dim s As New NotesSession
-	Dim payload As NotesAgent_JsonHTTPHelper
-	Dim jsonNav As NotesJSONNavigator
-	Dim fldList List As Variant
-	Dim mtgName As String, mtgURL As String, mtgKey As String, pw As String, urlBase As String
-	Dim bodyMsg As String
-	Dim rstr As String, rlng As Long, rdbl As Double, rbool As Boolean, rdoc As NotesDocument, rint As Integer, rvar As Variant, emptyvar As Variant
-	Dim errtxt As String
-	Set payload = spawnJSONHttpHelper(Nothing, False, True)  ' in NotesHTTPJsonRequestHelper
-	Call payload.loadJson(s, CStr(updateList.content("meetingJSON")))
-	
-	rbool = payload.findStringByPointer("/password", pw)
-	rbool = payload.findStringByPointer("/name", mtgName)
-	urlBase = DOMI_ROOTURL_SAMETIMEMEETINGS
-	If rbool Then
-		mtgURL = urlBase & "/meeting/" & mtgName
-	Else
-		Error 1000, "Meeting Name not returned from Sametime Meetings"
-	End If
-
-	fldList("meetingService") = "sametime"
-	fldList("meetingServiceLabel") = "Sametime"
-	fldList("meetingId") = mtgName
-	fldList("meetingPassword") = pw
-	fldList("meetingTitle") = mtgName
-	fldList("meetingAgenda") = updateList.content("meetingAgenda")
-	fldList("meetingURL") = mtgURL
-	fldList("meetingStartStr") = updateList.content("meetingStartStr")
-	fldList("meetingEndStr") = updateList.content("meetingEndStr")
-	fldList("meetingDuration") = updateList.content("meetingDuration")
-	fldList("meetingJSON") = updateList.content("meetingJSON")
-	' these fields give us the "Join Online" link below the Location on the Calendar Entry
-	fldList("OnlineMeeting") = "1"
-	fldList("ApptUNIDURL") = fldList("meetingURL")
-	fldList("SametimeType") = "0"
-	' this puts the link and PW into the Location field of the Calendar Entry
-	bodyMsg = bodyMsg & "Attendee Link: " & fldList("meetingURL")
-	If Not(fldList("meetingPassword") = "") Then bodyMsg = Chr(10) & bodyMsg & "Password: " & fldList("meetingPassword")
-	fldList("meetingInfoInsert") = bodyMsg
-	fldList("Location") = bodyMsg
-	' now that we have all of our field values, update the Calendar Entry doc
-	ForAll f In fldList
-		Call curDoc.Replaceitemvalue(ListTag(f), f)
-	End ForAll
-	
-getOut:
-	Exit Sub
-errHandler:
-	errtxt = Error$ & " [in: " & GetThreadInfo(1) & "; err: " & Err & "; line: " & Erl & "]"
-	On Error GoTo 0
-
-	Error Err, errtxt
-	Resume getOut
-End Sub
