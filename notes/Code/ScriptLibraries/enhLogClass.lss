@@ -2343,7 +2343,7 @@ Private Class LogSingleton 	' Declaring as Private allows for Singleton function
 			lstrLogTypes(Me.logType) & | to | & lstrLogTypes(newLogType) & |.|
 
 			server$ = Me.TargetDatabase.Server 
-			If isBlankString(server$) Then server$ = |[LocalCliient]| 
+			If isBlankString(server$) Then server$ = |[LocalClient]| 
 			enhLogAction CLASS_PREFIX, |Closing | & lstrLogTypes(Me.logType) & |: | & server$ & |!!| & Me.TargetDatabase.Filepath  
 		End If 
 		
@@ -2400,7 +2400,7 @@ Private Class LogSingleton 	' Declaring as Private allows for Singleton function
 					Call Me.CreateLogDoc()
 					
 					server$ = Me.TargetDatabase.Server 
-					If isBlankString(server$) Then server$ = |[LocalCliient]| 
+					If isBlankString(server$) Then server$ = |[LocalClient]| 
 					enhLogAction CLASS_PREFIX, |Opened NotesLog | & server$ & |!!| & Me.TargetDatabase.Filepath
 					
 					Set Me.ndtStartTime = New NotesDateTime(Now)
@@ -6161,6 +6161,7 @@ ErrorTrap:
 	result = False
 	Resume ExitPoint
 End Function 
+
 
 
 
