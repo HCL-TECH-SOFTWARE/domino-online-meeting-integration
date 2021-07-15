@@ -209,6 +209,8 @@ End Function
 	works as a part of a URL - so we need to replace spaces with underscores
 %END REM
 Function cleanupSTMeetingName(subj As String) As String
+	On Error GoTo errHandler
+	
 	Dim badList List As String, cleansubj As String, tag As String
 	
 	' ? &* : ‘ % # ( ) ! @ $ ^ * + = [ ] / \ ; , .
@@ -236,13 +238,16 @@ Function cleanupSTMeetingName(subj As String) As String
 	badList(".") = ""
 	badlist("<") = ""
 	badlist(">") = ""
-	badList(" ") = "_"  ' make sure this one is always last :)
 	
 	cleansubj = subj
 	ForAll b In badList
 		tag = ListTag(b)
 		cleansubj = Replace(cleansubj, tag, b)
 	End ForAll
+	
+	cleansubj = FullTrim(cleansubj) ' remove redundant spaces 
+	cleansubj = Replace(cleansubj, " ", "_") ' replace all single spaces with underscores (do last because URLs) 
+	
 	
 	cleanupSTMeetingName = cleansubj
 	
