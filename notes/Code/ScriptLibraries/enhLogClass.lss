@@ -9,7 +9,7 @@
 
 	Author: Devin S. Olson  (devin.olson@azlighthouse.com)
 	http://www.devinolson.net
-	Version 2021.07.07
+	Version 2021.07.14
 
 	Last updated: 07/2021
 
@@ -6161,6 +6161,7 @@ ErrorTrap:
 	result = False
 	Resume ExitPoint
 End Function 
+
 
 
 
