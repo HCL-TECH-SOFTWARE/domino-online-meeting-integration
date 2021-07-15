@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <view name='02. Design Element Profiles\01. All by Type' alias='uiDesignElementsByType'
- xmlns='http://www.lotus.com/dxl' version='12.0' replicaid='852586FE00669899'
+ xmlns='http://www.lotus.com/dxl' version='12.0' replicaid='85258712006E4CE0'
  showinmenu='false' defaultdesign='true' publicaccess='false' designerversion='8.5.3'
  comment='Design Element Profiles (for users - can be modified)' unreadmarks='none'
  onopengoto='lastopened' onrefresh='displayindicator' headers='simple' opencollapsed='false'
@@ -10,12 +10,12 @@
  headerbgcolor='#f2f2f2' boldunreadrows='false' evaluateactions='false' allownewdocuments='false'
  allowcustomizations='false' hidemarginborder='false' marginwidth='0px' marginbgcolor='white'
  uniquekeys='false'>
-<noteinfo noteid='2b6' unid='67EE24BBC02B84FE85258677005A0A41' sequence='7'>
+<noteinfo noteid='2ca' unid='67EE24BBC02B84FE85258677005A0A41' sequence='4'>
 <created><datetime>20210209T112328,65-05</datetime></created>
-<modified><datetime dst='true'>20210711T181502,53-04</datetime></modified>
-<revised><datetime dst='true'>20210711T181502,52-04</datetime></revised>
-<lastaccessed><datetime dst='true'>20210711T181502,52-04</datetime></lastaccessed>
-<addedtofile><datetime dst='true'>20210624T144059,93-04</datetime></addedtofile></noteinfo>
+<modified><datetime dst='true'>20210715T085150,55-04</datetime></modified>
+<revised><datetime dst='true'>20210715T085150,54-04</datetime></revised>
+<lastaccessed><datetime dst='true'>20210715T085150,54-04</datetime></lastaccessed>
+<addedtofile><datetime dst='true'>20210714T160500,40-04</datetime></addedtofile></noteinfo>
 <updatedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></updatedby>
 <wassignedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></wassignedby><code
  event='selection'><formula>SELECT Form = "desElement"</formula></code>

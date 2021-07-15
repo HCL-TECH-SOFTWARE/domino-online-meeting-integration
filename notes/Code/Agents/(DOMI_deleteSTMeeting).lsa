@@ -1,16 +1,16 @@
 <?xml version='1.0' encoding='utf-8'?>
 <agent name='(DOMI_deleteSTMeeting)' alias='DOMI_deleteSTMeeting' xmlns='http://www.lotus.com/dxl'
- version='12.0' replicaid='852586FE00669899' hide='v3' publicaccess='false'
+ version='12.0' replicaid='85258712006E4CE0' hide='v3' publicaccess='false'
  designerversion='8.5.3'>
-<noteinfo noteid='182' unid='4FA24E7D57CEB099C88FEAFB9FE8DA1F' sequence='7'>
+<noteinfo noteid='18a' unid='4FA24E7D57CEB099C88FEAFB9FE8DA1F' sequence='4'>
 <created><datetime/></created>
-<modified><datetime dst='true'>20210711T181501,12-04</datetime></modified>
-<revised><datetime dst='true'>20210711T181501,11-04</datetime></revised>
-<lastaccessed><datetime dst='true'>20210711T181501,11-04</datetime></lastaccessed>
-<addedtofile><datetime dst='true'>20210624T144044,37-04</datetime></addedtofile></noteinfo>
+<modified><datetime dst='true'>20210715T085148,29-04</datetime></modified>
+<revised><datetime dst='true'>20210715T085148,28-04</datetime></revised>
+<lastaccessed><datetime dst='true'>20210715T085148,28-04</datetime></lastaccessed>
+<addedtofile><datetime dst='true'>20210714T160453,82-04</datetime></addedtofile></noteinfo>
 <updatedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></updatedby>
 <wassignedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></wassignedby>
-<designchange><datetime dst='true'>20210711T181501,06-04</datetime></designchange>
+<designchange><datetime dst='true'>20210715T085148,23-04</datetime></designchange>
 <trigger type='actionsmenu'/>
 <documentset type='runonce'/><code event='options'><lotusscript>%REM
 	Agent (DOMI_deleteSTMeeting)

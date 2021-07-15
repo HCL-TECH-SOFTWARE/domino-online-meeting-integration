@@ -1,13 +1,13 @@
 <?xml version='1.0' encoding='utf-8'?>
 <form name='Design Element Profile' alias='desElement' xmlns='http://www.lotus.com/dxl'
- version='12.0' replicaid='852586FE00669899' publicaccess='false' designerversion='8.5.3'
+ version='12.0' replicaid='85258712006E4CE0' publicaccess='false' designerversion='8.5.3'
  comment='Little form to store the tokens used for meeting integration' renderpassthrough='true'>
-<noteinfo noteid='286' unid='3C3DA40D37A4EB6B8525867600470097' sequence='7'>
+<noteinfo noteid='296' unid='3C3DA40D37A4EB6B8525867600470097' sequence='4'>
 <created><datetime>20210208T075532,07-05</datetime></created>
-<modified><datetime dst='true'>20210711T181502,47-04</datetime></modified>
-<revised><datetime dst='true'>20210711T181502,46-04</datetime></revised>
-<lastaccessed><datetime dst='true'>20210711T181502,46-04</datetime></lastaccessed>
-<addedtofile><datetime dst='true'>20210624T144058,84-04</datetime></addedtofile></noteinfo>
+<modified><datetime dst='true'>20210715T085150,15-04</datetime></modified>
+<revised><datetime dst='true'>20210715T085150,14-04</datetime></revised>
+<lastaccessed><datetime dst='true'>20210715T085150,14-04</datetime></lastaccessed>
+<addedtofile><datetime dst='true'>20210714T160458,97-04</datetime></addedtofile></noteinfo>
 <updatedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></updatedby>
 <wassignedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></wassignedby><code
  event='windowtitle'><formula>"Design Element Profile"</formula></code>

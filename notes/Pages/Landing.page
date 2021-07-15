@@ -1,12 +1,12 @@
 <?xml version='1.0' encoding='utf-8'?>
-<page name='Landing' xmlns='http://www.lotus.com/dxl' version='12.0' replicaid='852586FE00669899'
+<page name='Landing' xmlns='http://www.lotus.com/dxl' version='12.0' replicaid='85258712006E4CE0'
  publicaccess='false' designerversion='8.5.3' bgcolor='#f2f2f2' renderpassthrough='true'>
-<noteinfo noteid='292' unid='AB2BC49A12B9197E86258692005BA633' sequence='14'>
+<noteinfo noteid='2a2' unid='AB2BC49A12B9197E86258692005BA633' sequence='4'>
 <created><datetime>20210308T104103,23-06</datetime></created>
-<modified><datetime dst='true'>20210711T181502,49-04</datetime></modified>
-<revised><datetime dst='true'>20210711T181502,48-04</datetime></revised>
-<lastaccessed><datetime dst='true'>20210711T181502,48-04</datetime></lastaccessed>
-<addedtofile><datetime dst='true'>20210624T144059,07-04</datetime></addedtofile></noteinfo>
+<modified><datetime dst='true'>20210715T085150,30-04</datetime></modified>
+<revised><datetime dst='true'>20210715T085150,29-04</datetime></revised>
+<lastaccessed><datetime dst='true'>20210715T085150,29-04</datetime></lastaccessed>
+<addedtofile><datetime dst='true'>20210714T160459,28-04</datetime></addedtofile></noteinfo>
 <updatedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></updatedby>
 <wassignedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></wassignedby>
 <actionbar bgcolor='#04633d' bordercolor='black'><actionbarstyle height='4.7500ex'
