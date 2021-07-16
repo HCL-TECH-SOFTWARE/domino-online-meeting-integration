@@ -1,20 +1,21 @@
 <?xml version='1.0' encoding='utf-8'?>
-<helpusingdocument xmlns='http://www.lotus.com/dxl' version='12.0' replicaid='852586FE00669899'
+<helpusingdocument xmlns='http://www.lotus.com/dxl' version='12.0' replicaid='85258712006E4CE0'
  publicaccess='false' designerversion='8.5.3' default='true' renderpassthrough='true'>
-<noteinfo noteid='2ea' unid='A20CCE8F70D088B28525870B0065A9E7' sequence='5'>
+<noteinfo noteid='15e' unid='A20CCE8F70D088B28525870B0065A9E7' sequence='3'>
 <created><datetime dst='true'>20210707T143026,31-04</datetime></created>
-<modified><datetime dst='true'>20210707T144735,06-04</datetime></modified>
-<revised><datetime dst='true'>20210707T144735,05-04</datetime></revised>
-<lastaccessed><datetime dst='true'>20210707T144735,05-04</datetime></lastaccessed>
-<addedtofile><datetime dst='true'>20210707T143026,37-04</datetime></addedtofile></noteinfo>
+<modified><datetime dst='true'>20210715T083315,83-04</datetime></modified>
+<revised><datetime dst='true'>20210715T083315,82-04</datetime></revised>
+<lastaccessed><datetime dst='true'>20210715T083315,82-04</datetime></lastaccessed>
+<addedtofile><datetime dst='true'>20210714T160453,25-04</datetime></addedtofile></noteinfo>
 <updatedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></updatedby>
 <wassignedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></wassignedby>
 <body><richtext>
 <pardef id='1' align='center' leftmargin='1in' tabs='L0.5000in L1in L1.5000in L2in L2.5000in L3in L3.5000in L4in'/>
 <par def='1'><run><font size='24pt'/></run></par>
-<par def='1'><run><font size='24pt' style='bold' color='maroon'/>Using </run><run
-><font size='24pt' style='bold' color='blue'/><computedtext><code event='value'><formula
->@DbTitle</formula></code></computedtext></run><run><font size='24pt' style='bold'/>  </run></par>
+<par def='1'><run><font size='24pt' style='bold' color='navy'/>Using </run><run
+><font size='24pt' style='bold' color='navy'/><computedtext><code event='value'><formula
+>@DbTitle</formula></code></computedtext></run><run><font size='24pt' style='bold'
+ color='navy'/>  </run></par>
 <par def='1'><run><font size='18pt'/></run></par>
 <par def='1'><run><font size='18pt'/></run></par>
 <par def='1'><run><font size='18pt'/></run></par>

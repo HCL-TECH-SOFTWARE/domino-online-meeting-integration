@@ -1,16 +1,16 @@
 <?xml version='1.0' encoding='utf-8'?>
 <agent name='(DOMI_deleteTeamsMeeting)' alias='DOMI_deleteTeamsMeeting' xmlns='http://www.lotus.com/dxl'
- version='12.0' replicaid='852586FE00669899' hide='v3' publicaccess='false'
+ version='12.0' replicaid='85258712006E4CE0' hide='v3' publicaccess='false'
  designerversion='8.5.3'>
-<noteinfo noteid='18a' unid='536C08A60BE898567FDFBDAA54082311' sequence='9'>
+<noteinfo noteid='192' unid='536C08A60BE898567FDFBDAA54082311' sequence='4'>
 <created><datetime>354340121T195454,09+1545</datetime></created>
-<modified><datetime dst='true'>20210711T181501,18-04</datetime></modified>
-<revised><datetime dst='true'>20210711T181501,17-04</datetime></revised>
-<lastaccessed><datetime dst='true'>20210711T181501,17-04</datetime></lastaccessed>
-<addedtofile><datetime dst='true'>20210624T144044,47-04</datetime></addedtofile></noteinfo>
+<modified><datetime dst='true'>20210715T085148,36-04</datetime></modified>
+<revised><datetime dst='true'>20210715T085148,35-04</datetime></revised>
+<lastaccessed><datetime dst='true'>20210715T085148,35-04</datetime></lastaccessed>
+<addedtofile><datetime dst='true'>20210714T160453,93-04</datetime></addedtofile></noteinfo>
 <updatedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></updatedby>
 <wassignedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></wassignedby>
-<designchange><datetime dst='true'>20210711T181501,12-04</datetime></designchange>
+<designchange><datetime dst='true'>20210715T085148,29-04</datetime></designchange>
 <trigger type='actionsmenu'/>
 <documentset type='runonce'/><code event='options'><lotusscript>%REM
 	Agent (DOMI_deleteTeamsMeeting)
@@ -53,7 +53,5 @@ ErrorTrap:
 	enhLogAction ||, || 
 	Resume ExitPoint 		
 End Sub</lotusscript></code>
-<rundata processeddocs='0' exitcode='0'>
-<agentmodified><datetime dst='true'>20210711T174227,23-04</datetime></agentmodified></rundata>
 <item name='$POID'><datetime dst='true'>20210521T131032,40-04</datetime></item></agent>
 

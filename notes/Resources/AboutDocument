@@ -1,19 +1,18 @@
 <?xml version='1.0' encoding='utf-8'?>
-<helpaboutdocument xmlns='http://www.lotus.com/dxl' version='12.0' replicaid='852586FE00669899'
+<helpaboutdocument xmlns='http://www.lotus.com/dxl' version='12.0' replicaid='85258712006E4CE0'
  publicaccess='false' designerversion='8.5.3' default='true' renderpassthrough='true'>
-<noteinfo noteid='2e6' unid='039019369E1012578525870B0064F4C1' sequence='6'>
+<noteinfo noteid='15a' unid='039019369E1012578525870B0064F4C1' sequence='3'>
 <created><datetime dst='true'>20210707T142242,57-04</datetime></created>
-<modified><datetime dst='true'>20210707T144749,65-04</datetime></modified>
-<revised><datetime dst='true'>20210707T144749,64-04</datetime></revised>
-<lastaccessed><datetime dst='true'>20210707T144749,64-04</datetime></lastaccessed>
-<addedtofile><datetime dst='true'>20210707T142242,65-04</datetime></addedtofile></noteinfo>
+<modified><datetime dst='true'>20210715T083302,45-04</datetime></modified>
+<revised><datetime dst='true'>20210715T083302,44-04</datetime></revised>
+<lastaccessed><datetime dst='true'>20210715T083302,44-04</datetime></lastaccessed>
+<addedtofile><datetime dst='true'>20210714T160453,18-04</datetime></addedtofile></noteinfo>
 <updatedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></updatedby>
 <wassignedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></wassignedby>
 <body><richtext>
 <pardef id='1' align='center'/>
 <par def='1'><run><font size='18pt'/></run></par>
-<par def='1'><run><font size='18pt'/></run></par>
-<par def='1'><run><font size='24pt' style='bold' color='purple'/>About </run><run
+<par def='1'><run><font size='24pt' style='bold' color='navy'/>About </run><run
 ><font size='24pt' style='bold' color='navy'/><computedtext><code event='value'><formula
 >@DbTitle</formula></code></computedtext></run><run><font size='24pt' style='bold'/>  </run></par>
 <par def='1'><run><font size='18pt'/></run></par>

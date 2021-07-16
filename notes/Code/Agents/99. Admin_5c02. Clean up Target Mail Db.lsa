@@ -1,16 +1,16 @@
 <?xml version='1.0' encoding='utf-8'?>
 <agent name='99. Admin\02. Clean up Target Mail Db' alias='uninstallDOMI'
- xmlns='http://www.lotus.com/dxl' version='12.0' replicaid='852586FE00669899'
+ xmlns='http://www.lotus.com/dxl' version='12.0' replicaid='85258712006E4CE0'
  hide='v3' publicaccess='false' designerversion='8.5.3'>
-<noteinfo noteid='23a' unid='C12304FE02F0E6F18525868500472CAC' sequence='7'>
+<noteinfo noteid='242' unid='C12304FE02F0E6F18525868500472CAC' sequence='4'>
 <created><datetime>20210223T075724,92-05</datetime></created>
-<modified><datetime dst='true'>20210711T181502,43-04</datetime></modified>
-<revised><datetime dst='true'>20210711T181502,42-04</datetime></revised>
-<lastaccessed><datetime dst='true'>20210711T181502,42-04</datetime></lastaccessed>
-<addedtofile><datetime dst='true'>20210624T144055,96-04</datetime></addedtofile></noteinfo>
+<modified><datetime dst='true'>20210715T085149,88-04</datetime></modified>
+<revised><datetime dst='true'>20210715T085149,87-04</datetime></revised>
+<lastaccessed><datetime dst='true'>20210715T085149,87-04</datetime></lastaccessed>
+<addedtofile><datetime dst='true'>20210714T160456,02-04</datetime></addedtofile></noteinfo>
 <updatedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></updatedby>
 <wassignedby><name>CN=Devin Olson/OU=USA/O=PNPHCL</name></wassignedby>
-<designchange><datetime dst='true'>20210711T181500,00-04</datetime></designchange>
+<designchange><datetime dst='true'>20210715T085149,81-04</datetime></designchange>
 <trigger type='actionsmenu'/>
 <documentset type='runonce'/><code event='options'><lotusscript>%REM
 	Agent Install DOMI in Target Mail Db
