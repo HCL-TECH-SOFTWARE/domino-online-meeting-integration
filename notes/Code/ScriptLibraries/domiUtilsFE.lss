@@ -336,7 +336,7 @@ Function domiValidateOAuthToken() As Boolean
 	Set domi.CopyNodes = Nothing
 	Set domi.Document = ndoc 
 
-	If domi.refreshAuthToken(False) Then 
+	If domi.refreshAuthToken(True) Then 
 		If nuidoc.EditMode Then Call nuidoc.Reload()
 		MessageBox |Your OAuth Token is Valid|, MB_ICONINFORMATION, |Success|
 		result = True 
