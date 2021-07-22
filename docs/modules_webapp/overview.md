@@ -21,18 +21,18 @@ For each provider, this application provides endpoints for retrieving a token, c
 - If a Zoom Client ID and secret are passed into the application   
   - /dominoZoom/index.html
   - /zoomCallback
-  - /zoomRefresh
-  - /zoomRevoke
+  - /dominoZoomRefresh
+  - /dominoZoomRevoke
 - If a Teams Client ID and secret are passed into the application  
   - /dominoTeams/index.html
   - /teamsCallback
-  - /teamsRefresh
+  - /dominoTeamsRefresh
 - If a GoToMeeting Client ID and secret are passed into the application  
   - /dominoGTM/index.html
   - /gtmCallback
-  - /gtmRefresh
+  - /dominoGTMRefresh
 - If a Webex Client ID and secret are passed into the application  
   - /dominoWebex/index.html
   - /webexCallback
-  - /webexRefresh
+  - /dominoWebexRefresh
 - /index.html - a catch-all landing page
