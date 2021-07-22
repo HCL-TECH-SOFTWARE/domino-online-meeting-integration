@@ -124,6 +124,7 @@ h4,
     position: relative;
     padding: 100px 0 50px;
     text-align: left;
+    background-color: #000;
 }
 
 .img-responsive {
