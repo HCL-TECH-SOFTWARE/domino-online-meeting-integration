@@ -197,6 +197,7 @@ public class OnlineMeetingProviderFactoryHolder implements OnlineMeetingProvider
    * @param ctx current RoutingContext
    * @param location to override URL in location bar
    */
+  @SuppressWarnings("resource")
   private void oAuthTokenHandler(final RoutingContext ctx, final String location) {
     final HttpServerResponse response = ctx.response();
     DOMIUtils.incrementRequestCounter(DOMIConstants.METRIC_TOTAL_HTTP, getProviderName(),
