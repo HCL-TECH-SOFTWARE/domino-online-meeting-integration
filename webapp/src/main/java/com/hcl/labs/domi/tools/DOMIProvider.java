@@ -1,121 +1,133 @@
 package com.hcl.labs.domi.tools;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public enum DOMIProvider {
 
-  GTM(DOMIConstants.GTM_LABEL,
-      DOMIConstants.GTM_AUTHORIZE_URL,
-      DOMIConstants.GTM_CALLBACK_ROUTE,
-      DOMIConstants.GTM_SCOPES,
-      DOMIConstants.GTM_PATH,
-      DOMIConstants.GTM_TOKEN_URL,
-      DOMIConstants.GTM_REFRESH_ROUTE,
-      DOMIConstants.GTM_REVOKE_ROUTE,
-      DOMIConstants.GTM_REVOCATION_URL),
-  TEAMS(DOMIConstants.TEAMS_LABEL,
-      DOMIConstants.TEAMS_AUTHORIZE_URL,
-      DOMIConstants.TEAMS_CALLBACK_ROUTE,
-      DOMIConstants.TEAMS_SCOPES,
-      DOMIConstants.TEAMS_PATH,
-      DOMIConstants.TEAMS_TOKEN_URL,
-      DOMIConstants.TEAMS_REFRESH_ROUTE,
-      DOMIConstants.TEAMS_REVOKE_ROUTE,
-      DOMIConstants.TEAMS_REVOCATION_URL),
-  WEBEX(DOMIConstants.WEBEX_LABEL,
-      DOMIConstants.WEBEX_AUTHORIZE_URL,
-      DOMIConstants.WEBEX_CALLBACK_ROUTE,
-      DOMIConstants.WEBEX_SCOPES,
-      DOMIConstants.WEBEX_PATH,
-      DOMIConstants.WEBEX_TOKEN_URL,
-      DOMIConstants.WEBEX_REFRESH_ROUTE,
-      DOMIConstants.WEBEX_REVOKE_ROUTE,
-      DOMIConstants.WEBEX_REVOCATION_URL),
-  ZOOM(DOMIConstants.ZOOM_LABEL,
-      DOMIConstants.ZOOM_AUTHORIZE_URL,
-      DOMIConstants.ZOOM_CALLBACK_ROUTE,
-      DOMIConstants.ZOOM_SCOPES,
-      DOMIConstants.ZOOM_PATH,
-      DOMIConstants.ZOOM_TOKEN_URL,
-      DOMIConstants.ZOOM_REFRESH_ROUTE,
-      DOMIConstants.ZOOM_REVOKE_ROUTE,
-      DOMIConstants.ZOOM_REVOCATION_URL);
+  /**
+   * Goto Meeting
+   * (label, authorizeURL, callbackRoute, scopes, path, tokenURL, refreshRoute)
+   */
+  GTM("GoToMeeting",
+      "https://api.getgo.com/oauth/v2/authorize",
+      "/gtmCallback",
+      "collab:",
+      "/dominoGTM/",
+      "https://api.getgo.com/oauth/v2/token",
+      "/dominoGTMRefresh"),
 
-  private final Map<String, String> _map;
+  /**
+   * Microsoft Teams
+   * (label, authorizeURL, callbackRoute, scopes, path, tokenURL, refreshRoute)
+   */
+  TEAMS("Microsoft Teams",
+      "https://login.microsoftonline.com/organizations/oauth2/v2.0/authorize",
+      "/teamsCallback",
+      "User.Read OnlineMeetings.ReadWrite offline_access",
+      "/dominoTeams/",
+      "https://login.microsoftonline.com/organizations/oauth2/v2.0/token",
+      "/dominoTeamsRefresh"),
+
+  /**
+   * Webex
+   * (label, authorizeURL, callbackRoute, scopes, path, tokenURL, refreshRoute)
+   */
+  WEBEX("Webex",
+      "https://webexapis.com/v1/authorize",
+      "/webexCallback",
+      "meeting:schedules_write",
+      "/dominoWebex/",
+      "https://webexapis.com/v1/access_token",
+      "/dominoWebexRefresh"),
+
+  /**
+   * Zoom
+   * (label, authorizeURL, callbackRoute, scopes, path, tokenURL, refreshRoute,
+   * revokeRoute, revocationURL)
+   */
+  ZOOM("Zoom",
+      "https://zoom.us/oauth/authorize",
+      "/zoomCallback",
+      "meeting:write",
+      "/dominoZoom/",
+      "https://zoom.us/oauth/token",
+      "/dominoZoomRefresh",
+      "/dominoZoomRevoke",
+      "https://zoom.us/oauth/revoke");
+
+  /**
+   * Label for the Provider
+   */
+  public final String LABEL;
+
+  /**
+   * Authorize URL for the Provider
+   */
+  public final String AUTHORIZE_URL;
+
+  /**
+   * Callback Route for the Provider
+   */
+  public final String CALLBACK_ROUTE;
+
+  /**
+   * Requested Scopes for the Provider
+   */
+  public final String SCOPES;
+
+  /**
+   * Path for the Provider
+   */
+  public final String PATH;
+
+  /**
+   * Token URL for the Provider
+   */
+  public final String TOKEN_URL;
+
+  /**
+   * Refresh Route for the Provider
+   */
+  public final String REFRESH_ROUTE;
+
+  /**
+   * Revoke Route for the Provider
+   */
+  public final String REVOKE_ROUTE;
+
+  /**
+   * Revocation URL for the Provider
+   */
+  public final String REVOCATION_URL;
+
+  private DOMIProvider(final String label, final String authorizeURL, final String callbackRoute, final String scopes,
+      final String path, final String tokenURL, final String refreshRoute) {
+
+    this.LABEL = label;
+    this.AUTHORIZE_URL = authorizeURL;
+    this.CALLBACK_ROUTE = callbackRoute;
+    this.SCOPES = scopes;
+    this.PATH = path;
+    this.TOKEN_URL = tokenURL;
+    this.REFRESH_ROUTE = refreshRoute;
+    this.REVOKE_ROUTE = "";
+    this.REVOCATION_URL = "";
+  }
 
   private DOMIProvider(final String label, final String authorizeURL, final String callbackRoute, final String scopes,
       final String path, final String tokenURL, final String refreshRoute, final String revokeRoute,
       final String revocationURL) {
 
-    this._map = new HashMap<>();
-    this._map.put("Label", label);
-    this._map.put("AuthorizeURL", authorizeURL);
-    this._map.put("CallbackRoute", callbackRoute);
-    this._map.put("Scopes", scopes);
-    this._map.put("Path", path);
-    this._map.put("TokenURL", tokenURL);
-    this._map.put("RefreshRoute", refreshRoute);
-    this._map.put("RevokeRoute", revokeRoute);
-    this._map.put("RevocationURL", revocationURL);
-  }
-
-  /**
-   * @return AuthorizeURL for the Provider
-   */
-  public final String getAuthorizeURL() {
-    return this._map.getOrDefault("AuthorizeURL", "");
-  }
-
-  /**
-   * @return CallbackRoute for the Provider
-   */
-  public final String getCallbackRoute() {
-    return this._map.getOrDefault("CallbackRoute", "");
-  }
-
-  /**
-   * @return Scopes for the Provider
-   */
-  public final String getScopes() {
-    return this._map.getOrDefault("Scopes", "");
-  }
-
-  /**
-   * @return Path for the Provider
-   */
-  public final String getPath() {
-    return this._map.getOrDefault("Path", "");
-  }
-
-  /**
-   * @return TokenURL for the Provider
-   */
-  public final String getTokenURL() {
-    return this._map.getOrDefault("TokenURL", "");
-  }
-
-  /**
-   * @return RefreshRoute for the Provider
-   */
-  public final String getRefreshRoute() {
-    return this._map.getOrDefault("RefreshRoute", "");
-  }
-
-  /**
-   * @return RevokeRoute for the Provider
-   */
-  public final String getRevokeRoute() {
-    return this._map.getOrDefault("RevokeRoute", "");
-  }
-
-  /**
-   * @return RevocationURL for the Provider
-   */
-  public final String getRevocationURL() {
-    return this._map.getOrDefault("RevocationURL", "");
+    this.LABEL = label;
+    this.AUTHORIZE_URL = authorizeURL;
+    this.CALLBACK_ROUTE = callbackRoute;
+    this.SCOPES = scopes;
+    this.PATH = path;
+    this.TOKEN_URL = tokenURL;
+    this.REFRESH_ROUTE = refreshRoute;
+    this.REVOKE_ROUTE = revokeRoute;
+    this.REVOCATION_URL = revocationURL;
   }
 
   /**
@@ -126,7 +138,7 @@ public enum DOMIProvider {
   public static final List<String> getPaths() {
     final List<String> result = new ArrayList<>();
     for (DOMIProvider dp : DOMIProvider.values()) {
-      result.add(dp.getPath());
+      result.add(dp.PATH);
     }
     return result;
   }
