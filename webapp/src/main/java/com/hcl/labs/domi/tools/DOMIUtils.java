@@ -23,12 +23,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import com.google.common.io.CharStreams;
 import com.hcl.labs.domi.metrics.DOMIStatistics;
 import com.hcl.labs.domi.metrics.DOMIStatisticsHolder;
+
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.Tag;
 import io.vertx.core.http.HttpServerOptions;
@@ -118,9 +121,10 @@ public class DOMIUtils {
   /**
    * Increment metrics counter, creating the counter if required
    *
-   * @param counterName name of the counter to increment
+   * @param counterName  name of the counter to increment
    * @param providerName OAuth provider for the request
-   * @param grantType whether the request was for an authorization code or refresh token
+   * @param grantType    whether the request was for an authorization code or
+   *                     refresh token
    */
   public static void incrementRequestCounter(final String counterName, final String providerName,
       final String grantType) {
@@ -134,7 +138,6 @@ public class DOMIUtils {
     }
     counter.increment(1.0);
   }
-
 
   /**
    * Constructing options for HTTP server
@@ -236,6 +239,5 @@ public class DOMIUtils {
       default /* none */ :
         DOMIUtils.LOGGER.error(DOMIUtils.TLS_TYPE_INVALID, tlsType);
     }
-
   }
 }
