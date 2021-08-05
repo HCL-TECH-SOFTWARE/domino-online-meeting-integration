@@ -23,14 +23,18 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.TreeSet;
 import java.util.function.Consumer;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import com.hcl.labs.domi.providers.OnlineMeetingProviderFactory;
 import com.hcl.labs.domi.providers.OnlineMeetingProviderFactoryHolder;
 import com.hcl.labs.domi.providers.OnlineMeetingProviderParameterBuilder;
 import com.hcl.labs.domi.tools.DOMIConstants;
 import com.hcl.labs.domi.tools.DOMIException;
+import com.hcl.labs.domi.tools.DOMIProvider;
 import com.hcl.labs.domi.tools.DOMIUtils;
+
 import io.vertx.config.ConfigRetriever;
 import io.vertx.config.ConfigRetrieverOptions;
 import io.vertx.config.ConfigStoreOptions;
@@ -43,6 +47,7 @@ import io.vertx.core.VertxOptions;
 import io.vertx.core.http.HttpServerOptions;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
+import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
 import io.vertx.ext.web.handler.ErrorHandler;
 import io.vertx.ext.web.handler.StaticHandler;
@@ -61,6 +66,9 @@ public class MainVerticle extends AbstractVerticle {
   private static JsonObject config;
   // Logger
   private static final Logger LOGGER = LoggerFactory.getLogger(MainVerticle.class);
+
+  // private static final List<String> validStateParams = new ArrayList<>();
+
   /**
    * Configure the use of Java JDK logging to use
    * Log4J. In Keep we use slf4j, but some external
@@ -72,6 +80,12 @@ public class MainVerticle extends AbstractVerticle {
   static {
     System.setProperty("java.util.logging.manager", "org.apache.logging.log4j.jul.LogManager");
     System.setProperty("log4j.configurationFile", "/log4j2.json");
+
+    // validStateParams.add(DOMIConstants.GTM_PATH);
+    // validStateParams.add(DOMIConstants.ZOOM_PATH);
+    // validStateParams.add(DOMIConstants.WEBEX_PATH);
+    // validStateParams.add(DOMIConstants.TEAMS_PATH);
+
   }
 
   /**
@@ -83,11 +97,9 @@ public class MainVerticle extends AbstractVerticle {
   private static MicrometerMetricsOptions getMetricsOptions() {
     // Performance metrics using Micrometer
 
-    final JsonObject promMetricsConfig =
-        MainVerticle.config.getJsonObject("prometheusMetrics", new JsonObject());
+    final JsonObject promMetricsConfig = MainVerticle.config.getJsonObject("prometheusMetrics", new JsonObject());
     final Integer port = MainVerticle.config.getInteger(DOMIConstants.CONFIG_METRICSPORT, 8890);
-    final HttpServerOptions serverOptions =
-        DOMIUtils.getServerOptions(DOMIConstants.CONFIG_METRICSPORT, port, MainVerticle.config);
+    final HttpServerOptions serverOptions = DOMIUtils.getServerOptions(DOMIConstants.CONFIG_METRICSPORT, port, MainVerticle.config);
     MainVerticle.LOGGER.info(
         "Metrics is configured for port {} {}", port,
         serverOptions.isSsl() ? "with HTTPS" : "HTTP only");
@@ -112,10 +124,11 @@ public class MainVerticle extends AbstractVerticle {
   }
 
   /**
-   * Loads the configuration from the internal configuration file or JSON file that is in the
+   * Loads the configuration from the internal configuration file or JSON file
+   * that is in the
    * configuration directory
    *
-   * @param vertx - the vertx instance
+   * @param vertx         - the vertx instance
    * @param configDirName - the configuration directory
    * @return Future with a configuration
    */
@@ -233,7 +246,7 @@ public class MainVerticle extends AbstractVerticle {
    * Sends a startup complete message out as information
    *
    * @param verticleName - ClassName of main verticle
-   * @param verticleId - ID of the verticle being launched
+   * @param verticleId   - ID of the verticle being launched
    */
   static void sendStartupMessage(final String verticleName, final String verticleId) {
     final StringBuilder builder = new StringBuilder();
@@ -274,11 +287,11 @@ public class MainVerticle extends AbstractVerticle {
     MainVerticle.LOGGER.info("Starting up with hostname " + hostName);
 
     final Integer port = MainVerticle.config.getInteger(DOMIConstants.CONFIG_PORT, 8878);
-    final HttpServerOptions serverOptions =
-        DOMIUtils.getServerOptions(DOMIConstants.CONFIG_PORT, port, MainVerticle.config);
+    final HttpServerOptions serverOptions = DOMIUtils.getServerOptions(DOMIConstants.CONFIG_PORT, port, MainVerticle.config);
 
     // Get router
     this.router = Router.router(this.getVertx());
+    this.router.route().handler(this::keepTheBadBoysOut);
     this.router.route().handler(BodyHandler.create(false));
 
     // Add static and error routes
@@ -308,6 +321,34 @@ public class MainVerticle extends AbstractVerticle {
         });
   }
 
+  private void keepTheBadBoysOut(final RoutingContext ctx) {
+    System.out.println("Bad Boys what you gonna do?");
+
+    final String state = ctx.request().getParam("state");
+    if (null == state) {
+      ctx.next();
+      return;
+    }
+
+    // TODO Spanky Use a List of all valid paths, then stream the list and filter,
+    // if fails then error, if not fail then good.
+
+    // if (validStateParams.stream().filter(s -> state.startsWith(s)).count() > 0) {
+    // System.out.println("Invalid route");
+    // ctx.fail(400);
+    // return;
+    // }
+
+    if (DOMIProvider.getPaths().stream().filter(s -> state.startsWith(s)).count() > 0) {
+      System.out.println("Invalid route");
+      ctx.fail(400);
+      return;
+    }
+
+    ctx.next();
+
+  }
+
   /**
    * Load routes for all meeting provider
    * 
@@ -315,7 +356,7 @@ public class MainVerticle extends AbstractVerticle {
    * @throws Exception what went wrong
    */
   private void createMeetingProviderRoutes(final String hostName) throws DOMIException {
-    // Initialise key variables from config
+    // Initialize key variables from config
     final String zoomClientId = this.config().getString(DOMIConstants.ZOOM_CLIENT_ID, "");
     final String zoomClientSecret = this.config().getString(DOMIConstants.ZOOM_CLIENT_SECRET, "");
     final String gtmClientId = this.config().getString(DOMIConstants.GTM_CLIENT_ID, "");
@@ -327,36 +368,34 @@ public class MainVerticle extends AbstractVerticle {
 
     final OnlineMeetingProviderFactory zoomFactory = new OnlineMeetingProviderFactoryHolder(
         zoomClientId, zoomClientSecret, DOMIConstants.ZOOM_LABEL, hostName);
-    final OnlineMeetingProviderParameterBuilder zoomBuilder =
-        new OnlineMeetingProviderParameterBuilder()
-            .vertx(this.vertx)
-            .router(this.router)
-            .authUrl(DOMIConstants.ZOOM_AUTHORIZE_URL)
-            .tokenUrl(DOMIConstants.ZOOM_TOKEN_URL)
-            .revocationUrl(DOMIConstants.ZOOM_REVOCATION_URL)
-            .callbackRoute(DOMIConstants.ZOOM_CALLBACK_ROUTE)
-            .refreshRoute(DOMIConstants.ZOOM_REFRESH_ROUTE)
-            .revokeRoute(DOMIConstants.ZOOM_REVOKE_ROUTE)
-            .scopes(DOMIConstants.ZOOM_SCOPES)
-            .path(DOMIConstants.ZOOM_PATH)
-            .extraParams(new JsonObject());
+    final OnlineMeetingProviderParameterBuilder zoomBuilder = new OnlineMeetingProviderParameterBuilder()
+        .vertx(this.vertx)
+        .router(this.router)
+        .authUrl(DOMIConstants.ZOOM_AUTHORIZE_URL)
+        .tokenUrl(DOMIConstants.ZOOM_TOKEN_URL)
+        .revocationUrl(DOMIConstants.ZOOM_REVOCATION_URL)
+        .callbackRoute(DOMIConstants.ZOOM_CALLBACK_ROUTE)
+        .refreshRoute(DOMIConstants.ZOOM_REFRESH_ROUTE)
+        .revokeRoute(DOMIConstants.ZOOM_REVOKE_ROUTE)
+        .scopes(DOMIConstants.ZOOM_SCOPES)
+        .path(DOMIConstants.ZOOM_PATH)
+        .extraParams(new JsonObject());
     zoomFactory.createAndEnableRoutes(zoomBuilder.build());
 
     final OnlineMeetingProviderFactory teamsFactory = new OnlineMeetingProviderFactoryHolder(
         teamsClientId, teamsClientSecret, DOMIConstants.TEAMS_LABEL, hostName);
-    final OnlineMeetingProviderParameterBuilder teamsBuilder =
-        new OnlineMeetingProviderParameterBuilder()
-            .vertx(this.vertx)
-            .router(this.router)
-            .authUrl(DOMIConstants.TEAMS_AUTHORIZE_URL)
-            .tokenUrl(DOMIConstants.TEAMS_TOKEN_URL)
-            .revocationUrl(DOMIConstants.TEAMS_REVOCATION_URL)
-            .callbackRoute(DOMIConstants.TEAMS_CALLBACK_ROUTE)
-            .refreshRoute(DOMIConstants.TEAMS_REFRESH_ROUTE)
-            .revokeRoute(DOMIConstants.TEAMS_REVOKE_ROUTE)
-            .scopes(DOMIConstants.TEAMS_SCOPES)
-            .path(DOMIConstants.TEAMS_PATH)
-            .extraParams(new JsonObject());
+    final OnlineMeetingProviderParameterBuilder teamsBuilder = new OnlineMeetingProviderParameterBuilder()
+        .vertx(this.vertx)
+        .router(this.router)
+        .authUrl(DOMIConstants.TEAMS_AUTHORIZE_URL)
+        .tokenUrl(DOMIConstants.TEAMS_TOKEN_URL)
+        .revocationUrl(DOMIConstants.TEAMS_REVOCATION_URL)
+        .callbackRoute(DOMIConstants.TEAMS_CALLBACK_ROUTE)
+        .refreshRoute(DOMIConstants.TEAMS_REFRESH_ROUTE)
+        .revokeRoute(DOMIConstants.TEAMS_REVOKE_ROUTE)
+        .scopes(DOMIConstants.TEAMS_SCOPES)
+        .path(DOMIConstants.TEAMS_PATH)
+        .extraParams(new JsonObject());
     teamsFactory.createAndEnableRoutes(teamsBuilder.build());
 
     final OnlineMeetingProviderFactory webexFactory = new OnlineMeetingProviderFactoryHolder(
@@ -365,36 +404,34 @@ public class MainVerticle extends AbstractVerticle {
     final JsonObject extraParams = new JsonObject()
         .put("client_id", webexClientId)
         .put("client_secret", webexClientSecret);
-    final OnlineMeetingProviderParameterBuilder webexBuilder =
-        new OnlineMeetingProviderParameterBuilder()
-            .vertx(this.vertx)
-            .router(this.router)
-            .authUrl(DOMIConstants.WEBEX_AUTHORIZE_URL)
-            .tokenUrl(DOMIConstants.WEBEX_TOKEN_URL)
-            .revocationUrl(DOMIConstants.WEBEX_REVOCATION_URL)
-            .callbackRoute(DOMIConstants.WEBEX_CALLBACK_ROUTE)
-            .refreshRoute(DOMIConstants.WEBEX_REFRESH_ROUTE)
-            .revokeRoute(DOMIConstants.WEBEX_REVOKE_ROUTE)
-            .scopes(DOMIConstants.WEBEX_SCOPES)
-            .path(DOMIConstants.WEBEX_PATH)
-            .extraParams(extraParams);
+    final OnlineMeetingProviderParameterBuilder webexBuilder = new OnlineMeetingProviderParameterBuilder()
+        .vertx(this.vertx)
+        .router(this.router)
+        .authUrl(DOMIConstants.WEBEX_AUTHORIZE_URL)
+        .tokenUrl(DOMIConstants.WEBEX_TOKEN_URL)
+        .revocationUrl(DOMIConstants.WEBEX_REVOCATION_URL)
+        .callbackRoute(DOMIConstants.WEBEX_CALLBACK_ROUTE)
+        .refreshRoute(DOMIConstants.WEBEX_REFRESH_ROUTE)
+        .revokeRoute(DOMIConstants.WEBEX_REVOKE_ROUTE)
+        .scopes(DOMIConstants.WEBEX_SCOPES)
+        .path(DOMIConstants.WEBEX_PATH)
+        .extraParams(extraParams);
     webexFactory.createAndEnableRoutes(webexBuilder.build());
 
     final OnlineMeetingProviderFactory gtmFactory = new OnlineMeetingProviderFactoryHolder(
         gtmClientId, gtmClientSecret, DOMIConstants.GTM_LABEL, hostName);
-    final OnlineMeetingProviderParameterBuilder gtmBuilder =
-        new OnlineMeetingProviderParameterBuilder()
-            .vertx(this.vertx)
-            .router(this.router)
-            .authUrl(DOMIConstants.GTM_AUTHORIZE_URL)
-            .tokenUrl(DOMIConstants.GTM_TOKEN_URL)
-            .revocationUrl(DOMIConstants.GTM_REVOCATION_URL)
-            .callbackRoute(DOMIConstants.GTM_CALLBACK_ROUTE)
-            .refreshRoute(DOMIConstants.GTM_REFRESH_ROUTE)
-            .revokeRoute(DOMIConstants.GTM_REVOKE_ROUTE)
-            .scopes(DOMIConstants.GTM_SCOPES)
-            .path(DOMIConstants.GTM_PATH)
-            .extraParams(new JsonObject());
+    final OnlineMeetingProviderParameterBuilder gtmBuilder = new OnlineMeetingProviderParameterBuilder()
+        .vertx(this.vertx)
+        .router(this.router)
+        .authUrl(DOMIConstants.GTM_AUTHORIZE_URL)
+        .tokenUrl(DOMIConstants.GTM_TOKEN_URL)
+        .revocationUrl(DOMIConstants.GTM_REVOCATION_URL)
+        .callbackRoute(DOMIConstants.GTM_CALLBACK_ROUTE)
+        .refreshRoute(DOMIConstants.GTM_REFRESH_ROUTE)
+        .revokeRoute(DOMIConstants.GTM_REVOKE_ROUTE)
+        .scopes(DOMIConstants.GTM_SCOPES)
+        .path(DOMIConstants.GTM_PATH)
+        .extraParams(new JsonObject());
     gtmFactory.createAndEnableRoutes(gtmBuilder.build());
   }
 }
