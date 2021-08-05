@@ -67,8 +67,6 @@ public class MainVerticle extends AbstractVerticle {
   // Logger
   private static final Logger LOGGER = LoggerFactory.getLogger(MainVerticle.class);
 
-  // private static final List<String> validStateParams = new ArrayList<>();
-
   /**
    * Configure the use of Java JDK logging to use
    * Log4J. In Keep we use slf4j, but some external
@@ -80,12 +78,6 @@ public class MainVerticle extends AbstractVerticle {
   static {
     System.setProperty("java.util.logging.manager", "org.apache.logging.log4j.jul.LogManager");
     System.setProperty("log4j.configurationFile", "/log4j2.json");
-
-    // validStateParams.add(DOMIConstants.GTM_PATH);
-    // validStateParams.add(DOMIConstants.ZOOM_PATH);
-    // validStateParams.add(DOMIConstants.WEBEX_PATH);
-    // validStateParams.add(DOMIConstants.TEAMS_PATH);
-
   }
 
   /**
@@ -291,7 +283,7 @@ public class MainVerticle extends AbstractVerticle {
 
     // Get router
     this.router = Router.router(this.getVertx());
-    this.router.route().handler(this::keepTheBadBoysOut);
+    this.router.route().handler(this::validateState);
     this.router.route().handler(BodyHandler.create(false));
 
     // Add static and error routes
@@ -321,32 +313,22 @@ public class MainVerticle extends AbstractVerticle {
         });
   }
 
-  private void keepTheBadBoysOut(final RoutingContext ctx) {
-    System.out.println("Bad Boys what you gonna do?");
-
+  private void validateState(final RoutingContext ctx) {
+    // state needs to be absent or, if present, start with a known DOMIProvider path
     final String state = ctx.request().getParam("state");
-    if (null == state) {
-      ctx.next();
-      return;
-    }
 
-    // TODO Spanky Use a List of all valid paths, then stream the list and filter,
-    // if fails then error, if not fail then good.
+    try {
+      if (null == state || DOMIProvider.getPaths().stream().filter(state::startsWith).count() > 0) {
+        ctx.next();
+        return;
+      }
 
-    // if (validStateParams.stream().filter(s -> state.startsWith(s)).count() > 0) {
-    // System.out.println("Invalid route");
-    // ctx.fail(400);
-    // return;
-    // }
+      throw new IllegalArgumentException("Disallowed QueryString State parameter: " + state);
 
-    if (DOMIProvider.getPaths().stream().filter(s -> state.startsWith(s)).count() > 0) {
-      System.out.println("Invalid route");
+    } catch (Exception e) {
+      LoggerFactory.getLogger(OnlineMeetingProviderFactoryHolder.class).error("State Not Allowed {} {}", state, e);
       ctx.fail(400);
-      return;
     }
-
-    ctx.next();
-
   }
 
   /**
@@ -367,39 +349,39 @@ public class MainVerticle extends AbstractVerticle {
     final String webexClientSecret = this.config().getString(DOMIConstants.WEBEX_CLIENT_SECRET, "");
 
     final OnlineMeetingProviderFactory zoomFactory = new OnlineMeetingProviderFactoryHolder(
-        zoomClientId, zoomClientSecret, DOMIConstants.ZOOM_LABEL, hostName);
+        zoomClientId, zoomClientSecret, DOMIProvider.ZOOM.LABEL, hostName);
     final OnlineMeetingProviderParameterBuilder zoomBuilder = new OnlineMeetingProviderParameterBuilder()
         .vertx(this.vertx)
         .router(this.router)
-        .authUrl(DOMIConstants.ZOOM_AUTHORIZE_URL)
-        .tokenUrl(DOMIConstants.ZOOM_TOKEN_URL)
-        .revocationUrl(DOMIConstants.ZOOM_REVOCATION_URL)
-        .callbackRoute(DOMIConstants.ZOOM_CALLBACK_ROUTE)
-        .refreshRoute(DOMIConstants.ZOOM_REFRESH_ROUTE)
-        .revokeRoute(DOMIConstants.ZOOM_REVOKE_ROUTE)
-        .scopes(DOMIConstants.ZOOM_SCOPES)
-        .path(DOMIConstants.ZOOM_PATH)
+        .authUrl(DOMIProvider.ZOOM.AUTHORIZE_URL)
+        .tokenUrl(DOMIProvider.ZOOM.TOKEN_URL)
+        .revocationUrl(DOMIProvider.ZOOM.REVOCATION_URL)
+        .callbackRoute(DOMIProvider.ZOOM.CALLBACK_ROUTE)
+        .refreshRoute(DOMIProvider.ZOOM.REFRESH_ROUTE)
+        .revokeRoute(DOMIProvider.ZOOM.REVOKE_ROUTE)
+        .scopes(DOMIProvider.ZOOM.SCOPES)
+        .path(DOMIProvider.ZOOM.PATH)
         .extraParams(new JsonObject());
     zoomFactory.createAndEnableRoutes(zoomBuilder.build());
 
     final OnlineMeetingProviderFactory teamsFactory = new OnlineMeetingProviderFactoryHolder(
-        teamsClientId, teamsClientSecret, DOMIConstants.TEAMS_LABEL, hostName);
+        teamsClientId, teamsClientSecret, DOMIProvider.TEAMS.LABEL, hostName);
     final OnlineMeetingProviderParameterBuilder teamsBuilder = new OnlineMeetingProviderParameterBuilder()
         .vertx(this.vertx)
         .router(this.router)
-        .authUrl(DOMIConstants.TEAMS_AUTHORIZE_URL)
-        .tokenUrl(DOMIConstants.TEAMS_TOKEN_URL)
-        .revocationUrl(DOMIConstants.TEAMS_REVOCATION_URL)
-        .callbackRoute(DOMIConstants.TEAMS_CALLBACK_ROUTE)
-        .refreshRoute(DOMIConstants.TEAMS_REFRESH_ROUTE)
-        .revokeRoute(DOMIConstants.TEAMS_REVOKE_ROUTE)
-        .scopes(DOMIConstants.TEAMS_SCOPES)
-        .path(DOMIConstants.TEAMS_PATH)
+        .authUrl(DOMIProvider.TEAMS.AUTHORIZE_URL)
+        .tokenUrl(DOMIProvider.TEAMS.TOKEN_URL)
+        .revocationUrl(DOMIProvider.TEAMS.REVOCATION_URL)
+        .callbackRoute(DOMIProvider.TEAMS.CALLBACK_ROUTE)
+        .refreshRoute(DOMIProvider.TEAMS.REFRESH_ROUTE)
+        .revokeRoute(DOMIProvider.TEAMS.REVOKE_ROUTE)
+        .scopes(DOMIProvider.TEAMS.SCOPES)
+        .path(DOMIProvider.TEAMS.PATH)
         .extraParams(new JsonObject());
     teamsFactory.createAndEnableRoutes(teamsBuilder.build());
 
     final OnlineMeetingProviderFactory webexFactory = new OnlineMeetingProviderFactoryHolder(
-        webexClientId, webexClientSecret, DOMIConstants.WEBEX_LABEL, hostName);
+        webexClientId, webexClientSecret, DOMIProvider.WEBEX.LABEL, hostName);
 
     final JsonObject extraParams = new JsonObject()
         .put("client_id", webexClientId)
@@ -407,30 +389,30 @@ public class MainVerticle extends AbstractVerticle {
     final OnlineMeetingProviderParameterBuilder webexBuilder = new OnlineMeetingProviderParameterBuilder()
         .vertx(this.vertx)
         .router(this.router)
-        .authUrl(DOMIConstants.WEBEX_AUTHORIZE_URL)
-        .tokenUrl(DOMIConstants.WEBEX_TOKEN_URL)
-        .revocationUrl(DOMIConstants.WEBEX_REVOCATION_URL)
-        .callbackRoute(DOMIConstants.WEBEX_CALLBACK_ROUTE)
-        .refreshRoute(DOMIConstants.WEBEX_REFRESH_ROUTE)
-        .revokeRoute(DOMIConstants.WEBEX_REVOKE_ROUTE)
-        .scopes(DOMIConstants.WEBEX_SCOPES)
-        .path(DOMIConstants.WEBEX_PATH)
+        .authUrl(DOMIProvider.WEBEX.AUTHORIZE_URL)
+        .tokenUrl(DOMIProvider.WEBEX.TOKEN_URL)
+        .revocationUrl(DOMIProvider.WEBEX.REVOCATION_URL)
+        .callbackRoute(DOMIProvider.WEBEX.CALLBACK_ROUTE)
+        .refreshRoute(DOMIProvider.WEBEX.REFRESH_ROUTE)
+        .revokeRoute(DOMIProvider.WEBEX.REVOKE_ROUTE)
+        .scopes(DOMIProvider.WEBEX.SCOPES)
+        .path(DOMIProvider.WEBEX.PATH)
         .extraParams(extraParams);
     webexFactory.createAndEnableRoutes(webexBuilder.build());
 
     final OnlineMeetingProviderFactory gtmFactory = new OnlineMeetingProviderFactoryHolder(
-        gtmClientId, gtmClientSecret, DOMIConstants.GTM_LABEL, hostName);
+        gtmClientId, gtmClientSecret, DOMIProvider.GTM.LABEL, hostName);
     final OnlineMeetingProviderParameterBuilder gtmBuilder = new OnlineMeetingProviderParameterBuilder()
         .vertx(this.vertx)
         .router(this.router)
-        .authUrl(DOMIConstants.GTM_AUTHORIZE_URL)
-        .tokenUrl(DOMIConstants.GTM_TOKEN_URL)
-        .revocationUrl(DOMIConstants.GTM_REVOCATION_URL)
-        .callbackRoute(DOMIConstants.GTM_CALLBACK_ROUTE)
-        .refreshRoute(DOMIConstants.GTM_REFRESH_ROUTE)
-        .revokeRoute(DOMIConstants.GTM_REVOKE_ROUTE)
-        .scopes(DOMIConstants.GTM_SCOPES)
-        .path(DOMIConstants.GTM_PATH)
+        .authUrl(DOMIProvider.GTM.AUTHORIZE_URL)
+        .tokenUrl(DOMIProvider.GTM.TOKEN_URL)
+        .revocationUrl(DOMIProvider.GTM.REVOCATION_URL)
+        .callbackRoute(DOMIProvider.GTM.CALLBACK_ROUTE)
+        .refreshRoute(DOMIProvider.GTM.REFRESH_ROUTE)
+        .revokeRoute(DOMIProvider.GTM.REVOKE_ROUTE)
+        .scopes(DOMIProvider.GTM.SCOPES)
+        .path(DOMIProvider.GTM.PATH)
         .extraParams(new JsonObject());
     gtmFactory.createAndEnableRoutes(gtmBuilder.build());
   }
