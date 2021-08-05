@@ -38,6 +38,10 @@ public class ZoomOAuth2API extends OAuth2API {
 
   final OAuth2Options config;
 
+  /**
+   * @param vertx  current Vertx instance
+   * @param config OAuth options
+   */
   public ZoomOAuth2API(Vertx vertx, OAuth2Options config) {
     super(vertx, config);
     this.config = config;
@@ -58,15 +62,15 @@ public class ZoomOAuth2API extends OAuth2API {
     final JsonObject headers = new JsonObject();
 
     final boolean confidentialClient =
-        config.getClientID() != null && config.getClientSecret() != null;
+        this.config.getClientID() != null && this.config.getClientSecret() != null;
 
     if (confidentialClient) {
-      String basic = config.getClientID() + ":" + config.getClientSecret();
+      String basic = this.config.getClientID() + ":" + this.config.getClientSecret();
       headers.put("Authorization",
           "Basic " + Base64.getEncoder().encodeToString(basic.getBytes(StandardCharsets.UTF_8)));
     }
 
-    final JsonObject tmp = config.getHeaders();
+    final JsonObject tmp = this.config.getHeaders();
     if (tmp != null) {
       headers.mergeIn(tmp);
     }
@@ -79,7 +83,7 @@ public class ZoomOAuth2API extends OAuth2API {
 
     fetch(
         HttpMethod.POST,
-        config.getRevocationPath() + query,
+        this.config.getRevocationPath() + query,
         headers,
         payload,
         res -> {
