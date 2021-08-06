@@ -15,42 +15,37 @@ The web application is designed to be extended to support other OAuth-enabled me
 - URLs for requesting a short-lived code, converting that to a token, refreshing the token and (if supported) revoking the token.  
 - Details of the REST API endpoints for requesting, refreshing and (if supported) revoking OAuth tokens.
 
-**The Client ID and secret should never be hard-coded into this application, for security reasons.**
+**The Client ID and secret must be passed as environment variables and cannot be hard-coded into this application, for security reasons.**
 
 ### Changes Required
 
-Changes will need to be made in three places:
+Release 1.0.5 makes extending DOMI's web application easier than ever before. For a standard OAuth provider, you only need to make changes in one place: `com.hcl.labs.domi.tools.DOMIProvider`. This is an enum that contains all the information required to set up a meeting provider.
 
-#### 1. Constants
+If the meeting provider has an endpoint to support revocation of a token, use the constructor with 11 parameters. If not, the constructor taking 9 parameters can be used. The enum name can be arbitrary, it is only used internally.
 
-**com.hcl.domi.utils.DOMIConstants** holds key information for the meeting provider. The constants for a specific meeting provider are grouped together. Replacing `XXXX` with a prefix for the relevant meeting provider, you will need to add:  
-- **XXXX_AUTHORIZE_URL**: the URL on the meeting provider's REST API to do the OAuth dance and retrieve a short-lived code. This will be the first URL the user will need to go to, which will prompt them to enter their credentials.  
-- **XXXX_CALLBACK_ROUTE**: the endpoint on this server that the user should be redirected back to after they have entered their credentials. This will be included as a query string parameter to the XXX_AUTHORIZE_URL as URL to redirect back to. This endpoint, along with the host name, will also need to be entered on the meeting provider's side. As part of their validation, they will verify that the redirect URL sent with the XXX_AUTHORIZE_URL matches one you've told them to expect.  
-- **XXXX_CLIENT_ID**: the environment variable to look for to get the relevant Client ID.  
-- **XXXX_CLIENT_SECRET**: the environment variable to look for to get the relevant Client secret.  
-- **XXX_REVOCATION_URL**: the URL on the meeting provider's REST API to revoke tokens. Not all OAUth APIs support this functionality. Only include this if the meeting provider supports revoking tokens.  
-- **XXXX_PATH**: the path followed by "index.html" that the HCL Notes Online Meeting Provider Credentials form should launch to retrieve a token.  
-- **XXXX_REFRESH_ROUTE**: the endpoint on this server that HCL Notes should call to refresh a token.  
-- **XXX_REVOKE_ROUTE**: the endpoint on this server that HCL Notes should call to revoke a token. Only include this if the meeting provider supports revoking tokens.  
-- **XXXX_SCOPES**: the scopes you need from the OAuth process. Only include the minimum scopes you need to create, update and delete meetings.  
-- **XXXX_TOKEN_URL**: the URL on the meeting provider's REST API to swap the short-lived code for a token.  
-- **XXXX_LABEL**: a label for the meeting provider. This will be used on the tokens page, so should be designed to be recognisable for end users and can contain spaces.
+The parameters to pass are:
+- A label for the meeting provider. This will be used on the tokens page, so should be designed to be recognisable for end users and can contain spaces.  
+- The URL on the meeting provider's REST API to do the OAuth dance and retrieve a short-lived code. This will be the first URL the user will need to go to, which will prompt them to enter their credentials. 
+- The callback route, an endpoint on this server that the user should be redirected back to after they have entered their credentials. This will be included as a query string parameter to the XXX_AUTHORIZE_URL as URL to redirect back to. This endpoint, along with the host name, will also need to be entered on the meeting provider's side. As part of their validation, they will verify that the redirect URL sent with the XXX_AUTHORIZE_URL matches one you've told them to expect.  
+-  The scopes you need from the OAuth process. Only include the minimum scopes you need to create, update and delete meetings.  
+-  The path followed by "index.html" that the HCL Notes Online Meeting Provider Credentials form should launch to retrieve a token. This will also be used to catch phishing attempts to redirect the token to a malicious third party.  
+-  The token URL, the URL on the meeting provider's REST API to swap:  
+   -  either the short-lived code for an access token and refresh token.
+   -  or the refresh token for a new access token and refresh token.  
+-  The refresh route, an endpoint on this server that HCL Notes should call to refresh a token.  
+-  The environment variable to look for to get the relevant Client ID.  
+-  The environment variable to look for to get the relevant Client secret.  
+-  The revoke route, an endpoint on this server that HCL Notes should call to revoke a token. Only include this if the meeting provider supports revoking tokens.  
+-  The URL on the meeting provider's REST API to revoke tokens. Not all OAUth APIs support this functionality. Only include this if the meeting provider supports revoking tokens.  
 
-#### 2. Loading Environment Variables
+### Exceptions
 
-Only specific environment variables are added to the config. These are defined in `DOMIUtils.getEnvironmentParamsToRead()`. If you add a new OAuth meeting provider, add the constants for the client ID and secret to the `result` JsonArray.
+In the case of Webex, as well as having the client ID and secret encoded in the Authorization header, they also require the client ID and secret in the body of the POST request to the token URL. As a result, in the MainVerticle's `createMeetingProviderRoutes` method there is an if statement to add extra information to the `extraParams` JsonObject.
 
-#### 3. Registering the OAuth Provider
+### Testing
 
-Vertx has classes for handling OAuth dances which minimise the amount of code you need to enter. If the meeting provider follows OAuth standards, you should be able to use the standard classes without modification. Where providers don't follow standards, changes are needed - and this was done for Zoom.
-
-To add a new provider, the changes just need making to `MainVerticle.createMeetingProviderRoutes()`.
-
-1. Add final String variables for the client ID and secret, using the existing ones as examples. If the value for client ID or secret is blank, the endpoints will not be added for that provider.  
-2. Add an additional block creating an `OnlineMeetingProviderFactory` and `OnlineMeetingProviderParameterBuilder`, and calling the factory's `createAndEnableRoutes()` method. The `extraParams` JsonObject contains any additional content for the body for the call to the XXXX_TOKEN_URL. In the case of Webex, as well as having the client ID and secret encoded in the Authorization header, they also require the client ID and secret in the body of the POST request - hence the extraParams object passed into `webexBuilder`.
-
-If successful, when the DOMI web application starts up, the console will log:  
-- OAuth validation for the XXXX_PATH URL.  
-- Token revocation for the XXXX_REVOKE_ROUTE (if not blank).  
-- Token refresh for the XXXX_REFRESH_ROUTE.  
-- OAuth callback for the XXXX_CALLBACK_ROUTE.
+If successful, when the DOMI web application starts up, the console will log information for each DOMIProvider:  
+- "Enabled OAuth callback" for the callback route.
+- "Enabled OAuth validation" for the path on this server to retrieve the token.  
+- "Enabled OAuth token revocation" for the revoke route (only logged if a revoke route is provided).  
+- "Enabled OAuth token refresh" for the refresh route.  

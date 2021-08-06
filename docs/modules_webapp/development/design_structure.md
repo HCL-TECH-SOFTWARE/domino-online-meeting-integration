@@ -32,6 +32,7 @@ The Java structure is:
 - **com.hcl.domi.tools**: the generic classes for use elsewhere.  
   - **DOMIConstants**: all constants used throughout the application.  
   - **DOMIException**: a class for exceptions within this application.
+  - **DOMIProvider**: enum for variable information relating to a meeting provider.
   - **DOMIUtils**: static methods for use throughout the application.
 
 ### Resources
