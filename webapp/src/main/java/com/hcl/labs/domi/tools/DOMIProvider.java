@@ -1,15 +1,34 @@
+/* ========================================================================== *
+ * Copyright (c) 2021 HCL America, Inc.                       *
+ *                            All rights reserved.                            *
+ * ========================================================================== *
+ * Licensed under the  Apache License, Version 2.0  (the "License").  You may *
+ * not use this file except in compliance with the License.  You may obtain a *
+ * copy of the License at <http://www.apache.org/licenses/LICENSE-2.0>.       *
+ *                                                                            *
+ * Unless  required  by applicable  law or  agreed  to  in writing,  software *
+ * distributed under the License is distributed on an  "AS IS" BASIS, WITHOUT *
+ * WARRANTIES OR  CONDITIONS OF ANY KIND, either express or implied.  See the *
+ * License for the  specific language  governing permissions  and limitations *
+ * under the License.                                                         *
+ * ========================================================================== */
+
 package com.hcl.labs.domi.tools;
 
 import java.util.ArrayList;
 import java.util.List;
 import io.vertx.core.json.JsonArray;
 
+/**
+ * @author Devin Olson, Paul Withers
+ *         Enum for all meeting providers supported
+ */
 public enum DOMIProvider {
 
   /**
    * Goto Meeting
    * (label, authorizeURL, callbackRoute, scopes, path, tokenURL, refreshRoute,
-   * client_id_label, client_secret_label)
+   * client_id_envVar_label, client_secret_envVar_label)
    */
   GTM("GoToMeeting",
       "https://api.getgo.com/oauth/v2/authorize",
@@ -24,7 +43,7 @@ public enum DOMIProvider {
   /**
    * Microsoft Teams
    * (label, authorizeURL, callbackRoute, scopes, path, tokenURL, refreshRoute,
-   * client_id_label, client_secret_label)
+   * client_id_envVar_label, client_secret_envVar_label)
    */
   TEAMS("Microsoft Teams",
       "https://login.microsoftonline.com/organizations/oauth2/v2.0/authorize",
@@ -39,7 +58,7 @@ public enum DOMIProvider {
   /**
    * Webex
    * (label, authorizeURL, callbackRoute, scopes, path, tokenURL, refreshRoute,
-   * client_id_label, client_secret_label)
+   * client_id_envVar_label, client_secret_envVar_label)
    */
   WEBEX("Webex",
       "https://webexapis.com/v1/authorize",
@@ -54,7 +73,7 @@ public enum DOMIProvider {
   /**
    * Zoom
    * (label, authorizeURL, callbackRoute, scopes, path, tokenURL, refreshRoute,
-   * client_id_label, client_secret_label, revokeRoute, revocationURL)
+   * client_id_envVar_label, client_secret_envVar_label, revokeRoute, revocationURL)
    */
   ZOOM("Zoom",
       "https://zoom.us/oauth/authorize",
