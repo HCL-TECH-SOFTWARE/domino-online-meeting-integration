@@ -184,7 +184,7 @@ public class DOMIUtils {
    * Returns all keys where the value is "true" - used to switch on/off features
    *
    * @param key    - value to look for
-   * @param config
+   * @param config Vert.x config
    * @return Set of values that are enables
    */
   public static Set<String> getEnabledValuesFromConfig(final String key, final JsonObject config) {

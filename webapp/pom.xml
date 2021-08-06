@@ -29,13 +29,37 @@
 				<role>Developer</role>
 			</roles>
 		</developer>
+		<developer>
+			<name>Devin Olson</name>
+			<url>https://github.com/spanky762</url>
+			<roles>
+				<role>Developer</role>
+			</roles>
+		</developer>
+		<developer>
+			<name>Rocky Oliver</name>
+			<url>https://github.com/lotusgeek</url>
+			<roles>
+				<role>Developer</role>
+			</roles>
+		</developer>
 	</developers>
+	<contributors>
+		<contributor>
+			<name>Ulrich Krause</name>
+			<url>https://github.com/eknori</url>
+			<roles>
+				<role>Developer</role>
+			</roles>
+		</contributor>
+	</contributors>
 	<scm>
-		<developerConnection>scm:git:https://github01.hclpnp.com/hcl-labs/domino-online-meeting-integration/domino-online-meeting-integration.git</developerConnection>
+		<connection>scm:git:https://github.com/hcl-tech-software/domino-online-meeting-integration</connection>
+		<url>https://github.com/hcl-tech-software/domino-online-meeting-integration</url>
 	</scm>
 	<issueManagement>
-		<system>HCP JIRA</system>
-		<url>https://jira01.hclpnp.com/</url>
+		<system>GitHub</system>
+		<url>https://github.com/hcl-tech-software/domino-online-meeting-integration/issues</url>
 	</issueManagement>
 
 	<properties>
