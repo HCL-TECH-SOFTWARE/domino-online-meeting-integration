@@ -23,15 +23,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.google.common.io.CharStreams;
 import com.hcl.labs.domi.metrics.DOMIStatistics;
 import com.hcl.labs.domi.metrics.DOMIStatisticsHolder;
-
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.Tag;
 import io.vertx.core.http.HttpServerOptions;
@@ -69,15 +66,9 @@ public class DOMIUtils {
         .add(DOMIConstants.CONFIG_PORT)
         .add(DOMIConstants.CONFIG_TLSFILE)
         .add(DOMIConstants.CONFIG_TLSPASSWORD)
-        .add(DOMIConstants.ZOOM_CLIENT_ID)
-        .add(DOMIConstants.ZOOM_CLIENT_SECRET)
-        .add(DOMIConstants.TEAMS_CLIENT_ID)
-        .add(DOMIConstants.TEAMS_CLIENT_SECRET)
-        .add(DOMIConstants.WEBEX_CLIENT_ID)
-        .add(DOMIConstants.WEBEX_CLIENT_SECRET)
-        .add(DOMIConstants.GTM_CLIENT_ID)
-        .add(DOMIConstants.GTM_CLIENT_SECRET)
         .add(DOMIConstants.CONFIG_HOSTNAME);
+    result.addAll(DOMIProvider.getClientIDEnvs());
+    result.addAll(DOMIProvider.getClientSecretEnvs());
 
     return result;
   }

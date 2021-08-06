@@ -23,10 +23,8 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.TreeSet;
 import java.util.function.Consumer;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.hcl.labs.domi.providers.OnlineMeetingProviderFactory;
 import com.hcl.labs.domi.providers.OnlineMeetingProviderFactoryHolder;
 import com.hcl.labs.domi.providers.OnlineMeetingProviderParameterBuilder;
@@ -34,7 +32,6 @@ import com.hcl.labs.domi.tools.DOMIConstants;
 import com.hcl.labs.domi.tools.DOMIException;
 import com.hcl.labs.domi.tools.DOMIProvider;
 import com.hcl.labs.domi.tools.DOMIUtils;
-
 import io.vertx.config.ConfigRetriever;
 import io.vertx.config.ConfigRetrieverOptions;
 import io.vertx.config.ConfigStoreOptions;
@@ -339,14 +336,17 @@ public class MainVerticle extends AbstractVerticle {
    */
   private void createMeetingProviderRoutes(final String hostName) throws DOMIException {
     // Initialize key variables from config
-    final String zoomClientId = this.config().getString(DOMIConstants.ZOOM_CLIENT_ID, "");
-    final String zoomClientSecret = this.config().getString(DOMIConstants.ZOOM_CLIENT_SECRET, "");
-    final String gtmClientId = this.config().getString(DOMIConstants.GTM_CLIENT_ID, "");
-    final String gtmClientSecret = this.config().getString(DOMIConstants.GTM_CLIENT_SECRET, "");
-    final String teamsClientId = this.config().getString(DOMIConstants.TEAMS_CLIENT_ID, "");
-    final String teamsClientSecret = this.config().getString(DOMIConstants.TEAMS_CLIENT_SECRET, "");
-    final String webexClientId = this.config().getString(DOMIConstants.WEBEX_CLIENT_ID, "");
-    final String webexClientSecret = this.config().getString(DOMIConstants.WEBEX_CLIENT_SECRET, "");
+    final String zoomClientId = this.config().getString(DOMIProvider.ZOOM.CLIENT_ID_ENV, "");
+    final String zoomClientSecret =
+        this.config().getString(DOMIProvider.ZOOM.CLIENT_SECRET_ENV, "");
+    final String gtmClientId = this.config().getString(DOMIProvider.GTM.CLIENT_ID_ENV, "");
+    final String gtmClientSecret = this.config().getString(DOMIProvider.GTM.CLIENT_SECRET_ENV, "");
+    final String teamsClientId = this.config().getString(DOMIProvider.TEAMS.CLIENT_ID_ENV, "");
+    final String teamsClientSecret =
+        this.config().getString(DOMIProvider.TEAMS.CLIENT_SECRET_ENV, "");
+    final String webexClientId = this.config().getString(DOMIProvider.WEBEX.CLIENT_ID_ENV, "");
+    final String webexClientSecret =
+        this.config().getString(DOMIProvider.WEBEX.CLIENT_SECRET_ENV, "");
 
     final OnlineMeetingProviderFactory zoomFactory = new OnlineMeetingProviderFactoryHolder(
         zoomClientId, zoomClientSecret, DOMIProvider.ZOOM.LABEL, hostName);

@@ -37,18 +37,6 @@ public class DOMIConstants {
 
   public static final String TOKEN_PAGE = "/meetings.mustache";
 
-  public static final String ZOOM_CLIENT_ID = "ZOOM_CLIENT_ID";
-  public static final String ZOOM_CLIENT_SECRET = "ZOOM_CLIENT_SECRET";
-
-  public static final String TEAMS_CLIENT_ID = "TEAMS_CLIENT_ID";
-  public static final String TEAMS_CLIENT_SECRET = "TEAMS_CLIENT_SECRET";
-
-  public static final String WEBEX_CLIENT_ID = "WEBEX_CLIENT_ID";
-  public static final String WEBEX_CLIENT_SECRET = "WEBEX_CLIENT_SECRET";
-
-  public static final String GTM_CLIENT_ID = "GTM_CLIENT_ID";
-  public static final String GTM_CLIENT_SECRET = "GTM_CLIENT_SECRET";
-
   public static final String METRIC_TOTAL_HTTP = "domi.token.requests.total";
   public static final String METRIC_GRANT_TYPE_AUTH_CODE = "authorization_code";
   public static final String METRIC_GRANT_TYPE_REFRESH_TOKEN = "refresh_token";
