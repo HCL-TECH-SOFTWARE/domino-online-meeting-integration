@@ -335,85 +335,25 @@ public class MainVerticle extends AbstractVerticle {
    * @throws Exception what went wrong
    */
   private void createMeetingProviderRoutes(final String hostName) throws DOMIException {
-    // Initialize key variables from config
-    final String zoomClientId = this.config().getString(DOMIProvider.ZOOM.CLIENT_ID_ENV, "");
-    final String zoomClientSecret =
-        this.config().getString(DOMIProvider.ZOOM.CLIENT_SECRET_ENV, "");
-    final String gtmClientId = this.config().getString(DOMIProvider.GTM.CLIENT_ID_ENV, "");
-    final String gtmClientSecret = this.config().getString(DOMIProvider.GTM.CLIENT_SECRET_ENV, "");
-    final String teamsClientId = this.config().getString(DOMIProvider.TEAMS.CLIENT_ID_ENV, "");
-    final String teamsClientSecret =
-        this.config().getString(DOMIProvider.TEAMS.CLIENT_SECRET_ENV, "");
-    final String webexClientId = this.config().getString(DOMIProvider.WEBEX.CLIENT_ID_ENV, "");
-    final String webexClientSecret =
-        this.config().getString(DOMIProvider.WEBEX.CLIENT_SECRET_ENV, "");
-
-    final OnlineMeetingProviderFactory zoomFactory = new OnlineMeetingProviderFactoryHolder(
-        zoomClientId, zoomClientSecret, DOMIProvider.ZOOM.LABEL, hostName);
-    final OnlineMeetingProviderParameterBuilder zoomBuilder = new OnlineMeetingProviderParameterBuilder()
-        .vertx(this.vertx)
-        .router(this.router)
-        .authUrl(DOMIProvider.ZOOM.AUTHORIZE_URL)
-        .tokenUrl(DOMIProvider.ZOOM.TOKEN_URL)
-        .revocationUrl(DOMIProvider.ZOOM.REVOCATION_URL)
-        .callbackRoute(DOMIProvider.ZOOM.CALLBACK_ROUTE)
-        .refreshRoute(DOMIProvider.ZOOM.REFRESH_ROUTE)
-        .revokeRoute(DOMIProvider.ZOOM.REVOKE_ROUTE)
-        .scopes(DOMIProvider.ZOOM.SCOPES)
-        .path(DOMIProvider.ZOOM.PATH)
-        .extraParams(new JsonObject());
-    zoomFactory.createAndEnableRoutes(zoomBuilder.build());
-
-    final OnlineMeetingProviderFactory teamsFactory = new OnlineMeetingProviderFactoryHolder(
-        teamsClientId, teamsClientSecret, DOMIProvider.TEAMS.LABEL, hostName);
-    final OnlineMeetingProviderParameterBuilder teamsBuilder = new OnlineMeetingProviderParameterBuilder()
-        .vertx(this.vertx)
-        .router(this.router)
-        .authUrl(DOMIProvider.TEAMS.AUTHORIZE_URL)
-        .tokenUrl(DOMIProvider.TEAMS.TOKEN_URL)
-        .revocationUrl(DOMIProvider.TEAMS.REVOCATION_URL)
-        .callbackRoute(DOMIProvider.TEAMS.CALLBACK_ROUTE)
-        .refreshRoute(DOMIProvider.TEAMS.REFRESH_ROUTE)
-        .revokeRoute(DOMIProvider.TEAMS.REVOKE_ROUTE)
-        .scopes(DOMIProvider.TEAMS.SCOPES)
-        .path(DOMIProvider.TEAMS.PATH)
-        .extraParams(new JsonObject());
-    teamsFactory.createAndEnableRoutes(teamsBuilder.build());
-
-    final OnlineMeetingProviderFactory webexFactory = new OnlineMeetingProviderFactoryHolder(
-        webexClientId, webexClientSecret, DOMIProvider.WEBEX.LABEL, hostName);
-
-    final JsonObject extraParams = new JsonObject()
-        .put("client_id", webexClientId)
-        .put("client_secret", webexClientSecret);
-    final OnlineMeetingProviderParameterBuilder webexBuilder = new OnlineMeetingProviderParameterBuilder()
-        .vertx(this.vertx)
-        .router(this.router)
-        .authUrl(DOMIProvider.WEBEX.AUTHORIZE_URL)
-        .tokenUrl(DOMIProvider.WEBEX.TOKEN_URL)
-        .revocationUrl(DOMIProvider.WEBEX.REVOCATION_URL)
-        .callbackRoute(DOMIProvider.WEBEX.CALLBACK_ROUTE)
-        .refreshRoute(DOMIProvider.WEBEX.REFRESH_ROUTE)
-        .revokeRoute(DOMIProvider.WEBEX.REVOKE_ROUTE)
-        .scopes(DOMIProvider.WEBEX.SCOPES)
-        .path(DOMIProvider.WEBEX.PATH)
-        .extraParams(extraParams);
-    webexFactory.createAndEnableRoutes(webexBuilder.build());
-
-    final OnlineMeetingProviderFactory gtmFactory = new OnlineMeetingProviderFactoryHolder(
-        gtmClientId, gtmClientSecret, DOMIProvider.GTM.LABEL, hostName);
-    final OnlineMeetingProviderParameterBuilder gtmBuilder = new OnlineMeetingProviderParameterBuilder()
-        .vertx(this.vertx)
-        .router(this.router)
-        .authUrl(DOMIProvider.GTM.AUTHORIZE_URL)
-        .tokenUrl(DOMIProvider.GTM.TOKEN_URL)
-        .revocationUrl(DOMIProvider.GTM.REVOCATION_URL)
-        .callbackRoute(DOMIProvider.GTM.CALLBACK_ROUTE)
-        .refreshRoute(DOMIProvider.GTM.REFRESH_ROUTE)
-        .revokeRoute(DOMIProvider.GTM.REVOKE_ROUTE)
-        .scopes(DOMIProvider.GTM.SCOPES)
-        .path(DOMIProvider.GTM.PATH)
-        .extraParams(new JsonObject());
-    gtmFactory.createAndEnableRoutes(gtmBuilder.build());
+    for (DOMIProvider dp : DOMIProvider.values()) {
+      final String clientId = this.config().getString(dp.CLIENT_ID_ENV, "");
+      final String clientSecret =
+          this.config().getString(dp.CLIENT_SECRET_ENV, "");
+      final OnlineMeetingProviderFactory mpFactory = new OnlineMeetingProviderFactoryHolder(
+          clientId, clientSecret, dp.LABEL, hostName);
+      final OnlineMeetingProviderParameterBuilder mpBuilder = new OnlineMeetingProviderParameterBuilder()
+          .vertx(this.vertx)
+          .router(this.router)
+          .authUrl(dp.AUTHORIZE_URL)
+          .tokenUrl(dp.TOKEN_URL)
+          .revocationUrl(dp.REVOCATION_URL)
+          .callbackRoute(dp.CALLBACK_ROUTE)
+          .refreshRoute(dp.REFRESH_ROUTE)
+          .revokeRoute(dp.REVOKE_ROUTE)
+          .scopes(dp.SCOPES)
+          .path(dp.PATH)
+          .extraParams(new JsonObject());
+      mpFactory.createAndEnableRoutes(mpBuilder.build());
+    }
   }
 }
