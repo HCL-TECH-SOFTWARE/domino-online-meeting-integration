@@ -339,6 +339,15 @@ public class MainVerticle extends AbstractVerticle {
       final String clientId = this.config().getString(dp.CLIENT_ID_ENV, "");
       final String clientSecret =
           this.config().getString(dp.CLIENT_SECRET_ENV, "");
+
+      // Webex requires extra parameters additional content for the body for the call to the
+      // TOKEN_URL, so needs building here
+      JsonObject extraParams = new JsonObject();
+      if ("WEBEX".equals(dp.name())) {
+        extraParams.put("client_id", clientId)
+            .put("client_secret", clientSecret);
+      }
+
       final OnlineMeetingProviderFactory mpFactory = new OnlineMeetingProviderFactoryHolder(
           clientId, clientSecret, dp.LABEL, hostName);
       final OnlineMeetingProviderParameterBuilder mpBuilder = new OnlineMeetingProviderParameterBuilder()
@@ -352,7 +361,7 @@ public class MainVerticle extends AbstractVerticle {
           .revokeRoute(dp.REVOKE_ROUTE)
           .scopes(dp.SCOPES)
           .path(dp.PATH)
-          .extraParams(new JsonObject());
+          .extraParams(extraParams);
       mpFactory.createAndEnableRoutes(mpBuilder.build());
     }
   }
