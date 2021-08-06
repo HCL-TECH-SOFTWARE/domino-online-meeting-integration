@@ -142,7 +142,8 @@ public enum DOMIProvider {
    */
   public final String REVOCATION_URL;
 
-  private DOMIProvider(final String label, final String authorizeURL, final String callbackRoute, final String scopes,
+  DOMIProvider(final String label, final String authorizeURL, final String callbackRoute,
+      final String scopes,
       final String path, final String tokenURL, final String refreshRoute, final String clientIdEnv,
       final String clientSecretEnv) {
 
@@ -159,7 +160,9 @@ public enum DOMIProvider {
     this.REVOCATION_URL = "";
   }
 
-  private DOMIProvider(final String label, final String authorizeURL, final String callbackRoute, final String scopes,
+
+  DOMIProvider(final String label, final String authorizeURL, final String callbackRoute,
+      final String scopes,
       final String path, final String tokenURL, final String refreshRoute, final String clientIdEnv,
       final String clientSecretEnv, final String revokeRoute,
       final String revocationURL) {
