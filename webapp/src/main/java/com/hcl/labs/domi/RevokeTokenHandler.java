@@ -28,6 +28,10 @@ import io.vertx.ext.web.RoutingContext;
  */
 public class RevokeTokenHandler extends RefreshTokenHandler {
 
+  /**
+   * @param oAuthProvider current OAUth provider config
+   * @param providerName  OAuth provider name
+   */
   public RevokeTokenHandler(OAuth2Auth oAuthProvider, String providerName) {
     super(oAuthProvider, providerName);
   }
@@ -53,7 +57,6 @@ public class RevokeTokenHandler extends RefreshTokenHandler {
    * Echoes back the JWT token in the response
    *
    * @param ctx RoutingContext for the request
-   * @return
    */
   private void returnSuccess(final RoutingContext ctx) {
     final HttpServerResponse response = this.createJsonResponse(ctx);
