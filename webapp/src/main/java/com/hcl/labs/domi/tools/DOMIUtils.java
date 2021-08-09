@@ -66,15 +66,9 @@ public class DOMIUtils {
         .add(DOMIConstants.CONFIG_PORT)
         .add(DOMIConstants.CONFIG_TLSFILE)
         .add(DOMIConstants.CONFIG_TLSPASSWORD)
-        .add(DOMIConstants.ZOOM_CLIENT_ID)
-        .add(DOMIConstants.ZOOM_CLIENT_SECRET)
-        .add(DOMIConstants.TEAMS_CLIENT_ID)
-        .add(DOMIConstants.TEAMS_CLIENT_SECRET)
-        .add(DOMIConstants.WEBEX_CLIENT_ID)
-        .add(DOMIConstants.WEBEX_CLIENT_SECRET)
-        .add(DOMIConstants.GTM_CLIENT_ID)
-        .add(DOMIConstants.GTM_CLIENT_SECRET)
         .add(DOMIConstants.CONFIG_HOSTNAME);
+    result.addAll(DOMIProvider.getClientIDEnvs());
+    result.addAll(DOMIProvider.getClientSecretEnvs());
 
     return result;
   }
@@ -118,9 +112,10 @@ public class DOMIUtils {
   /**
    * Increment metrics counter, creating the counter if required
    *
-   * @param counterName name of the counter to increment
+   * @param counterName  name of the counter to increment
    * @param providerName OAuth provider for the request
-   * @param grantType whether the request was for an authorization code or refresh token
+   * @param grantType    whether the request was for an authorization code or
+   *                     refresh token
    */
   public static void incrementRequestCounter(final String counterName, final String providerName,
       final String grantType) {
@@ -134,7 +129,6 @@ public class DOMIUtils {
     }
     counter.increment(1.0);
   }
-
 
   /**
    * Constructing options for HTTP server
@@ -190,7 +184,7 @@ public class DOMIUtils {
    * Returns all keys where the value is "true" - used to switch on/off features
    *
    * @param key    - value to look for
-   * @param config
+   * @param config Vert.x config
    * @return Set of values that are enables
    */
   public static Set<String> getEnabledValuesFromConfig(final String key, final JsonObject config) {
@@ -236,6 +230,5 @@ public class DOMIUtils {
       default /* none */ :
         DOMIUtils.LOGGER.error(DOMIUtils.TLS_TYPE_INVALID, tlsType);
     }
-
   }
 }
