@@ -1641,7 +1641,7 @@ ErrorTrap:
 
 		' these fields give us the "Join Online" link below the Location on the Calendar Entry
 		fldList(|OnlineMeeting|) = |1|
-		fldList(|SametimeType|) = |0|
+		fldList(|SametimeType|) = |3| ' Don't use 0 as that is original Sametime and triggers the Presentation field to display. 
 
 
 		' build the link and list of Meeting Values to be added to the Location
@@ -1895,7 +1895,7 @@ ErrorTrap:
 
 		' these fields give us the "Join Online" link below the Location on the Calendar Entry
 		fldList(|OnlineMeeting|) = |1|
-		fldList(|SametimeType|) = |0|
+		fldList(|SametimeType|) = |3| ' Don't use 0 as that is original Sametime and triggers the Presentation field to display. 
 
 		' this puts the link and PW into the Location field of the Calendar Entry
 		If me.MeetingValues.hasTag(|meetingURL|) Then bodyMsg = bodyMsg & |Attendee Link: | & mv.getScalarStringValue(|meetingURL|)
@@ -2338,6 +2338,7 @@ ErrorTrap:
 	enhLogException LIB_PREFIX, ||
 	Resume ExitPoint
 End Function
+
 
 
 

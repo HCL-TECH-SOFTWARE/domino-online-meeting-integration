@@ -78,7 +78,7 @@ Sub updateSTCalendarEntry(curDoc As NotesDocument, updateList As VariantList)
 	' these fields give us the "Join Online" link below the Location on the Calendar Entry
 	fldList("OnlineMeeting") = "1"
 	fldList("ApptUNIDURL") = fldList("meetingURL")
-	fldList("SametimeType") = "0"
+	fldList("SametimeType") = |3| ' Don't use 0 as that is original Sametime and triggers the Presentation field to display. 
 	' this puts the link and PW into the Location field of the Calendar Entry
 	bodyMsg = bodyMsg & "Attendee Link: " & fldList("meetingURL")
 	If Not(fldList("meetingPassword") = "") Then bodyMsg = Chr(10) & bodyMsg & "Password: " & fldList("meetingPassword")
