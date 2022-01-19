@@ -372,7 +372,12 @@ Class NotesRESTconsumer
 					Set jsonelement = jsonobject.getFirstElement() 
 					Set jsonvalues = New VariantList() 
 					Do While Not (jsonelement Is Nothing) 
-						jsonvalues.content(jsonelement.Name) = jsonelement.Value 
+						If IsObject(jsonelement.Value) Then 
+							Set jsonvalues.content(jsonelement.Name) = jsonelement.Value
+						Else 
+							jsonvalues.content(jsonelement.Name) = jsonelement.Value
+						End If 
+						
 						Set jsonelement = jsonobject.getNextElement() 
 					Loop
 					
@@ -713,6 +718,7 @@ ErrorTrap:
 	enhLogException LIB_PREFIX, |Method Code: | & CStr(method%) 
 	Resume ExitPoint
 End Function
+
 
 
 
