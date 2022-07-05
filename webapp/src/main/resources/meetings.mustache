@@ -11,6 +11,7 @@
 </head>
 
 <body>
+    <div id="divlocation" class="display-none visibility-hidden">{{LOCATION}}</div>
     <div class="container">
         <div class="row">
             <header id="masterHeader" class="dark master-header dark-master">
@@ -75,7 +76,7 @@
                     </h1>
 
                     <h4 class="text-white">
-						<p dir="ltr">${dominoTagLine}</p>
+						                <p dir="ltr">${dominoTagLine}</p>
                     </h4>
 
                 </div>
@@ -105,7 +106,7 @@
             </div>
         </div>
     </section>
-    
+
     <div class="py-3 border-top">
   <div class="container">
 
@@ -130,6 +131,7 @@
 
     <!-- end: main-section -->
 
+    <!-- rem out script
     <script>
         $(function () {
             $('<button class="btn btn-copy btn-sm" type="button" style="float:right">Copy</button>').prependTo(".code").click(function (e) {
@@ -152,6 +154,10 @@
         	window.history.pushState('data', '', '{{LOCATION}}');
         });
     </script>
+  -->
+
+  <button id="btncopy" class="btn btn-copy btn-sm float-right" type="button">Copy</button>
+
 </body>
 
 </html>
