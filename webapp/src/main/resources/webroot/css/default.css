@@ -175,3 +175,15 @@ h4,
         height: calc(100% - 78px);
     }
 }
+
+.float-right {
+	float: right;
+}
+
+.visibility-hidden {
+	visibility: hidden;
+}
+
+.display-none {
+	display: none;
+}
