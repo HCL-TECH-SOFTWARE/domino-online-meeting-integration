@@ -21,10 +21,15 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.Consumer;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Strings;
 import com.hcl.labs.domi.providers.OnlineMeetingProviderFactory;
 import com.hcl.labs.domi.providers.OnlineMeetingProviderFactoryHolder;
 import com.hcl.labs.domi.providers.OnlineMeetingProviderParameterBuilder;
@@ -32,16 +37,19 @@ import com.hcl.labs.domi.tools.DOMIConstants;
 import com.hcl.labs.domi.tools.DOMIException;
 import com.hcl.labs.domi.tools.DOMIProvider;
 import com.hcl.labs.domi.tools.DOMIUtils;
+
 import io.vertx.config.ConfigRetriever;
 import io.vertx.config.ConfigRetrieverOptions;
 import io.vertx.config.ConfigStoreOptions;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Future;
+import io.vertx.core.Handler;
 import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.http.HttpServerOptions;
+import io.vertx.core.http.HttpServerResponse;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
@@ -63,6 +71,21 @@ public class MainVerticle extends AbstractVerticle {
   private static JsonObject config;
   // Logger
   private static final Logger LOGGER = LoggerFactory.getLogger(MainVerticle.class);
+
+  private static final String DEFAULT_CSP_VALUE = "default-src 'self';";
+  private static final String HEADER_CSP = "Content-Security-Policy";
+  private static final String ORIGIN = "Origin";
+  private static final String HEADER_STRICT_TLS = "Strict-Transport-Security";
+  public static final String X_HEADER = "X-Clacks-Overhead";
+  public static final String HEADER_GNU_TP = "GNU Terry Pratchett";
+
+  /**
+   * Flag to determine if we use TLS only, might get overwritten
+   * in listenerStart()
+   */
+  private boolean useTLS = true;
+
+  private final Set<String> corsHosts = new HashSet<>();
 
   /**
    * Configure the use of Java JDK logging to use
@@ -281,6 +304,15 @@ public class MainVerticle extends AbstractVerticle {
     // Get router
     this.router = Router.router(this.getVertx());
     this.router.route().handler(this::validateState);
+
+    this.setupCorsHostLookup();
+    final Handler<RoutingContext> strictCSP = MainVerticle.createContentSecurityHeaderHandler(MainVerticle.DEFAULT_CSP_VALUE);
+
+    this.router.route().handler(strictCSP);
+
+    this.router.route().handler(this::handlerCheckCorsHeaders);
+    this.router.route().handler(this::handlerStrictTLS);
+    this.router.route().handler(this::handlerPratchett);
     this.router.route().handler(BodyHandler.create(false));
 
     // Add static and error routes
@@ -337,10 +369,10 @@ public class MainVerticle extends AbstractVerticle {
   private void createMeetingProviderRoutes(final String hostName) throws DOMIException {
     for (DOMIProvider dp : DOMIProvider.values()) {
       final String clientId = this.config().getString(dp.CLIENT_ID_ENV, "");
-      final String clientSecret =
-          this.config().getString(dp.CLIENT_SECRET_ENV, "");
+      final String clientSecret = this.config().getString(dp.CLIENT_SECRET_ENV, "");
 
-      // Webex requires extra parameters additional content for the body for the call to the
+      // Webex requires extra parameters additional content for the body for the call
+      // to the
       // TOKEN_URL, so needs building here
       JsonObject extraParams = new JsonObject();
       if ("WEBEX".equals(dp.name())) {
@@ -365,4 +397,85 @@ public class MainVerticle extends AbstractVerticle {
       mpFactory.createAndEnableRoutes(mpBuilder.build());
     }
   }
+
+  /**
+   * Creates a handler for a Content security header injection
+   *
+   * @param cspValue The content security header to set
+   * @return A Routing context handler setting the content-security-policy
+   */
+  private static Handler<RoutingContext> createContentSecurityHeaderHandler(final String cspValue) {
+    return ctx -> {
+      final String realValue = Strings.isNullOrEmpty(cspValue) ? MainVerticle.DEFAULT_CSP_VALUE : cspValue;
+      final HttpServerResponse response = ctx.response();
+      if (response.headers().contains(MainVerticle.HEADER_CSP)) {
+        response.headers().remove(MainVerticle.HEADER_CSP);
+      }
+      response.putHeader(MainVerticle.HEADER_CSP, realValue);
+      ctx.next();
+    };
+  }
+
+  private void handlerCheckCorsHeaders(final RoutingContext ctx) {
+    final HttpServerResponse response = ctx.response();
+    final String reqOrigin = ctx.request().getHeader(MainVerticle.ORIGIN);
+    if (reqOrigin != null && this.isAllowCors(reqOrigin)) {
+      response.putHeader("Access-Control-Allow-Origin", reqOrigin);
+      // Tell browser that response might change with origin
+      response.putHeader("Vary", MainVerticle.ORIGIN);
+      MainVerticle.LOGGER.trace("CORS added for {}", reqOrigin);
+    }
+    ctx.next();
+  }
+
+  /**
+   * Adds a TLS Strict Header
+   *
+   * @param ctx Routing context
+   */
+  private void handlerStrictTLS(final RoutingContext ctx) {
+    final HttpServerResponse response = ctx.response();
+    if (this.useTLS && !response.headers().contains(MainVerticle.HEADER_STRICT_TLS)) {
+      // One week enforcement of TLS
+      response.putHeader(MainVerticle.HEADER_STRICT_TLS, "max-age=604800");
+    }
+
+    ctx.next();
+  }
+
+  private void handlerPratchett(final RoutingContext ctx) {
+    // See http://www.gnuterrypratchett.com/
+    ctx.response().putHeader(MainVerticle.X_HEADER, MainVerticle.HEADER_GNU_TP);
+    ctx.next();
+  }
+
+  /**
+   * @param originIncoming - the Host where the request came from
+   * @return true if we serve it
+   */
+  private boolean isAllowCors(final String originIncoming) {
+    // Checking the ENDING of the origin, so
+    // acme.com will enable a.acme.com, b.acme.com etc
+    // Stripping out a port
+    final String[] parts = originIncoming.split(":");
+    final String origin = parts.length > 1 ? parts[1] : parts[0];
+    for (final String allowedDomain : this.corsHosts) {
+      if (origin.endsWith(allowedDomain)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Reads the cors lookup values into a lookup map
+   */
+  private void setupCorsHostLookup() {
+    final JsonObject input = this.config().getJsonObject("CORS", new JsonObject());
+    input.stream()
+        .filter(entry -> entry.getValue() instanceof Boolean)
+        .filter(entry -> (Boolean) entry.getValue())
+        .forEach(entry -> this.corsHosts.add(entry.getKey()));
+  }
+
 }
