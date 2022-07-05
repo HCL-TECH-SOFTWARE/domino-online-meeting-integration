@@ -5,9 +5,10 @@
     <link rel="stylesheet" href="css/bootstrap.min.css">
     <script src="js/bootstrap.min.js"></script>
     <script src="js/jquery-3.6.0.min.js"></script>
+    <script src="js/copytoken.js"></script>
     <link rel="stylesheet" href="css/default.css" >
     <title>{{OAUTH_TYPE}} for HCL Notes Setup</title>
-    <script src="js/copytoken.js"></script>
+
 </head>
 
 <body>
@@ -98,6 +99,7 @@
                 <div class="col-sm-6 mt-50 text-left">
                     <label dir="ltr" class="label" for="refreshToken">Copy into "Refresh Token"</label>
                 </div>
+                <button id="btncopy" class="btn btn-copy btn-sm float-right" type="button">Copy</button>
             </div>
             <div class="row">
                 <div class="col-sm-12 mt-50 text-left code" style="padding-right: 10px">
@@ -155,8 +157,6 @@
         });
     </script>
   -->
-
-  <button id="btncopy" class="btn btn-copy btn-sm float-right" type="button">Copy</button>
 
 </body>
 
