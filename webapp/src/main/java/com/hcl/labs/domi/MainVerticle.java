@@ -437,7 +437,7 @@ public class MainVerticle extends AbstractVerticle {
     final HttpServerResponse response = ctx.response();
     if (this.useTLS && !response.headers().contains(MainVerticle.HEADER_STRICT_TLS)) {
       // One week enforcement of TLS
-      response.putHeader(MainVerticle.HEADER_STRICT_TLS, "max-age=604800");
+      response.putHeader(MainVerticle.HEADER_STRICT_TLS, "max-age=2592000");
     }
 
     ctx.next();
