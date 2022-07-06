@@ -138,6 +138,7 @@ h4,
     color: #5C5C5C;
     border: #ADADAD 1px solid;
     border-radius: 25px;
+    height: min-content;
 }
 
 .label {
