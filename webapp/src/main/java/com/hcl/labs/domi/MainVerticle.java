@@ -76,6 +76,10 @@ public class MainVerticle extends AbstractVerticle {
   private static final String HEADER_CSP = "Content-Security-Policy";
   private static final String ORIGIN = "Origin";
   private static final String HEADER_STRICT_TLS = "Strict-Transport-Security";
+  private static final String HEADER_X_FRAME_OPTIONS = "X-Frame-Options";
+  private static final String HEADER_X_CONTENT_TYPE_OPTIONS = "X-Content-Type-Options";
+  private static final String HEADER_REFERRER_POLICY = "Referrer-Policy";
+  private static final String HEADER_PERMISSIONS_POLICY = "Permissions-Policy";
   public static final String X_HEADER = "X-Clacks-Overhead";
   public static final String HEADER_GNU_TP = "GNU Terry Pratchett";
 
@@ -436,7 +440,7 @@ public class MainVerticle extends AbstractVerticle {
   private void handlerStrictTLS(final RoutingContext ctx) {
     final HttpServerResponse response = ctx.response();
     if (this.useTLS && !response.headers().contains(MainVerticle.HEADER_STRICT_TLS)) {
-      // One week enforcement of TLS
+      // One month enforcement of TLS
       response.putHeader(MainVerticle.HEADER_STRICT_TLS, "max-age=2592000");
     }
 
@@ -446,6 +450,32 @@ public class MainVerticle extends AbstractVerticle {
   private void handlerPratchett(final RoutingContext ctx) {
     // See http://www.gnuterrypratchett.com/
     ctx.response().putHeader(MainVerticle.X_HEADER, MainVerticle.HEADER_GNU_TP);
+    ctx.next();
+  }
+
+  private void handlerXframeOptions(final RoutingContext ctx) {
+    // See
+    // https://scotthelme.co.uk/hardening-your-http-response-headers/#x-frame-options
+    ctx.response().putHeader(MainVerticle.HEADER_X_FRAME_OPTIONS, "SAMEORIGIN");
+    ctx.next();
+  }
+
+  private void handlerXcontentTypeOptions(final RoutingContext ctx) {
+    // See
+    // https://scotthelme.co.uk/hardening-your-http-response-headers/#x-content-type-options
+    ctx.response().putHeader(MainVerticle.HEADER_X_CONTENT_TYPE_OPTIONS, "nosniff");
+    ctx.next();
+  }
+
+  private void handlerReferrerPolicy(final RoutingContext ctx) {
+    // See https://scotthelme.co.uk/a-new-security-header-referrer-policy/
+    ctx.response().putHeader(MainVerticle.HEADER_REFERRER_POLICY, "no-referrer");
+    ctx.next();
+  }
+
+  private void handlerPermissionsPolicy(final RoutingContext ctx) {
+    // See http://www.gnuterrypratchett.com/
+    ctx.response().putHeader(MainVerticle.HEADER_PERMISSIONS_POLICY, "sync-xhr()");
     ctx.next();
   }
 
