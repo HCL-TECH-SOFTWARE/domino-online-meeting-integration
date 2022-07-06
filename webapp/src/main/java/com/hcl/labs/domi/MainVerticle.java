@@ -317,6 +317,11 @@ public class MainVerticle extends AbstractVerticle {
     this.router.route().handler(this::handlerCheckCorsHeaders);
     this.router.route().handler(this::handlerStrictTLS);
     this.router.route().handler(this::handlerPratchett);
+    this.router.route().handler(this::handlerXframeOptions);
+    this.router.route().handler(this::handlerXcontentTypeOptions);
+    this.router.route().handler(this::handlerReferrerPolicy);
+    this.router.route().handler(this::handlerPermissionsPolicy);
+
     this.router.route().handler(BodyHandler.create(false));
 
     // Add static and error routes
