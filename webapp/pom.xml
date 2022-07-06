@@ -6,7 +6,7 @@
 
 	<groupId>com.hcl.labs</groupId>
 	<artifactId>com.hcl.labs.domi</artifactId>
-	<version>1.0.7</version>
+	<version>1.0.8</version>
 	<name>DOMI</name>
 	<description>Online Meeting Integrations OAuth Service for HCL Domino</description>
 	<organization>
