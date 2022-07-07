@@ -480,7 +480,8 @@ public class MainVerticle extends AbstractVerticle {
 
   private void handlerPermissionsPolicy(final RoutingContext ctx) {
     // See http://www.gnuterrypratchett.com/
-    ctx.response().putHeader(MainVerticle.HEADER_PERMISSIONS_POLICY, "sync-xhr()");
+    ctx.response().putHeader(MainVerticle.HEADER_PERMISSIONS_POLICY,
+        "Permissions-Policy: accelerometer=(), ambient-light-sensor=(), autoplay=(), battery=(), camera=(), cross-origin-isolated=(), display-capture=(), document-domain=(), encrypted-media=(), execution-while-not-rendered=(), execution-while-out-of-viewport=(), fullscreen=*, geolocation=(), gyroscope=(), keyboard-map=(self), magnetometer=(), microphone=(), midi=(), navigation-override=(), payment=(), picture-in-picture=(), publickey-credentials-get=(self), screen-wake-lock=(), sync-xhr=(self), usb=(), web-share=(), xr-spatial-tracking=(), clipboard-read=(self), clipboard-write=(self), trust-token-redemption=(self), window-placement=(self), vertical-scroll=(self)");
     ctx.next();
   }
 
