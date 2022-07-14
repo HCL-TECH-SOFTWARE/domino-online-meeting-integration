@@ -138,6 +138,7 @@ h4,
     color: #5C5C5C;
     border: #ADADAD 1px solid;
     border-radius: 25px;
+    height: min-content;
 }
 
 .label {
@@ -174,4 +175,12 @@ h4,
         top: 78px;
         height: calc(100% - 78px);
     }
+}
+
+.visibility-hidden {
+	visibility: hidden;
+}
+
+.display-none {
+	display: none;
 }

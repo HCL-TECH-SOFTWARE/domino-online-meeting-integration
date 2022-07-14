@@ -23,11 +23,11 @@ under the License.
     <link>${project.url}</link>
     <description>DOMI - Checkstyle report</description>
     <language>en-us</language>
-    <copyright>&#169;2021 HCL Software</copyright>
+    <copyright>&#169;2022 HCL Software</copyright>
     <item>
-      <title>File: 15,
+      <title>File: 17,
              Errors: 0,
-             Warnings: 225,
+             Warnings: 241,
              Infos: 0
       </title>
             <link>${project.url}/checkstyle.html</link>
@@ -228,13 +228,27 @@ under the License.
               </tr>
                           <tr>
                 <td>
+                  <a href="${project.url}/checkstyle.html#domi.properties">domi.properties</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
                   <a href="${project.url}/checkstyle.html#com.hcl.labs.domi.MainVerticle.java">com/hcl/labs/domi/MainVerticle.java</a>
                 </td>
                 <td>
                   0
                 </td>
                 <td>
-                  43
+                  59
                 </td>
                 <td>
                   0
@@ -249,6 +263,20 @@ under the License.
                 </td>
                 <td>
                   2
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="${project.url}/checkstyle.html#log4j.properties">log4j.properties</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
                 </td>
                 <td>
                   0

@@ -4,13 +4,15 @@
 <head>
     <link rel="stylesheet" href="css/bootstrap.min.css">
     <script src="js/bootstrap.min.js"></script>
-	<script src="js/jquery-3.6.0.min.js"></script>
-	<link rel="stylesheet" href="css/default.css" >
+    <script src="js/jquery-3.6.0.min.js"></script>
+    <script src="js/copytoken.js" defer></script>
+    <link rel="stylesheet" href="css/default.css" >
     <title>{{OAUTH_TYPE}} for HCL Notes Setup</title>
 
 </head>
 
 <body>
+    <div id="divlocation" class="display-none visibility-hidden">{{LOCATION}}</div>
     <div class="container">
         <div class="row">
             <header id="masterHeader" class="dark master-header dark-master">
@@ -75,7 +77,7 @@
                     </h1>
 
                     <h4 class="text-white">
-						<p dir="ltr">${dominoTagLine}</p>
+						                <p dir="ltr">${dominoTagLine}</p>
                     </h4>
 
                 </div>
@@ -97,6 +99,7 @@
                 <div class="col-sm-6 mt-50 text-left">
                     <label dir="ltr" class="label" for="refreshToken">Copy into "Refresh Token"</label>
                 </div>
+                <button id="btncopy" class="btn btn-copy btn-sm float-right visibility-hidden display-none" type="button">Copy</button>
             </div>
             <div class="row">
                 <div class="col-sm-12 mt-50 text-left code" style="padding-right: 10px">
@@ -105,7 +108,7 @@
             </div>
         </div>
     </section>
-    
+
     <div class="py-3 border-top">
   <div class="container">
 
@@ -128,30 +131,7 @@
 
   </div>
 
-    <!-- end: main-section -->
-
-    <script>
-        $(function () {
-            $('<button class="btn btn-copy btn-sm" type="button" style="float:right">Copy</button>').prependTo(".code").click(function (e) {
-                var ta = document.createElement('textarea');
-                ta.value = $(this).next()[0].innerText;
-                ta.style.position = 'absolute';
-                ta.style.left = '-3000px';
-                document.body.appendChild(ta);
-                ta.select();
-                document.execCommand('copy');
-                document.body.removeChild(ta);
-                $(this).text("Copied!");
-                var self = $(this);
-                setTimeout(function () {
-                    self.text("Copy");
-                }, 3000)
-            })
-        });
-        $(window).on('load', function() {
-        	window.history.pushState('data', '', '{{LOCATION}}');
-        });
-    </script>
+  <!-- end: main-section -->
 </body>
 
 </html>
