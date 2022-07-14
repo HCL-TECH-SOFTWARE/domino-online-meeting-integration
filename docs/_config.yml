@@ -14,7 +14,7 @@
 # You can create any custom variable you would like, and they will be accessible
 # in the templates via {{ site.myvariable }}.
 # Theme
-theme: "just-the-docs"
+# theme: "just-the-docs"
 remote_theme: pmarsceill/just-the-docs
 title: Domino Online Meeting Integration
 description: Online meeting services integrations for HCL Domino
