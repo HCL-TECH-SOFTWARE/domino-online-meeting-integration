@@ -25,10 +25,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.Consumer;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.google.common.base.Strings;
 import com.hcl.labs.domi.providers.OnlineMeetingProviderFactory;
 import com.hcl.labs.domi.providers.OnlineMeetingProviderFactoryHolder;
@@ -37,7 +35,6 @@ import com.hcl.labs.domi.tools.DOMIConstants;
 import com.hcl.labs.domi.tools.DOMIException;
 import com.hcl.labs.domi.tools.DOMIProvider;
 import com.hcl.labs.domi.tools.DOMIUtils;
-
 import io.vertx.config.ConfigRetriever;
 import io.vertx.config.ConfigRetrieverOptions;
 import io.vertx.config.ConfigStoreOptions;
@@ -113,9 +110,11 @@ public class MainVerticle extends AbstractVerticle {
   private static MicrometerMetricsOptions getMetricsOptions() {
     // Performance metrics using Micrometer
 
-    final JsonObject promMetricsConfig = MainVerticle.config.getJsonObject("prometheusMetrics", new JsonObject());
+    final JsonObject promMetricsConfig =
+        MainVerticle.config.getJsonObject("prometheusMetrics", new JsonObject());
     final Integer port = MainVerticle.config.getInteger(DOMIConstants.CONFIG_METRICSPORT, 8890);
-    final HttpServerOptions serverOptions = DOMIUtils.getServerOptions(DOMIConstants.CONFIG_METRICSPORT, port, MainVerticle.config);
+    final HttpServerOptions serverOptions =
+        DOMIUtils.getServerOptions(DOMIConstants.CONFIG_METRICSPORT, port, MainVerticle.config);
     MainVerticle.LOGGER.info(
         "Metrics is configured for port {} {}", port,
         serverOptions.isSsl() ? "with HTTPS" : "HTTP only");
@@ -144,7 +143,7 @@ public class MainVerticle extends AbstractVerticle {
    * that is in the
    * configuration directory
    *
-   * @param vertx         - the vertx instance
+   * @param vertx - the vertx instance
    * @param configDirName - the configuration directory
    * @return Future with a configuration
    */
@@ -262,7 +261,7 @@ public class MainVerticle extends AbstractVerticle {
    * Sends a startup complete message out as information
    *
    * @param verticleName - ClassName of main verticle
-   * @param verticleId   - ID of the verticle being launched
+   * @param verticleId - ID of the verticle being launched
    */
   static void sendStartupMessage(final String verticleName, final String verticleId) {
     final StringBuilder builder = new StringBuilder();
@@ -303,14 +302,16 @@ public class MainVerticle extends AbstractVerticle {
     MainVerticle.LOGGER.info("Starting up with hostname " + hostName);
 
     final Integer port = MainVerticle.config.getInteger(DOMIConstants.CONFIG_PORT, 8878);
-    final HttpServerOptions serverOptions = DOMIUtils.getServerOptions(DOMIConstants.CONFIG_PORT, port, MainVerticle.config);
+    final HttpServerOptions serverOptions =
+        DOMIUtils.getServerOptions(DOMIConstants.CONFIG_PORT, port, MainVerticle.config);
 
     // Get router
     this.router = Router.router(this.getVertx());
     this.router.route().handler(this::validateState);
 
     this.setupCorsHostLookup();
-    final Handler<RoutingContext> strictCSP = MainVerticle.createContentSecurityHeaderHandler(MainVerticle.DEFAULT_CSP_VALUE);
+    final Handler<RoutingContext> strictCSP =
+        MainVerticle.createContentSecurityHeaderHandler(MainVerticle.DEFAULT_CSP_VALUE);
 
     this.router.route().handler(strictCSP);
 
@@ -364,7 +365,8 @@ public class MainVerticle extends AbstractVerticle {
       throw new IllegalArgumentException("Disallowed QueryString State parameter: " + state);
 
     } catch (Exception e) {
-      LoggerFactory.getLogger(OnlineMeetingProviderFactoryHolder.class).error("State Not Allowed {} {}", state, e);
+      LoggerFactory.getLogger(OnlineMeetingProviderFactoryHolder.class)
+          .error("State Not Allowed {} {}", state, e);
       ctx.fail(400);
     }
   }
@@ -391,18 +393,19 @@ public class MainVerticle extends AbstractVerticle {
 
       final OnlineMeetingProviderFactory mpFactory = new OnlineMeetingProviderFactoryHolder(
           clientId, clientSecret, dp.LABEL, hostName);
-      final OnlineMeetingProviderParameterBuilder mpBuilder = new OnlineMeetingProviderParameterBuilder()
-          .vertx(this.vertx)
-          .router(this.router)
-          .authUrl(dp.AUTHORIZE_URL)
-          .tokenUrl(dp.TOKEN_URL)
-          .revocationUrl(dp.REVOCATION_URL)
-          .callbackRoute(dp.CALLBACK_ROUTE)
-          .refreshRoute(dp.REFRESH_ROUTE)
-          .revokeRoute(dp.REVOKE_ROUTE)
-          .scopes(dp.SCOPES)
-          .path(dp.PATH)
-          .extraParams(extraParams);
+      final OnlineMeetingProviderParameterBuilder mpBuilder =
+          new OnlineMeetingProviderParameterBuilder()
+              .vertx(this.vertx)
+              .router(this.router)
+              .authUrl(dp.AUTHORIZE_URL)
+              .tokenUrl(dp.TOKEN_URL)
+              .revocationUrl(dp.REVOCATION_URL)
+              .callbackRoute(dp.CALLBACK_ROUTE)
+              .refreshRoute(dp.REFRESH_ROUTE)
+              .revokeRoute(dp.REVOKE_ROUTE)
+              .scopes(dp.SCOPES)
+              .path(dp.PATH)
+              .extraParams(extraParams);
       mpFactory.createAndEnableRoutes(mpBuilder.build());
     }
   }
@@ -415,7 +418,8 @@ public class MainVerticle extends AbstractVerticle {
    */
   private static Handler<RoutingContext> createContentSecurityHeaderHandler(final String cspValue) {
     return ctx -> {
-      final String realValue = Strings.isNullOrEmpty(cspValue) ? MainVerticle.DEFAULT_CSP_VALUE : cspValue;
+      final String realValue =
+          Strings.isNullOrEmpty(cspValue) ? MainVerticle.DEFAULT_CSP_VALUE : cspValue;
       final HttpServerResponse response = ctx.response();
       if (response.headers().contains(MainVerticle.HEADER_CSP)) {
         response.headers().remove(MainVerticle.HEADER_CSP);
@@ -446,7 +450,7 @@ public class MainVerticle extends AbstractVerticle {
     final HttpServerResponse response = ctx.response();
     if (this.useTLS && !response.headers().contains(MainVerticle.HEADER_STRICT_TLS)) {
       // One month enforcement of TLS
-      response.putHeader(MainVerticle.HEADER_STRICT_TLS, "max-age=2592000");
+      response.putHeader(MainVerticle.HEADER_STRICT_TLS, "max-age=31536000; includeSubDomains;");
     }
 
     ctx.next();
