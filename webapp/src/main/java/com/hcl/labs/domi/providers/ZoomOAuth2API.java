@@ -17,16 +17,13 @@ package com.hcl.labs.domi.providers;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
-import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
-import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.auth.oauth2.OAuth2Options;
 import io.vertx.ext.auth.oauth2.impl.OAuth2API;
-import io.vertx.ext.auth.oauth2.impl.OAuth2Response;
 
 /**
  * @author Paul Withers
@@ -39,7 +36,7 @@ public class ZoomOAuth2API extends OAuth2API {
   final OAuth2Options config;
 
   /**
-   * @param vertx  current Vertx instance
+   * @param vertx current Vertx instance
    * @param config OAuth options
    */
   public ZoomOAuth2API(Vertx vertx, OAuth2Options config) {
@@ -53,19 +50,18 @@ public class ZoomOAuth2API extends OAuth2API {
    * Unlike https://tools.ietf.org/html/rfc7009, Zoom requires token as query parameter
    */
   @Override
-  public void tokenRevocation(String tokenType, String token, Handler<AsyncResult<Void>> handler) {
+  public Future<Void> tokenRevocation(String tokenType, String token) {
     if (token == null) {
-      handler.handle(Future.failedFuture("Cannot revoke null token"));
-      return;
+      return Future.failedFuture("Cannot revoke null token");
     }
 
     final JsonObject headers = new JsonObject();
 
     final boolean confidentialClient =
-        this.config.getClientID() != null && this.config.getClientSecret() != null;
+        this.config.getClientId() != null && this.config.getClientSecret() != null;
 
     if (confidentialClient) {
-      String basic = this.config.getClientID() + ":" + this.config.getClientSecret();
+      String basic = this.config.getClientId() + ":" + this.config.getClientSecret();
       headers.put("Authorization",
           "Basic " + Base64.getEncoder().encodeToString(basic.getBytes(StandardCharsets.UTF_8)));
     }
@@ -81,26 +77,18 @@ public class ZoomOAuth2API extends OAuth2API {
     // specify preferred accepted accessToken type
     headers.put("Accept", "application/json,application/x-www-form-urlencoded;q=0.9");
 
-    fetch(
+    return fetch(
         HttpMethod.POST,
         this.config.getRevocationPath() + query,
         headers,
-        payload,
-        res -> {
-          if (res.failed()) {
-            handler.handle(Future.failedFuture(res.cause()));
-            return;
-          }
+        payload)
+            .compose(reply -> {
+              if (reply.body() == null) {
+                return Future.failedFuture("No Body");
+              }
 
-          final OAuth2Response reply = res.result();
-
-          if (reply.body() == null) {
-            handler.handle(Future.failedFuture("No Body"));
-            return;
-          }
-
-          handler.handle(Future.succeededFuture());
-        });
+              return Future.succeededFuture();
+            });
   }
 
 }

@@ -44,11 +44,12 @@ public enum DOMIProvider {
    * Microsoft Teams
    * (label, authorizeURL, callbackRoute, scopes, path, tokenURL, refreshRoute,
    * client_id_envVar_label, client_secret_envVar_label)
+   * Removed scope
    */
   TEAMS("Microsoft Teams",
       "https://login.microsoftonline.com/organizations/oauth2/v2.0/authorize",
       "/teamsCallback",
-      "User.Read OnlineMeetings.ReadWrite offline_access",
+      "User.Read OnlineMeetings.ReadWrite offline_access openid",
       "/dominoTeams/",
       "https://login.microsoftonline.com/organizations/oauth2/v2.0/token",
       "/dominoTeamsRefresh",

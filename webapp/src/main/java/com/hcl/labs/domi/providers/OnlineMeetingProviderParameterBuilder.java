@@ -56,102 +56,103 @@ public class OnlineMeetingProviderParameterBuilder {
   }
 
   /**
-   * @param vertx instance
+   * @param passedVertx instance
    * @return fluent
    */
-  public OnlineMeetingProviderParameterBuilder vertx(final Vertx vertx) {
-    this.vertx = vertx;
+  public OnlineMeetingProviderParameterBuilder vertx(final Vertx passedVertx) {
+    this.vertx = passedVertx;
     return this;
   }
 
   /**
-   * @param router for the server
+   * @param passedRouter for the server
    * @return fluent
    */
-  public OnlineMeetingProviderParameterBuilder router(final Router router) {
-    this.router = router;
+  public OnlineMeetingProviderParameterBuilder router(final Router passedRouter) {
+    this.router = passedRouter;
     return this;
   }
 
   /**
-   * @param authUrl on the provider to do OAuth dance to retrieve short-lived code
+   * @param passedAuthUrl on the provider to do OAuth dance to retrieve short-lived code
    * @return fluent
    */
-  public OnlineMeetingProviderParameterBuilder authUrl(final String authUrl) {
-    this.authUrl = authUrl;
+  public OnlineMeetingProviderParameterBuilder authUrl(final String passedAuthUrl) {
+    this.authUrl = passedAuthUrl;
     return this;
   }
 
   /**
-   * @param tokenUrl on the provider to exchange short-lived code for tokens
+   * @param passedTokenUrl on the provider to exchange short-lived code for tokens
    * @return fluent
    */
-  public OnlineMeetingProviderParameterBuilder tokenUrl(final String tokenUrl) {
-    this.tokenUrl = tokenUrl;
+  public OnlineMeetingProviderParameterBuilder tokenUrl(final String passedTokenUrl) {
+    this.tokenUrl = passedTokenUrl;
     return this;
   }
 
   /**
-   * @param revocationUrl on the provider for revoking tokens
+   * @param passedRevocationUrl on the provider for revoking tokens
    * @return fluent
    */
-  public OnlineMeetingProviderParameterBuilder revocationUrl(final String revocationUrl) {
-    this.revocationUrl = revocationUrl;
+  public OnlineMeetingProviderParameterBuilder revocationUrl(final String passedRevocationUrl) {
+    this.revocationUrl = passedRevocationUrl;
     return this;
   }
 
   /**
-   * @param callbackRoute endpoint on this server for OAuth dance to redirect to with short-lived
+   * @param passedCallbackRoute endpoint on this server for OAuth dance to redirect to with
+   *        short-lived
    *        code
    * @return fluent
    */
-  public OnlineMeetingProviderParameterBuilder callbackRoute(final String callbackRoute) {
-    this.callbackRoute = callbackRoute;
+  public OnlineMeetingProviderParameterBuilder callbackRoute(final String passedCallbackRoute) {
+    this.callbackRoute = passedCallbackRoute;
     return this;
   }
 
   /**
-   * @param refreshRoute endpoint on this server for refreshing tokens
+   * @param passedRefreshRoute endpoint on this server for refreshing tokens
    * @return fluent
    */
-  public OnlineMeetingProviderParameterBuilder refreshRoute(final String refreshRoute) {
-    this.refreshRoute = refreshRoute;
+  public OnlineMeetingProviderParameterBuilder refreshRoute(final String passedRefreshRoute) {
+    this.refreshRoute = passedRefreshRoute;
     return this;
   }
 
   /**
-   * @param revokeRoute endpoint on this server for revoking tokens
+   * @param passedRevokeRoute endpoint on this server for revoking tokens
    * @return fluent
    */
-  public OnlineMeetingProviderParameterBuilder revokeRoute(final String revokeRoute) {
-    this.revokeRoute = revokeRoute;
+  public OnlineMeetingProviderParameterBuilder revokeRoute(final String passedRevokeRoute) {
+    this.revokeRoute = passedRevokeRoute;
     return this;
   }
 
   /**
-   * @param scopes to apply for OAuth access
+   * @param passedScopes to apply for OAuth access
    * @return fluent
    */
-  public OnlineMeetingProviderParameterBuilder scopes(final String scopes) {
-    this.scopes = scopes;
+  public OnlineMeetingProviderParameterBuilder scopes(final String passedScopes) {
+    this.scopes = passedScopes;
     return this;
   }
 
   /**
-   * @param path on this server to apply OAuth restrictions to
+   * @param passedPath on this server to apply OAuth restrictions to
    * @return fluent
    */
-  public OnlineMeetingProviderParameterBuilder path(final String path) {
-    this.path = path;
+  public OnlineMeetingProviderParameterBuilder path(final String passedPath) {
+    this.path = passedPath;
     return this;
   }
 
   /**
-   * @param extraParams to add to body of HttpRequest for token
+   * @param passedExtraParams to add to body of HttpRequest for token
    * @return fluent
    */
-  public OnlineMeetingProviderParameterBuilder extraParams(final JsonObject extraParams) {
-    this.extraParams = extraParams;
+  public OnlineMeetingProviderParameterBuilder extraParams(final JsonObject passedExtraParams) {
+    this.extraParams = passedExtraParams;
     return this;
   }
 

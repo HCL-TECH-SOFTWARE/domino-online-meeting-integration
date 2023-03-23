@@ -15,11 +15,9 @@
 
 package com.hcl.labs.domi.providers;
 
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Handler;
+import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.ext.auth.User;
-import io.vertx.ext.auth.oauth2.OAuth2Auth;
 import io.vertx.ext.auth.oauth2.OAuth2Options;
 import io.vertx.ext.auth.oauth2.impl.OAuth2API;
 import io.vertx.ext.auth.oauth2.impl.OAuth2AuthProviderImpl;
@@ -46,12 +44,11 @@ public class ZoomOAuth2AuthProviderImpl extends OAuth2AuthProviderImpl {
   /*
    * (non-Javadoc)
    * @see io.vertx.ext.auth.oauth2.impl.OAuth2AuthProviderImpl#revoke(io.vertx.ext.auth.User,
-   * java.lang.String, io.vertx.core.Handler)
+   * java.lang.String)
    */
   @Override
-  public OAuth2Auth revoke(User user, String tokenType, Handler<AsyncResult<Void>> handler) {
-    this.revokeApi.tokenRevocation(tokenType, user.principal().getString(tokenType), handler);
-    return this;
+  public Future<Void> revoke(User user, String tokenType) {
+    return this.revokeApi.tokenRevocation(tokenType, user.principal().getString(tokenType));
   }
 
 }
