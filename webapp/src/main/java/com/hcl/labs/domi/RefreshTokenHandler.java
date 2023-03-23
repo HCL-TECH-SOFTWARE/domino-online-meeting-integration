@@ -104,7 +104,7 @@ public class RefreshTokenHandler extends BodyHandlerImpl {
       if ("Bearer".equals(split[0])) {
         final String token = split[split.length - 1];
         // Pass token to ctx.user.principal - used by oAuthProvider.refresh()
-        final User user = new UserImpl(new JsonObject().put(storeKey, token));
+        final User user = new UserImpl(new JsonObject().put(storeKey, token), new JsonObject());
         ctx.setUser(user);
         return Future.succeededFuture();
       }

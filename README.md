@@ -1,4 +1,6 @@
-# Domino Online Meeting Integration 
+# Domino Online Meeting Integration
+
+**NOTE** Domino Online Meeting Integration has been incorporated into the Notes mail template since Notes and Domino 12.0.1. This repo and its contents are only relevant for customers who have not upgraded to a more recent release.
 
 Domino Online Meeting Integration is an extension to the Domino Mail template allowing create, update and delete of ad hoc online meetings from HCL Notes client calendar entries. The following meeting providers are supported out-of-the-box:  
 - Zoom

@@ -19,13 +19,14 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.github.mustachejava.DefaultMustacheFactory;
 import com.github.mustachejava.Mustache;
 import com.github.mustachejava.MustacheFactory;
@@ -34,7 +35,6 @@ import com.hcl.labs.domi.RevokeTokenHandler;
 import com.hcl.labs.domi.tools.DOMIConstants;
 import com.hcl.labs.domi.tools.DOMIProvider;
 import com.hcl.labs.domi.tools.DOMIUtils;
-
 import io.vertx.core.http.HttpHeaders;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServerResponse;
@@ -50,7 +50,8 @@ import io.vertx.ext.web.handler.OAuth2AuthHandler;
  */
 public class OnlineMeetingProviderFactoryHolder implements OnlineMeetingProviderFactory {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(OnlineMeetingProviderFactoryHolder.class);
+  private static final Logger LOGGER =
+      LoggerFactory.getLogger(OnlineMeetingProviderFactoryHolder.class);
   private final String clientId; // Client ID to use when connecting to the OAuth provider
   private final String clientSecret; // Client secret to use when connecting to the OAuth provider
   private final String providerName; // Provider name, used in messages and web page
@@ -59,10 +60,10 @@ public class OnlineMeetingProviderFactoryHolder implements OnlineMeetingProvider
   /**
    * Constructor
    * 
-   * @param clientId     of OAuth application for this provider
+   * @param clientId of OAuth application for this provider
    * @param clientSecret of OAuth application for this provider
    * @param providerName for online meeting provider
-   * @param hostName     for this server, to use in redirect URLs etc
+   * @param hostName for this server, to use in redirect URLs etc
    */
   public OnlineMeetingProviderFactoryHolder(final String clientId, final String clientSecret,
       final String providerName, final String hostName) {
@@ -125,8 +126,10 @@ public class OnlineMeetingProviderFactoryHolder implements OnlineMeetingProvider
       final OAuth2Auth oauthProvider = createOAuthRoutesAndHandler(params);
 
       // Add revoke route, if needed
-      if (StringUtils.isNotEmpty(params.revokeRoute) && StringUtils.isNotEmpty(params.revocationUrl)) {
-        final RevokeTokenHandler revokeHandler = new RevokeTokenHandler(oauthProvider, getProviderName());
+      if (StringUtils.isNotEmpty(params.revokeRoute)
+          && StringUtils.isNotEmpty(params.revocationUrl)) {
+        final RevokeTokenHandler revokeHandler =
+            new RevokeTokenHandler(oauthProvider, getProviderName());
         params.router.route(params.revokeRoute).handler(revokeHandler);
         if (OnlineMeetingProviderFactoryHolder.LOGGER.isInfoEnabled()) {
           OnlineMeetingProviderFactoryHolder.LOGGER.info(
@@ -135,7 +138,8 @@ public class OnlineMeetingProviderFactoryHolder implements OnlineMeetingProvider
         }
       }
 
-      final RefreshTokenHandler refreshHandler = new RefreshTokenHandler(oauthProvider, getProviderName());
+      final RefreshTokenHandler refreshHandler =
+          new RefreshTokenHandler(oauthProvider, getProviderName());
       params.router.route(HttpMethod.GET, params.refreshRoute).handler(refreshHandler);
       if (OnlineMeetingProviderFactoryHolder.LOGGER.isInfoEnabled()) {
         OnlineMeetingProviderFactoryHolder.LOGGER.info("Enabled OAuth token refresh for {} at {}",
@@ -149,19 +153,18 @@ public class OnlineMeetingProviderFactoryHolder implements OnlineMeetingProvider
    * refresh tokens
    * 
    * @param params OnlineMeetingProviderParameters object holding all required
-   *               settings
+   *        settings
    * @return OAuth2Auth authentication provider
    */
   private OAuth2Auth createOAuthRoutesAndHandler(final OnlineMeetingProviderParameters params) {
     final String indexRoot = params.path + "index.html";
     final OAuth2Options options = new OAuth2Options()
         .setFlow(OAuth2FlowType.AUTH_CODE)
-        .setClientID(getClientId())
+        .setClientId(getClientId())
         .setClientSecret(getClientSecret())
         .setAuthorizationPath(params.authUrl)
         .setTokenPath(params.tokenUrl)
-        .setExtraParameters(params.extraParams)
-        .setScopeSeparator(" ");
+        .setExtraParameters(params.extraParams);
 
     // Add revocation URL if needed
     if (StringUtils.isNotEmpty(params.revocationUrl)) {
@@ -173,25 +176,35 @@ public class OnlineMeetingProviderFactoryHolder implements OnlineMeetingProvider
         ? new ZoomOAuth2AuthProviderImpl(params.vertx, options)
         : OAuth2Auth.create(params.vertx, options);
 
-    final OAuth2AuthHandler oAuthHandler = OAuth2AuthHandler.create(params.vertx, oAuthProvider,
-        getHostName() + params.callbackRoute);
+    List<String> scopes = new ArrayList<>();
+    scopes.addAll(Arrays.asList(StringUtils.split(params.scopes, " ")));
+    OAuth2AuthHandler oAuthHandler;
+    if (DOMIProvider.TEAMS.AUTHORIZE_URL.equals(params.authUrl)) {
+      oAuthHandler = new TeamsOAuth2AuthHandlerImpl(params.vertx, oAuthProvider,
+          getHostName() + params.callbackRoute).withScopes(scopes);
+    } else {
+      oAuthHandler = OAuth2AuthHandler.create(params.vertx, oAuthProvider,
+          getHostName() + params.callbackRoute)
+          .withScopes(scopes);
+    }
 
     if (OnlineMeetingProviderFactoryHolder.LOGGER.isInfoEnabled()) {
       OnlineMeetingProviderFactoryHolder.LOGGER.info("Enabled OAuth callback for {} at {}",
           getProviderName(), getHostName() + params.callbackRoute);
     }
 
-    oAuthHandler.setupCallback(params.router.route())
-        .withScope(params.scopes);
-    params.router.route(params.path + "*").handler(oAuthHandler);
+    oAuthHandler.setupCallback(params.router.route(params.callbackRoute));
+    params.router.route(params.path + "*")
+        .handler(oAuthHandler);
     if (OnlineMeetingProviderFactoryHolder.LOGGER.isInfoEnabled()) {
       OnlineMeetingProviderFactoryHolder.LOGGER.info("Enabled OAuth validation for {} on paths {}",
           getProviderName(), getHostName() + params.path + "*");
     }
 
     // OAuth handler
-    params.router.route(indexRoot).handler(ctx -> oAuthTokenHandler(ctx,
-        getHostName() + indexRoot));
+    params.router.route(indexRoot)
+        .handler(ctx -> oAuthTokenHandler(ctx,
+            getHostName() + indexRoot));
     return oAuthProvider;
   }
 
@@ -199,7 +212,7 @@ public class OnlineMeetingProviderFactoryHolder implements OnlineMeetingProvider
    * Handler to generate page with access and refresh tokens for this online
    * meeting provider
    * 
-   * @param ctx      current RoutingContext
+   * @param ctx current RoutingContext
    * @param location to override URL in location bar
    */
   @SuppressWarnings("resource")
