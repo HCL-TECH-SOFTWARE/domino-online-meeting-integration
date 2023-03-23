@@ -13,6 +13,9 @@ last_modified_date: 2021.06.25
 Version {{ site.version }}
 {: .fs-3 }
 
+**NOTE** Domino Online Meeting Integration has been incorporated into the Notes mail template since Notes and Domino 12.0.1. This documentation is only relevant to the open source version for 11.0.1 FP3+ and 12.0.0. This documentation is not intended to support and will not be correct for customers who have upgraded to a more recent release.
+{: .alert .alert-warning}
+
 Access the source code on [GitHub]({{ site.gh_edit_repository }}). If you're a Domino Administrator, you can download the <a href="{{ site.gh_edit_repository }}/tree/main/release" target="_new">DOMI Installation database here</a>.
 {: .alert .alert-info}
 
