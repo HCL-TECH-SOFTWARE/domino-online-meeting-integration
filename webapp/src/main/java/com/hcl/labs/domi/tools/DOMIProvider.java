@@ -31,11 +31,11 @@ public enum DOMIProvider {
    * client_id_envVar_label, client_secret_envVar_label)
    */
   GTM("GoToMeeting",
-      "https://api.getgo.com/oauth/v2/authorize",
+      "https://authentication.logmeininc.com/oauth/authorize",
       "/gtmCallback",
       "collab:",
       "/dominoGTM/",
-      "https://api.getgo.com/oauth/v2/token",
+      "https://authentication.logmeininc.com/oauth/token",
       "/dominoGTMRefresh",
       "GTM_CLIENT_ID",
       "GTM_CLIENT_SECRET"),
