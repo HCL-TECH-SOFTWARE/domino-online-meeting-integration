@@ -137,6 +137,11 @@ public class RefreshTokenHandler extends BodyHandlerImpl {
    */
   private void returnUser(final RoutingContext ctx, final User user) {
     final HttpServerResponse response = this.createJsonResponse(ctx);
+    if (!user.principal().containsKey(DOMIConstants.METRIC_GRANT_TYPE_REFRESH_TOKEN)
+        && ctx.user().principal().containsKey(DOMIConstants.METRIC_GRANT_TYPE_REFRESH_TOKEN)) {
+      user.principal().put(DOMIConstants.METRIC_GRANT_TYPE_REFRESH_TOKEN,
+          ctx.user().principal().getString(DOMIConstants.METRIC_GRANT_TYPE_REFRESH_TOKEN));
+    }
     response.end(user.principal().encode());
   }
 
